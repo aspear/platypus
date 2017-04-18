@@ -23,16 +23,22 @@ ADD ./favicons.tar.gz /usr/share/nginx/html/
 # and then uninstall python. done as one step so that image size is not bloated with python 
 # which is unused except for the config step.  To pickup a new version, update the VERSION
 # env var below to match the release in github 
-RUN export VER="0.0.29" && \
-    apk add --update ca-certificates && \
+RUN export VER="0.0.31" && \
+    apk add --update ca-certificates python && \
     wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-dist-${VER}.zip && \
     wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-tools-${VER}.zip && \
     unzip -o api-explorer-dist-${VER}.zip && unzip -o api-explorer-tools-${VER}.zip  && \
-    mv -f ./local/local-apis.json ./local.json && \
+    python ./apixlocal/apixlocal.py --server=https://vdc-repo.vmware.com \
+                --html_root_dir=./ \
+                --input_file=./local/local-apis.json \
+                --output_file=./local.json \
+                --swagger_output_dir=./local/swagger \
+                --swaggerglob=./local/swagger/api*.json \
+                --mirror_output_dir=./local/mirror && \
     mv -f ./local/config.js . && \
-    rm apiFilesToLocalJson.py  api-explorer*.zip && \
-    rm -rf apixlocal* \
-    apk del ca-certificates && \
+    rm *.py  api-explorer*.zip ./local/local-apis.json && \
+    rm -rf ./apixlocal && \
+    apk del ca-certificates python && \
     rm -rf /var/cache/apk/* 
 
 EXPOSE 80
