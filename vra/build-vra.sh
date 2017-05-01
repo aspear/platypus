@@ -7,7 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 TOOLS_DIR=${SCRIPT_DIR}/tools
 rm -rf ${TOOLS_DIR}
 
-export VER="0.0.10"
+export VER="0.0.17"
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
     wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-dist-${VER}.zip
