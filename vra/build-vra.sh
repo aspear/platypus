@@ -4,35 +4,51 @@ set -x
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
+OUTPUT_DIR=${SCRIPT_DIR}/staging
+
 TOOLS_DIR=${SCRIPT_DIR}/tools
-rm -rf ${TOOLS_DIR}
+
+APIX_SERVER=https://vdc-repo.vmware.com
 
 export VER="0.0.19"
+APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-dist-${VER}.zip
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
 fi
 
 if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-tools-${VER}.zip
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
 fi
 
-mkdir -p ${SCRIPT_DIR}/tools
-pushd ${SCRIPT_DIR}/tools
-unzip ${SCRIPT_DIR}/api-explorer-tools-*.zip
-popd
+if [ -d "${SCRIPT_DIR}/tools" ]; then
+    echo "Already staged tools"
+else
+    echo "Staging tools"
+    mkdir -p ${SCRIPT_DIR}/tools
+    pushd ${SCRIPT_DIR}/tools
 
-OUTPUT_DIR=${SCRIPT_DIR}/staging
+    # FIXME eventually when we pick up the other change, switch to
+    # using the apixlocal in the tools distribution.
+    #mkdir apixlocal
+    #cd apixlocal
+    #unzip ../../apixlocal.zip
+	
+    unzip ${SCRIPT_DIR}/api-explorer-tools-*.zip
+
+    popd
+fi
 
 # remove all of the locally generated files.
-rm -rf ${OUTPUT_DIR}
+rm -rf ${OUTPUT_DIR}/*
 mkdir -p ${OUTPUT_DIR}/local/swagger
 
 pushd ${OUTPUT_DIR}
 
+echo "extracting APIX distribution"
 unzip ${SCRIPT_DIR}/api-explorer-dist-*.zip
 
-#overwrite config with vRA config
+echo "overwriting config with local config"
 cp -f ${SCRIPT_DIR}/config.js .
 
 # run the tool to stage the swagger json files from the 
@@ -42,15 +58,28 @@ cp -f ${SCRIPT_DIR}/config.js .
 # this it generates an "overview" resource in the local.json file
 # that has all of the configuration in it
 
-python ${TOOLS_DIR}/apiFilesToLocalJson.py \
+#python ${TOOLS_DIR}/apiFilesToLocalJson.py \
+# --abbreviateDescription \
+# --generateOverviewHtml \
+# --apiPrepend="vRealize Automation " \
+# --productName="vRealize Automation;7.3.0" \
+# --apiVersion="(vRealize Automation 7.3.0)" \
+# --swaggerglob ${SCRIPT_DIR}/swagger-vra/api*.json \
+# --outdir=${OUTPUT_DIR}/local/swagger \
+# --htmlRootDir ${OUTPUT_DIR} \
+# --outfile ${OUTPUT_DIR}/local.json
+
+echo "Mirroring API content from ${APIX_SERVER}"
+python ${TOOLS_DIR}/apixlocal/apixlocal.py \
+ --server=${APIX_SERVER} \
+ --html_root_dir=${OUTPUT_DIR} \
+ --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviateDescription \
  --generateOverviewHtml \
  --apiPrepend="vRealize Automation " \
  --productName="vRealize Automation;7.3.0" \
  --apiVersion="(vRealize Automation 7.3.0)" \
  --swaggerglob ${SCRIPT_DIR}/swagger-vra/api*.json \
- --outdir=${OUTPUT_DIR}/local/swagger \
- --htmlRootDir ${OUTPUT_DIR} \
- --outfile ${OUTPUT_DIR}/local.json
+ --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
 
 popd
