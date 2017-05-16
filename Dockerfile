@@ -14,12 +14,11 @@ WORKDIR /usr/share/nginx/html/
 
 # (note that the normal Platypus project build dynamically assembles this image by downloading the API Explorer
 # component, unzipping it and then staging swagger.json files during the Docker build)
-COPY ./vra/staging /usr/share/nginx/html/
+COPY ./local/staging /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY "runner.sh" /usr/share/nginx/html/
-# this ADD command will extract the favicons in the html root
-ADD ./favicons.tar.gz /usr/share/nginx/html/
+ADD ./local/favicon.ico /usr/share/nginx/html/
 
 EXPOSE 80
 ENTRYPOINT ["/usr/share/nginx/html/runner.sh"]
