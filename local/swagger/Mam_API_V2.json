@@ -1,1 +1,1346 @@
-{"swagger":"2.0","info":{"version":"2","title":"MAM API V2"},"host":"apimain.ssdevrd.com","basePath":"/api/mam","schemes":["https","http"],"paths":{"/apps/applestore/search":{"get":{"tags":["AppsV2"],"summary":"New - Searches in apple app store for the applications with the specified search string and returns the details","description":"v1","operationId":"AppsV2_SearchAppleStore","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"appname","in":"query","description":"Application name to be searched.","required":false,"type":"string"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/playstore/search":{"get":{"tags":["AppsV2"],"summary":"New - Searches in google playstore for the applications with the specified search string and returns the details","description":"v1","operationId":"AppsV2_SearchGoogleStore","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"appname","in":"query","description":"Application name to be searched.","required":false,"type":"string"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/windowsstore/search":{"get":{"tags":["AppsV2"],"summary":"New - Searches in Windows store for the applications with the specified search string and platform and returns the details","description":"v1","operationId":"AppsV2_SearchWindowsStore","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"appname","in":"query","description":"Application name to be searched.","required":false,"type":"string"},{"name":"platform","in":"query","description":"Device platform.","required":false,"type":"string"},{"name":"countryCode","in":"query","description":"countryCode.","required":false,"type":"string"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/{id}":{"get":{"tags":["PublicAppsV2"],"summary":"New - Gets the details of a public app identified by id.","description":"v2","operationId":"PublicAppsV2_GetPublicAppById","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"id","in":"path","description":"Public App Id.","required":true,"type":"integer","format":"int32"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public":{"post":{"tags":["PublicAppsV2"],"summary":"New - Inserts the public application selected by searching for the bundle ID (Android) or external ID (iOS) in the app market.","description":"v1","operationId":"PublicAppsV2_AddPublicApplication","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"application","in":"body","description":"The application entity to be inserted.","required":true,"schema":{"$ref":"#/definitions/PublicAppsAddEditModel"}},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/{applicationid}":{"put":{"tags":["PublicAppsV2"],"summary":"New - Updates the public application selected by searching for the bundle ID (Android) or external ID (iOS) in the app market.","description":"v1","operationId":"PublicAppsV2_EditPublicApplication","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"applicationid","in":"path","description":"Application id to be updated","required":true,"type":"integer","format":"int32"},{"name":"application","in":"body","description":"The application details.","required":true,"schema":{"$ref":"#/definitions/PublicAppsAddEditModel"}},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/boxer":{"post":{"tags":["PublicAppsV2"],"summary":"Adds the public boxer flex assignment.","operationId":"PublicAppsV2_AddPublicAppBoxerFlexAssignment","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"boxerFlexAssignmentModel","in":"body","description":"The boxer flex assignment model.","required":true,"schema":{"$ref":"#/definitions/PublicAppsBoxerFlexAssignmentModel"}},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/boxer/{id}":{"get":{"tags":["PublicAppsV2"],"summary":"Gets the public application boxer flex assignment.","operationId":"PublicAppsV2_GetPublicAppBoxerFlexAssignment","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"id","in":"path","description":"The identifier.","required":true,"type":"integer","format":"int32"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/{applicationId}/smartgroups/{smartGroupId}":{"post":{"tags":["SmartGroupV2"],"summary":"New - Assigns a Smart Group to an Public Application.","description":"v2","operationId":"SmartGroupV2_AddPublicAppToSmartGroup","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"applicationId","in":"path","description":"Application Id.","required":true,"type":"integer","format":"int32"},{"name":"smartGroupId","in":"path","description":"SmartGroup Id.","required":true,"type":"integer","format":"int32"},{"name":"type","in":"query","description":"Type is {harmony/airwatch}.","required":false,"type":"string"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}},"/apps/public/{applicationId}/bspsmartgroups":{"post":{"tags":["SmartGroupV2"],"summary":"New - Assigns Smart Groups to an BSP Application.","description":"v2","operationId":"SmartGroupV2_AddBspAppToSmartGroup","consumes":["application/json","application/xml"],"produces":["application/json;version=2","application/xml;version=2"],"parameters":[{"name":"applicationId","in":"path","description":"Application Id.","required":true,"type":"integer","format":"int32"},{"name":"offlinesmartgroupid","in":"query","description":"Offline smart group Identifier","required":false,"type":"string"},{"name":"onlinesmartgroupid","in":"query","description":"Online smart group Identifier","required":false,"type":"string"},{"name":"type","in":"query","description":"Type is {harmony/airwatch}.","required":false,"type":"string"},{"name":"Authorization","in":"header","description":"Authorization header","type":"string"},{"name":"aw-tenant-code","in":"header","description":"API key","type":"string"}],"responses":{}}}},"definitions":{"RequestQuery":{"description":"Implementation for RequestQuery","type":"object","properties":{}},"StoreAppsSearchResults":{"description":"Store Apps Search Results","type":"object","properties":{"Applications":{"description":"Application details","type":"array","items":{"$ref":"#/definitions/StoreApplicationDetails"}}}},"StoreApplicationDetails":{"description":"Store Application Details","type":"object","properties":{"BundleID":{"description":"Bundle ID of the application","type":"string"},"ApplicationName":{"description":"Name of Application","type":"string"},"Description":{"description":"Description","type":"string"},"CurrentVersion":{"description":"Current version of App in AppStore","type":"string"},"ExternalID":{"description":"External ID of the application","type":"string"},"MinimumOsVersion":{"description":"Minimum Os Version","type":"string"},"LargeIcon":{"$ref":"#/definitions/ImageResult","description":"Large Icon Url of the application"},"MediumIcon":{"$ref":"#/definitions/ImageResult","description":"Medium Icon Url of the application"},"SmallIcon":{"$ref":"#/definitions/ImageResult","description":"Small Icon Url of the application"},"AppStoreUrl":{"description":"App Store Url of the application","type":"string"},"Size":{"format":"int64","description":"Size of the application","type":"integer"},"AverageRating":{"format":"double","description":"Rating of the application","type":"number"},"Version":{"description":"Version of the application","type":"string"},"Categories":{"description":"List of categories","type":"array","items":{"type":"string"}},"ScreenshotImages":{"description":"List of urls for screenshot images","type":"array","items":{"$ref":"#/definitions/ImageResult"}},"SellerName":{"description":"Application seller's name","type":"string"},"SellerURL":{"description":"seller's url","type":"string"},"Price":{"format":"double","description":"Application's price","type":"number"}}},"ImageResult":{"type":"object","properties":{"Data":{"type":"string"},"ResultType":{"format":"int32","enum":[0,1],"type":"integer"},"MimeType":{"type":"string"}},"example":{"Data":"test","ResultType":0,"MimeType":"test"}},"PublicAppDetailsModel":{"description":"The public app details model.","type":"object","properties":{"ApplicationName":{"description":"Gets or sets the Application Name.","type":"string"},"LargeIconUrl":{"$ref":"#/definitions/ImageResultModel","description":"Gets or sets Large Icon Url of the App."},"MediumIconUrl":{"$ref":"#/definitions/ImageResultModel","description":"Gets or sets Medium Icon Url of the App."},"SmallIconUrl":{"$ref":"#/definitions/ImageResultModel","description":"Gets or sets Small Icon Url of the App."},"IconId":{"format":"int32","description":"Gets or sets Icon Blob Id of the App.","type":"integer"},"ApplicationUrl":{"description":"Gets or sets the url for the Application.","type":"string"},"ApplicationSource":{"format":"int32","description":"Gets or sets the application source.","type":"integer"},"Platform":{"format":"int32","description":"Gets or sets the Platform.","type":"integer"},"SupportedModels":{"description":"Gets or sets the ApplicationSupportedModel.","type":"array","items":{"$ref":"#/definitions/ApplicationSupportedModelsModel"}},"AppSizeInKB":{"format":"int32","description":"Gets or sets the size of the application.","type":"integer"},"Rating":{"format":"int32","description":"Gets or sets the App Rating.","type":"integer"},"Version":{"description":"Gets or sets the application version.","type":"string"},"CategoryList":{"description":"Gets or sets the application category list.","type":"array","items":{"$ref":"#/definitions/ApplicationCategoriesModel"}},"AppId":{"description":"Gets or sets Bundle Id of the App.","type":"string"},"Screenshots":{"description":"Gets or sets the information related to App Screenshots.","type":"array","items":{"$ref":"#/definitions/ImageResultModel"}},"PublisherInformation":{"description":"Gets or sets the Application Publisher Information.","type":"string"},"Price":{"description":"Gets or sets the Application Price.","type":"string"},"MinimumOsVersion":{"description":"Gets or sets the Minimum OS Versions for the Application","type":"string"},"Description":{"description":"Gets or sets the Application Description.","type":"string"},"Comments":{"description":"Gets or sets the Comments for the Application.","type":"string"},"DefaultScheme":{"description":"Gets or sets the Application Default Scheme.","type":"string"},"SmartGroupIds":{"description":"Gets or sets the smart group id.","type":"array","items":{"format":"int32","type":"integer"}},"PushMode":{"format":"int32","description":"Gets or sets the Push Mode for the Application.","type":"integer"},"IsAppRestrictedToSilentInstall":{"description":"Gets or sets a value indicating whether is app restricted to silent install.","type":"boolean"},"RequireManagement":{"description":"Gets or sets a value indicating whether device should be enrolled to get the app.","type":"boolean"},"AppTunneling":{"description":"Gets or sets a value indicating whether device should be enrolled to get the app.","type":"boolean"},"UsesSdk":{"description":"Gets or sets a value indicating whether application uses AirWatch SDK.","type":"boolean"},"SendAppConfig":{"description":"Gets or sets a value indicating whether App Configuration values should be sent along with the application.","type":"boolean"},"RemoveOnUnEnroll":{"description":"Gets or sets a value indicating whether the appslication should be removed on unenrollment.","type":"boolean"},"PreventApplicationBackup":{"description":"Gets or sets a value indicating whether application back up will be prevented on the device.\r\nCurrently supported for iOS5.","type":"boolean"},"AllowManagement":{"description":"Gets or sets a value indicating whether if admin chooses to assume management of User Installed Apps.","type":"boolean"},"VpnProfileId":{"format":"int32","description":"Gets or sets a value indicating the VPN Profile ID associated with the application.","type":"integer"},"VpnProfile":{"description":"Gets or sets a value indicating the name of the VPN Profile associated with the application.","type":"string"},"SdkSettingsProfileId":{"format":"int32","description":"Gets or sets a value indicating the ID for the SDK settings profile associated with the app.","type":"integer"},"SdkSettingsProfile":{"description":"Gets or sets a value indicating the name of the SDK settings associated with the application.","type":"string"},"AppSettingProfileId":{"format":"int32","description":"Gets or sets a value indicating the ID of the App Settings Profile applicable to the devices in this assignment.","type":"integer"},"AppSettingsProfile":{"description":"Gets or sets a value indicating the name of the App settings associated with the application.","type":"string"},"AppConfigs":{"description":"Gets or sets the app configs.","type":"array","items":{"$ref":"#/definitions/ApplicationConfigurationModel"}},"id":{"format":"int32","description":"Identifier","type":"integer"}}},"ImageResultModel":{"description":"The Image Result model.","type":"object","properties":{"Data":{"description":"Gets or Sets the Image Data.","type":"string"},"ResultType":{"description":"Gets or Sets the of Image Data.","type":"string"},"MimeType":{"description":"Gets or Sets the Mime Type.","type":"string"}},"example":{"Data":"test","ResultType":"test","MimeType":"test"}},"ApplicationSupportedModelsModel":{"description":"The application supported models model.","type":"object","properties":{"Name":{"description":"Gets or sets the model name.","type":"string"},"id":{"format":"int32","description":"Identifier","type":"integer"}},"example":{"Name":"test","id":1}},"ApplicationCategoriesModel":{"description":"The application categories model.","type":"object","properties":{"Name":{"description":"Gets or sets the category name.","type":"string"},"id":{"format":"int32","description":"Identifier","type":"integer"}},"example":{"Name":"test","id":1}},"ApplicationConfigurationModel":{"description":"The application configuration model.","type":"object","properties":{"Key":{"description":"Gets or sets the configuration key.","type":"string"},"Value":{"description":"Gets or sets the configuration value.","type":"string"},"Type":{"description":"Gets or sets the configuration value type.","type":"string"},"id":{"format":"int32","description":"Identifier","type":"integer"}},"example":{"Key":"test","Value":"test","Type":"test","id":1}},"PublicAppsAddEditModel":{"description":"The public apps add/edit model.","type":"object","properties":{"ApplicationName":{"description":"Gets or sets the Application Name.","type":"string"},"IconId":{"format":"int32","description":"Gets or sets Icon Blob Id of the App.","type":"integer"},"ApplicationUrl":{"description":"Gets or sets the url for the Application.","type":"string"},"Platform":{"format":"int32","description":"Gets or sets the Platform.","type":"integer"},"ExternalId":{"description":"Gets or sets the App External ID.","type":"string"},"CategoryList":{"description":"Gets or sets the application category list.","type":"array","items":{"$ref":"#/definitions/ApplicationCategoriesModel"}},"BundleId":{"description":"Gets or sets Bundle Id of the App.","type":"string"},"LocationGroupId":{"format":"int32","description":"Gets or sets Location Group Id of the App.","type":"integer"},"Comments":{"description":"Gets or sets the Comments for the Application.","type":"string"},"DefaultScheme":{"description":"Gets or sets the Application Default Scheme.","type":"string"},"RequireManagement":{"description":"Gets or sets a value indicating whether device should be enrolled to get the app.","type":"boolean"},"AppTunneling":{"description":"Gets or sets a value indicating whether Per App Vpn is enabled.","type":"boolean"},"UsesSdk":{"description":"Gets or sets a value indicating whether application uses AirWatch SDK.","type":"boolean"},"SendAppConfig":{"description":"Gets or sets a value indicating whether App Configuration values should be sent along with the application.","type":"boolean"},"RemoveOnUnEnroll":{"description":"Gets or sets a value indicating whether the application should be removed on unenrollment.","type":"boolean"},"PreventApplicationBackup":{"description":"Gets or sets a value indicating whether application back up will be prevented on the device.\r\nCurrently supported for iOS5.","type":"boolean"},"AllowManagement":{"description":"Gets or sets a value indicating whether if admin chooses to assume management of User Installed Apps.","type":"boolean"},"VpnProfileId":{"format":"int32","description":"Gets or sets a value indicating the VPN Profile ID associated with the application.","type":"integer"},"SdkSettingsProfileId":{"format":"int32","description":"Gets or sets a value indicating the ID for the SDK settings profile associated with the app.","type":"integer"},"AppSettingProfileId":{"format":"int32","description":"Gets or sets a value indicating the ID of the App Settings Profile applicable to the devices in this assignment.","type":"integer"},"IsAppRestrictedToSilentInstall":{"description":"Gets or sets a value indicating whether is app restricted to silent install.","type":"boolean"},"AppConfigs":{"description":"Gets or sets the app configs.","type":"array","items":{"$ref":"#/definitions/ApplicationConfigurationModel"}},"PushMode":{"format":"int32","description":"Gets or sets the Push Mode for the Application.","type":"integer"},"id":{"format":"int32","description":"Identifier","type":"integer"}}},"IActionResult":{"description":"interface for HttpActionResult","type":"object","properties":{"RequestQuery":{"$ref":"#/definitions/IRequestQuery","description":"Gets or sets the RequestQuery"},"RequestMessage":{"description":"Gets or sets the RequestMessage","type":"object","example":{"Version":{"Major":1,"Minor":1,"Build":-1,"Revision":-1,"MajorRevision":-1,"MinorRevision":-1},"Method":{"Method":"GET"},"RequestUri":"http://air-watch.com","Headers":[],"Properties":{}}},"HttpStatusCode":{"format":"int32","description":"Gets or sets HttpStatusCode","enum":[100,101,200,201,202,203,204,205,206,300,300,301,301,302,302,303,303,304,305,306,307,307,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,426,500,501,502,503,504,505],"type":"integer"},"Model":{"description":"Gets or sets Model","type":"object","example":{}},"Stream":{"$ref":"#/definitions/Stream","description":"Gets or sets Stream"},"ByteArray":{"format":"byte","description":"Gets or sets ByteArray","type":"string"},"FileName":{"description":"Gets or sets FileName {Will be set in the content-disposition header}","type":"string"},"MediaType":{"description":"Gets or sets MediaType","type":"string"},"OnStreamAvailable":{"description":"Gets or sets OnStreamAvailable","type":"object"},"ETagHeaderValue":{"$ref":"#/definitions/EntityTagHeaderValue","description":"Gets or sets ResponseHeaders"},"LocationHeaderValue":{"description":"Gets or sets LocationHeaderValue","type":"string"}}},"IRequestQuery":{"description":"Interface for IAwRequestQuery\r\nThis will hold all the required data for a request. Will be filled from ModelBinder","type":"object","properties":{"QueryParams":{"description":"Gets or sets Query Parameters. For e.g. any query string parameters will be extracted to key,value pair and stored here.","type":"object","additionalProperties":{"type":"string"}},"TenantContext":{"$ref":"#/definitions/ITenantContext","description":"Gets or sets IAwTenantContext. Will hold the tenant details, which will be filled as part of the tenant validation handler"},"RequestMethod":{"$ref":"#/definitions/HttpMethod","description":"Gets or sets RequestMethod. Will be used to write custom rules"},"ActionName":{"description":"Gets or sets ActionName","type":"string"},"AllowedUriQueryChars":{"description":"Gets or sets allowed Characters in Query String.","type":"array","items":{"type":"string"}}}},"Stream":{"type":"object","properties":{"__identity":{"type":"object","example":{}}}},"EntityTagHeaderValue":{"type":"object","properties":{"Tag":{"type":"string","readOnly":true},"IsWeak":{"type":"boolean","readOnly":true}}},"ITenantContext":{"description":"Contract for TenantContext. Will be exposed from RequestQuery and will be injected to every controller actions and Business method","type":"object","properties":{"TenantCode":{"description":"Gets or sets TenantCode. Uniquely identify the tenant for the request","type":"string"},"OrganizationgroupId":{"$ref":"#/definitions/EntityId","description":"Gets or sets Organization Group ID"}}},"HttpMethod":{"type":"object","properties":{"Method":{"type":"string","readOnly":true}}},"EntityId":{"type":"object","properties":{"Value":{"format":"int64","type":"integer","readOnly":true}},"example":{"Value":1}},"PublicAppsBoxerFlexAssignmentModel":{"description":"Model to store the fields which will be used in the Boxer Flex Deployment API","type":"object","properties":{"ApplicationId":{"format":"int32","description":"Gets or sets the application identifier.","type":"integer"},"BoxerAppConfig":{"description":"The boxer application configuration","type":"array","items":{"$ref":"#/definitions/BoxerAppConfigModel"}},"SmartGroupIds":{"description":"The smart group ids","type":"array","items":{"format":"int32","type":"integer"}},"ExcludedSmartGroupIds":{"description":"The excluded smart group ids","type":"array","items":{"format":"int32","type":"integer"}},"DeviceType":{"format":"int32","description":"Gets or sets the type of the device.","type":"integer"},"id":{"format":"int32","description":"Identifier","type":"integer"}},"example":{"ApplicationId":1,"BoxerAppConfig":[{"Key":"test","Value":"test","ValueType":1}],"SmartGroupIds":[1],"ExcludedSmartGroupIds":[1],"DeviceType":1,"id":1}},"BoxerAppConfigModel":{"description":"Class to store key value pairs for Boxer (Api and Integration tests)","type":"object","properties":{"Key":{"description":"Gets or sets the key.","type":"string"},"Value":{"description":"Gets or sets the Value","type":"string"},"ValueType":{"format":"int32","description":"Gets or sets the ValueType","type":"integer"}},"example":{"Key":"test","Value":"test","ValueType":1}},"SmartGroupAppConfigModel":{"description":"Smart Group App Config","type":"object","properties":{"SmartGroupID":{"format":"int32","description":"Gets or sets the smart group identifier.","type":"integer"},"SmartGroupName":{"description":"Gets or sets the name.","type":"string"},"AppID":{"format":"int32","description":"Gets or sets the application identifier.","type":"integer"},"AppConfigs":{"description":"Gets or sets the application configs.","type":"array","items":{"$ref":"#/definitions/BoxerAppConfigModel"}},"id":{"format":"int32","description":"Identifier","type":"integer"}},"example":{"SmartGroupID":1,"SmartGroupName":"test","AppID":1,"AppConfigs":[{"Key":"test","Value":"test","ValueType":1}],"id":1}}}}
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "2",
+    "title": "AirWatch Mobile Application Management REST API",
+    "description": "AirWatch Mobile Application Management REST API V2"
+  },
+  "host": "apimain.ssdevrd.com",
+  "basePath": "/api/mam",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/apps/applestore/search": {
+      "get": {
+        "tags": [
+          "AppsV2"
+        ],
+        "summary": "New - Searches in apple app store for the applications with the specified search string and returns the details",
+        "description": "v1",
+        "operationId": "AppsV2_SearchAppleStore",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "appname",
+            "in": "query",
+            "description": "Application name to be searched.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/playstore/search": {
+      "get": {
+        "tags": [
+          "AppsV2"
+        ],
+        "summary": "New - Searches in google playstore for the applications with the specified search string and returns the details",
+        "description": "v1",
+        "operationId": "AppsV2_SearchGoogleStore",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "appname",
+            "in": "query",
+            "description": "Application name to be searched.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/windowsstore/search": {
+      "get": {
+        "tags": [
+          "AppsV2"
+        ],
+        "summary": "New - Searches in Windows store for the applications with the specified search string and platform and returns the details",
+        "description": "v1",
+        "operationId": "AppsV2_SearchWindowsStore",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "appname",
+            "in": "query",
+            "description": "Application name to be searched.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "description": "Device platform.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "countryCode",
+            "in": "query",
+            "description": "countryCode.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/{id}": {
+      "get": {
+        "tags": [
+          "PublicAppsV2"
+        ],
+        "summary": "New - Gets the details of a public app identified by id.",
+        "description": "v2",
+        "operationId": "PublicAppsV2_GetPublicAppById",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Public App Id.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public": {
+      "post": {
+        "tags": [
+          "PublicAppsV2"
+        ],
+        "summary": "New - Inserts the public application selected by searching for the bundle ID (Android) or external ID (iOS) in the app market.",
+        "description": "v1",
+        "operationId": "PublicAppsV2_AddPublicApplication",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "application",
+            "in": "body",
+            "description": "The application entity to be inserted.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PublicAppsAddEditModel"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/{applicationid}": {
+      "put": {
+        "tags": [
+          "PublicAppsV2"
+        ],
+        "summary": "New - Updates the public application selected by searching for the bundle ID (Android) or external ID (iOS) in the app market.",
+        "description": "v1",
+        "operationId": "PublicAppsV2_EditPublicApplication",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "applicationid",
+            "in": "path",
+            "description": "Application id to be updated",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "application",
+            "in": "body",
+            "description": "The application details.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PublicAppsAddEditModel"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/boxer": {
+      "post": {
+        "tags": [
+          "PublicAppsV2"
+        ],
+        "summary": "Adds the public boxer flex assignment.",
+        "operationId": "PublicAppsV2_AddPublicAppBoxerFlexAssignment",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "boxerFlexAssignmentModel",
+            "in": "body",
+            "description": "The boxer flex assignment model.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PublicAppsBoxerFlexAssignmentModel"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/boxer/{id}": {
+      "get": {
+        "tags": [
+          "PublicAppsV2"
+        ],
+        "summary": "Gets the public application boxer flex assignment.",
+        "operationId": "PublicAppsV2_GetPublicAppBoxerFlexAssignment",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/{applicationId}/smartgroups/{smartGroupId}": {
+      "post": {
+        "tags": [
+          "SmartGroupV2"
+        ],
+        "summary": "New - Assigns a Smart Group to an Public Application.",
+        "description": "v2",
+        "operationId": "SmartGroupV2_AddPublicAppToSmartGroup",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Application Id.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "smartGroupId",
+            "in": "path",
+            "description": "SmartGroup Id.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type is {harmony/airwatch}.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/apps/public/{applicationId}/bspsmartgroups": {
+      "post": {
+        "tags": [
+          "SmartGroupV2"
+        ],
+        "summary": "New - Assigns Smart Groups to an BSP Application.",
+        "description": "v2",
+        "operationId": "SmartGroupV2_AddBspAppToSmartGroup",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json;version=2",
+          "application/xml;version=2"
+        ],
+        "parameters": [
+          {
+            "name": "applicationId",
+            "in": "path",
+            "description": "Application Id.",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offlinesmartgroupid",
+            "in": "query",
+            "description": "Offline smart group Identifier",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "onlinesmartgroupid",
+            "in": "query",
+            "description": "Online smart group Identifier",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type is {harmony/airwatch}.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization header",
+            "type": "string"
+          },
+          {
+            "name": "aw-tenant-code",
+            "in": "header",
+            "description": "API key",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    }
+  },
+  "definitions": {
+    "RequestQuery": {
+      "description": "Implementation for RequestQuery",
+      "type": "object",
+      "properties": {}
+    },
+    "StoreAppsSearchResults": {
+      "description": "Store Apps Search Results",
+      "type": "object",
+      "properties": {
+        "Applications": {
+          "description": "Application details",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StoreApplicationDetails"
+          }
+        }
+      }
+    },
+    "StoreApplicationDetails": {
+      "description": "Store Application Details",
+      "type": "object",
+      "properties": {
+        "BundleID": {
+          "description": "Bundle ID of the application",
+          "type": "string"
+        },
+        "ApplicationName": {
+          "description": "Name of Application",
+          "type": "string"
+        },
+        "Description": {
+          "description": "Description",
+          "type": "string"
+        },
+        "CurrentVersion": {
+          "description": "Current version of App in AppStore",
+          "type": "string"
+        },
+        "ExternalID": {
+          "description": "External ID of the application",
+          "type": "string"
+        },
+        "MinimumOsVersion": {
+          "description": "Minimum Os Version",
+          "type": "string"
+        },
+        "LargeIcon": {
+          "$ref": "#/definitions/ImageResult",
+          "description": "Large Icon Url of the application"
+        },
+        "MediumIcon": {
+          "$ref": "#/definitions/ImageResult",
+          "description": "Medium Icon Url of the application"
+        },
+        "SmallIcon": {
+          "$ref": "#/definitions/ImageResult",
+          "description": "Small Icon Url of the application"
+        },
+        "AppStoreUrl": {
+          "description": "App Store Url of the application",
+          "type": "string"
+        },
+        "Size": {
+          "format": "int64",
+          "description": "Size of the application",
+          "type": "integer"
+        },
+        "AverageRating": {
+          "format": "double",
+          "description": "Rating of the application",
+          "type": "number"
+        },
+        "Version": {
+          "description": "Version of the application",
+          "type": "string"
+        },
+        "Categories": {
+          "description": "List of categories",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ScreenshotImages": {
+          "description": "List of urls for screenshot images",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ImageResult"
+          }
+        },
+        "SellerName": {
+          "description": "Application seller's name",
+          "type": "string"
+        },
+        "SellerURL": {
+          "description": "seller's url",
+          "type": "string"
+        },
+        "Price": {
+          "format": "double",
+          "description": "Application's price",
+          "type": "number"
+        }
+      }
+    },
+    "ImageResult": {
+      "type": "object",
+      "properties": {
+        "Data": {
+          "type": "string"
+        },
+        "ResultType": {
+          "format": "int32",
+          "enum": [
+            0,
+            1
+          ],
+          "type": "integer"
+        },
+        "MimeType": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "Data": "test",
+        "ResultType": 0,
+        "MimeType": "test"
+      }
+    },
+    "PublicAppDetailsModel": {
+      "description": "The public app details model.",
+      "type": "object",
+      "properties": {
+        "ApplicationName": {
+          "description": "Gets or sets the Application Name.",
+          "type": "string"
+        },
+        "LargeIconUrl": {
+          "$ref": "#/definitions/ImageResultModel",
+          "description": "Gets or sets Large Icon Url of the App."
+        },
+        "MediumIconUrl": {
+          "$ref": "#/definitions/ImageResultModel",
+          "description": "Gets or sets Medium Icon Url of the App."
+        },
+        "SmallIconUrl": {
+          "$ref": "#/definitions/ImageResultModel",
+          "description": "Gets or sets Small Icon Url of the App."
+        },
+        "IconId": {
+          "format": "int32",
+          "description": "Gets or sets Icon Blob Id of the App.",
+          "type": "integer"
+        },
+        "ApplicationUrl": {
+          "description": "Gets or sets the url for the Application.",
+          "type": "string"
+        },
+        "ApplicationSource": {
+          "format": "int32",
+          "description": "Gets or sets the application source.",
+          "type": "integer"
+        },
+        "Platform": {
+          "format": "int32",
+          "description": "Gets or sets the Platform.",
+          "type": "integer"
+        },
+        "SupportedModels": {
+          "description": "Gets or sets the ApplicationSupportedModel.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApplicationSupportedModelsModel"
+          }
+        },
+        "AppSizeInKB": {
+          "format": "int32",
+          "description": "Gets or sets the size of the application.",
+          "type": "integer"
+        },
+        "Rating": {
+          "format": "int32",
+          "description": "Gets or sets the App Rating.",
+          "type": "integer"
+        },
+        "Version": {
+          "description": "Gets or sets the application version.",
+          "type": "string"
+        },
+        "CategoryList": {
+          "description": "Gets or sets the application category list.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApplicationCategoriesModel"
+          }
+        },
+        "AppId": {
+          "description": "Gets or sets Bundle Id of the App.",
+          "type": "string"
+        },
+        "Screenshots": {
+          "description": "Gets or sets the information related to App Screenshots.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ImageResultModel"
+          }
+        },
+        "PublisherInformation": {
+          "description": "Gets or sets the Application Publisher Information.",
+          "type": "string"
+        },
+        "Price": {
+          "description": "Gets or sets the Application Price.",
+          "type": "string"
+        },
+        "MinimumOsVersion": {
+          "description": "Gets or sets the Minimum OS Versions for the Application",
+          "type": "string"
+        },
+        "Description": {
+          "description": "Gets or sets the Application Description.",
+          "type": "string"
+        },
+        "Comments": {
+          "description": "Gets or sets the Comments for the Application.",
+          "type": "string"
+        },
+        "DefaultScheme": {
+          "description": "Gets or sets the Application Default Scheme.",
+          "type": "string"
+        },
+        "SmartGroupIds": {
+          "description": "Gets or sets the smart group id.",
+          "type": "array",
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "PushMode": {
+          "format": "int32",
+          "description": "Gets or sets the Push Mode for the Application.",
+          "type": "integer"
+        },
+        "IsAppRestrictedToSilentInstall": {
+          "description": "Gets or sets a value indicating whether is app restricted to silent install.",
+          "type": "boolean"
+        },
+        "RequireManagement": {
+          "description": "Gets or sets a value indicating whether device should be enrolled to get the app.",
+          "type": "boolean"
+        },
+        "AppTunneling": {
+          "description": "Gets or sets a value indicating whether device should be enrolled to get the app.",
+          "type": "boolean"
+        },
+        "UsesSdk": {
+          "description": "Gets or sets a value indicating whether application uses AirWatch SDK.",
+          "type": "boolean"
+        },
+        "SendAppConfig": {
+          "description": "Gets or sets a value indicating whether App Configuration values should be sent along with the application.",
+          "type": "boolean"
+        },
+        "RemoveOnUnEnroll": {
+          "description": "Gets or sets a value indicating whether the appslication should be removed on unenrollment.",
+          "type": "boolean"
+        },
+        "PreventApplicationBackup": {
+          "description": "Gets or sets a value indicating whether application back up will be prevented on the device.\r\nCurrently supported for iOS5.",
+          "type": "boolean"
+        },
+        "AllowManagement": {
+          "description": "Gets or sets a value indicating whether if admin chooses to assume management of User Installed Apps.",
+          "type": "boolean"
+        },
+        "VpnProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the VPN Profile ID associated with the application.",
+          "type": "integer"
+        },
+        "VpnProfile": {
+          "description": "Gets or sets a value indicating the name of the VPN Profile associated with the application.",
+          "type": "string"
+        },
+        "SdkSettingsProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the ID for the SDK settings profile associated with the app.",
+          "type": "integer"
+        },
+        "SdkSettingsProfile": {
+          "description": "Gets or sets a value indicating the name of the SDK settings associated with the application.",
+          "type": "string"
+        },
+        "AppSettingProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the ID of the App Settings Profile applicable to the devices in this assignment.",
+          "type": "integer"
+        },
+        "AppSettingsProfile": {
+          "description": "Gets or sets a value indicating the name of the App settings associated with the application.",
+          "type": "string"
+        },
+        "AppConfigs": {
+          "description": "Gets or sets the app configs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApplicationConfigurationModel"
+          }
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      }
+    },
+    "ImageResultModel": {
+      "description": "The Image Result model.",
+      "type": "object",
+      "properties": {
+        "Data": {
+          "description": "Gets or Sets the Image Data.",
+          "type": "string"
+        },
+        "ResultType": {
+          "description": "Gets or Sets the of Image Data.",
+          "type": "string"
+        },
+        "MimeType": {
+          "description": "Gets or Sets the Mime Type.",
+          "type": "string"
+        }
+      },
+      "example": {
+        "Data": "test",
+        "ResultType": "test",
+        "MimeType": "test"
+      }
+    },
+    "ApplicationSupportedModelsModel": {
+      "description": "The application supported models model.",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "description": "Gets or sets the model name.",
+          "type": "string"
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "Name": "test",
+        "id": 1
+      }
+    },
+    "ApplicationCategoriesModel": {
+      "description": "The application categories model.",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "description": "Gets or sets the category name.",
+          "type": "string"
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "Name": "test",
+        "id": 1
+      }
+    },
+    "ApplicationConfigurationModel": {
+      "description": "The application configuration model.",
+      "type": "object",
+      "properties": {
+        "Key": {
+          "description": "Gets or sets the configuration key.",
+          "type": "string"
+        },
+        "Value": {
+          "description": "Gets or sets the configuration value.",
+          "type": "string"
+        },
+        "Type": {
+          "description": "Gets or sets the configuration value type.",
+          "type": "string"
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "Key": "test",
+        "Value": "test",
+        "Type": "test",
+        "id": 1
+      }
+    },
+    "PublicAppsAddEditModel": {
+      "description": "The public apps add/edit model.",
+      "type": "object",
+      "properties": {
+        "ApplicationName": {
+          "description": "Gets or sets the Application Name.",
+          "type": "string"
+        },
+        "IconId": {
+          "format": "int32",
+          "description": "Gets or sets Icon Blob Id of the App.",
+          "type": "integer"
+        },
+        "ApplicationUrl": {
+          "description": "Gets or sets the url for the Application.",
+          "type": "string"
+        },
+        "Platform": {
+          "format": "int32",
+          "description": "Gets or sets the Platform.",
+          "type": "integer"
+        },
+        "ExternalId": {
+          "description": "Gets or sets the App External ID.",
+          "type": "string"
+        },
+        "CategoryList": {
+          "description": "Gets or sets the application category list.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApplicationCategoriesModel"
+          }
+        },
+        "BundleId": {
+          "description": "Gets or sets Bundle Id of the App.",
+          "type": "string"
+        },
+        "LocationGroupId": {
+          "format": "int32",
+          "description": "Gets or sets Location Group Id of the App.",
+          "type": "integer"
+        },
+        "Comments": {
+          "description": "Gets or sets the Comments for the Application.",
+          "type": "string"
+        },
+        "DefaultScheme": {
+          "description": "Gets or sets the Application Default Scheme.",
+          "type": "string"
+        },
+        "RequireManagement": {
+          "description": "Gets or sets a value indicating whether device should be enrolled to get the app.",
+          "type": "boolean"
+        },
+        "AppTunneling": {
+          "description": "Gets or sets a value indicating whether Per App Vpn is enabled.",
+          "type": "boolean"
+        },
+        "UsesSdk": {
+          "description": "Gets or sets a value indicating whether application uses AirWatch SDK.",
+          "type": "boolean"
+        },
+        "SendAppConfig": {
+          "description": "Gets or sets a value indicating whether App Configuration values should be sent along with the application.",
+          "type": "boolean"
+        },
+        "RemoveOnUnEnroll": {
+          "description": "Gets or sets a value indicating whether the application should be removed on unenrollment.",
+          "type": "boolean"
+        },
+        "PreventApplicationBackup": {
+          "description": "Gets or sets a value indicating whether application back up will be prevented on the device.\r\nCurrently supported for iOS5.",
+          "type": "boolean"
+        },
+        "AllowManagement": {
+          "description": "Gets or sets a value indicating whether if admin chooses to assume management of User Installed Apps.",
+          "type": "boolean"
+        },
+        "VpnProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the VPN Profile ID associated with the application.",
+          "type": "integer"
+        },
+        "SdkSettingsProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the ID for the SDK settings profile associated with the app.",
+          "type": "integer"
+        },
+        "AppSettingProfileId": {
+          "format": "int32",
+          "description": "Gets or sets a value indicating the ID of the App Settings Profile applicable to the devices in this assignment.",
+          "type": "integer"
+        },
+        "IsAppRestrictedToSilentInstall": {
+          "description": "Gets or sets a value indicating whether is app restricted to silent install.",
+          "type": "boolean"
+        },
+        "AppConfigs": {
+          "description": "Gets or sets the app configs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApplicationConfigurationModel"
+          }
+        },
+        "PushMode": {
+          "format": "int32",
+          "description": "Gets or sets the Push Mode for the Application.",
+          "type": "integer"
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      }
+    },
+    "IActionResult": {
+      "description": "interface for HttpActionResult",
+      "type": "object",
+      "properties": {
+        "RequestQuery": {
+          "$ref": "#/definitions/IRequestQuery",
+          "description": "Gets or sets the RequestQuery"
+        },
+        "RequestMessage": {
+          "description": "Gets or sets the RequestMessage",
+          "type": "object",
+          "example": {
+            "Version": {
+              "Major": 1,
+              "Minor": 1,
+              "Build": -1,
+              "Revision": -1,
+              "MajorRevision": -1,
+              "MinorRevision": -1
+            },
+            "Method": {
+              "Method": "GET"
+            },
+            "RequestUri": "http://air-watch.com",
+            "Headers": [],
+            "Properties": {}
+          }
+        },
+        "HttpStatusCode": {
+          "format": "int32",
+          "description": "Gets or sets HttpStatusCode",
+          "enum": [
+            100,
+            101,
+            200,
+            201,
+            202,
+            203,
+            204,
+            205,
+            206,
+            300,
+            300,
+            301,
+            301,
+            302,
+            302,
+            303,
+            303,
+            304,
+            305,
+            306,
+            307,
+            307,
+            400,
+            401,
+            402,
+            403,
+            404,
+            405,
+            406,
+            407,
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414,
+            415,
+            416,
+            417,
+            426,
+            500,
+            501,
+            502,
+            503,
+            504,
+            505
+          ],
+          "type": "integer"
+        },
+        "Model": {
+          "description": "Gets or sets Model",
+          "type": "object",
+          "example": {}
+        },
+        "Stream": {
+          "$ref": "#/definitions/Stream",
+          "description": "Gets or sets Stream"
+        },
+        "ByteArray": {
+          "format": "byte",
+          "description": "Gets or sets ByteArray",
+          "type": "string"
+        },
+        "FileName": {
+          "description": "Gets or sets FileName {Will be set in the content-disposition header}",
+          "type": "string"
+        },
+        "MediaType": {
+          "description": "Gets or sets MediaType",
+          "type": "string"
+        },
+        "OnStreamAvailable": {
+          "description": "Gets or sets OnStreamAvailable",
+          "type": "object"
+        },
+        "ETagHeaderValue": {
+          "$ref": "#/definitions/EntityTagHeaderValue",
+          "description": "Gets or sets ResponseHeaders"
+        },
+        "LocationHeaderValue": {
+          "description": "Gets or sets LocationHeaderValue",
+          "type": "string"
+        }
+      }
+    },
+    "IRequestQuery": {
+      "description": "Interface for IAwRequestQuery\r\nThis will hold all the required data for a request. Will be filled from ModelBinder",
+      "type": "object",
+      "properties": {
+        "QueryParams": {
+          "description": "Gets or sets Query Parameters. For e.g. any query string parameters will be extracted to key,value pair and stored here.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "TenantContext": {
+          "$ref": "#/definitions/ITenantContext",
+          "description": "Gets or sets IAwTenantContext. Will hold the tenant details, which will be filled as part of the tenant validation handler"
+        },
+        "RequestMethod": {
+          "$ref": "#/definitions/HttpMethod",
+          "description": "Gets or sets RequestMethod. Will be used to write custom rules"
+        },
+        "ActionName": {
+          "description": "Gets or sets ActionName",
+          "type": "string"
+        },
+        "AllowedUriQueryChars": {
+          "description": "Gets or sets allowed Characters in Query String.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Stream": {
+      "type": "object",
+      "properties": {
+        "__identity": {
+          "type": "object",
+          "example": {}
+        }
+      }
+    },
+    "EntityTagHeaderValue": {
+      "type": "object",
+      "properties": {
+        "Tag": {
+          "type": "string",
+          "readOnly": true
+        },
+        "IsWeak": {
+          "type": "boolean",
+          "readOnly": true
+        }
+      }
+    },
+    "ITenantContext": {
+      "description": "Contract for TenantContext. Will be exposed from RequestQuery and will be injected to every controller actions and Business method",
+      "type": "object",
+      "properties": {
+        "TenantCode": {
+          "description": "Gets or sets TenantCode. Uniquely identify the tenant for the request",
+          "type": "string"
+        },
+        "OrganizationgroupId": {
+          "$ref": "#/definitions/EntityId",
+          "description": "Gets or sets Organization Group ID"
+        }
+      }
+    },
+    "HttpMethod": {
+      "type": "object",
+      "properties": {
+        "Method": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "EntityId": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "format": "int64",
+          "type": "integer",
+          "readOnly": true
+        }
+      },
+      "example": {
+        "Value": 1
+      }
+    },
+    "PublicAppsBoxerFlexAssignmentModel": {
+      "description": "Model to store the fields which will be used in the Boxer Flex Deployment API",
+      "type": "object",
+      "properties": {
+        "ApplicationId": {
+          "format": "int32",
+          "description": "Gets or sets the application identifier.",
+          "type": "integer"
+        },
+        "BoxerAppConfig": {
+          "description": "The boxer application configuration",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BoxerAppConfigModel"
+          }
+        },
+        "SmartGroupIds": {
+          "description": "The smart group ids",
+          "type": "array",
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "ExcludedSmartGroupIds": {
+          "description": "The excluded smart group ids",
+          "type": "array",
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "DeviceType": {
+          "format": "int32",
+          "description": "Gets or sets the type of the device.",
+          "type": "integer"
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "ApplicationId": 1,
+        "BoxerAppConfig": [
+          {
+            "Key": "test",
+            "Value": "test",
+            "ValueType": 1
+          }
+        ],
+        "SmartGroupIds": [
+          1
+        ],
+        "ExcludedSmartGroupIds": [
+          1
+        ],
+        "DeviceType": 1,
+        "id": 1
+      }
+    },
+    "BoxerAppConfigModel": {
+      "description": "Class to store key value pairs for Boxer (Api and Integration tests)",
+      "type": "object",
+      "properties": {
+        "Key": {
+          "description": "Gets or sets the key.",
+          "type": "string"
+        },
+        "Value": {
+          "description": "Gets or sets the Value",
+          "type": "string"
+        },
+        "ValueType": {
+          "format": "int32",
+          "description": "Gets or sets the ValueType",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "Key": "test",
+        "Value": "test",
+        "ValueType": 1
+      }
+    },
+    "SmartGroupAppConfigModel": {
+      "description": "Smart Group App Config",
+      "type": "object",
+      "properties": {
+        "SmartGroupID": {
+          "format": "int32",
+          "description": "Gets or sets the smart group identifier.",
+          "type": "integer"
+        },
+        "SmartGroupName": {
+          "description": "Gets or sets the name.",
+          "type": "string"
+        },
+        "AppID": {
+          "format": "int32",
+          "description": "Gets or sets the application identifier.",
+          "type": "integer"
+        },
+        "AppConfigs": {
+          "description": "Gets or sets the application configs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BoxerAppConfigModel"
+          }
+        },
+        "id": {
+          "format": "int32",
+          "description": "Identifier",
+          "type": "integer"
+        }
+      },
+      "example": {
+        "SmartGroupID": 1,
+        "SmartGroupName": "test",
+        "AppID": 1,
+        "AppConfigs": [
+          {
+            "Key": "test",
+            "Value": "test",
+            "ValueType": 1
+          }
+        ],
+        "id": 1
+      }
+    }
+  }
+}

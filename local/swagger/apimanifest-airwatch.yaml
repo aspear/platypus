@@ -1,0 +1,11 @@
+# Generated API manifest created on 2017-05-17 15:42:20.277893
+apis:
+  - api_uid: 'api_sample_exchange'
+    version: '1'
+    api_ref_doc_type: 'SWAGGER'
+    api_ref_doc_url: 'sx-swagger.json'
+products:
+  - product_name: Sample Exchange
+    product_version: 1.0
+    provided_api_uids:
+    - api_sample_exchange
