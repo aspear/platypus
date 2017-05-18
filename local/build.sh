@@ -10,7 +10,7 @@ TOOLS_DIR=${SCRIPT_DIR}/tools
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
-export VER="0.0.19"
+export VER="0.0.20"
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
@@ -59,7 +59,6 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviateDescription \
  --generateOverviewHtml \
- --apiPrepend="AirWatch " \
  --productName="AirWatch;1.0.0" \
  --swaggerglob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
