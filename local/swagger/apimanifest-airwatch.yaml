@@ -36,9 +36,8 @@ products:
     product_version: 9.1.1
     provided_api_uids:
     - api_airwatch_mdm_v1
-      api_airwatch_mdm_v2
-      api_airwatch_mam_v1
-      api_airwatch_mam_v2
-      api_airwatch_system_v1
-      api_airwatch_system_v2
-
+    - api_airwatch_mdm_v2
+    - api_airwatch_mam_v1
+    - api_airwatch_mam_v2
+    - api_airwatch_system_v1
+    - api_airwatch_system_v2
