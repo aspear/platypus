@@ -1,0 +1,4814 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Approval Service API Specification\n\n## What is the Approval Service REST API?\n\nThe approval service provides features for managing and tracking the human approval tasks associated with a service process/artifact in a provider realm. It also provides a record of the approval process when it completes.\n\nThe goal of the approval service is to provide a generic approval mechanism that any provider can use for any artifact, such as  as a service or  a resource action (which follows its own provider specified approval process).\n\nApproval is agnostic to the business artifact it is attached to. There is no representation of the artifact within the approval service. The provider (client of the approval service) stores an identifier of an approval to manage the approvals associated with their artifact.\n\n## Typical Use Cases\n\nYou can use the approval service REST API to implement approval policies for your service or resource action.  You can:\n\n* Define multiple approval levels in which actions must be approved.\n* Define approval policies that determine how an artifact is approved.\n* Query information about the state of specified approvals and the values of data fields in schemas associated with the service or resource action.\n\n## Key Concepts\n\n### Approval Level\n\nA level of approval that you define for your service.  For each level, you can specify approval criteria.\n\n### Approval Modes\n\nEach level supports two modes of approval:\n\n* **ANY** - If any ONE of the users approves, the approval step is complete and the process moves to the next step; for example, from Level 1 to Level 2. After one approver has approved, the remaining approvers are not allowed to approve that level.\n* **ALL** - All the approvers for the level need to approve. Each approver is assigned a workitem. The approval flow can only move on to the next step after ALL the approvers have approved.\n\n### Criteria\n\nApproval criteria are specified in a JSON string of a `com.vmware.vcac.platform.content.criteria.Clause` object:\n\n* Criteria should be set up based on the context that is defined by the corresponding `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getClassId()` and `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getTypeFilter()`.\n\n* The properties used in the criteria expression must be those of the client side object identified by the `classId` and `typeFilter`.\n\nThe `CatalogItemRequest` client object provides an example of how criteria are specified. A `CatalogItemRequest` has a criteria expression based on Request fields such as `RequestedBy`, `CatalogItem`, and so on, which are direct properties of the `CatalogItemRequest` class.\n\n## How the Approval Service Works\n\n### Overall High Level Flow\n\nThe approval process involves a simple chain of approval steps:\n\n1. Currently, the approval service supports only a single series of approval steps.\n2. Each step in the sequence can contain one or more users.\n3. Approval flows from level1 to level2 to level3, and so on. The approvers in level2 do not receive an  approval request until level1 is approved, and so on for other steps in the series.\n4. If approvers in ANY level reject the request, the whole approval is rejected. This essentially short circuits the approval process.\n5. When the final approval step is approved, the Approval instance goes into the APPROVED state.\n\n### Notes About Approval Level\n\n1. These are referred to as Level N Approval. Each step is activated in sequence, i.e., Level1 Approval is active first, and after it is done, Level2 Approval is active, and so on.\n2. The users in an approval step can be defined (during approval policy creation/definition) using three different methods, by referring to:\n  * One or more actual users (hard coding the user ID).\n  * One or more AD groups (static) and dynamic groups (composed of multiple AD groups and actual users).\n  * The users from contextual data such as $request.owner or $request.owner.manager, and so on.\n3. When a step is active, the users in that step are resolved, i.e., groups are expanded and contextual data expression is evaluated. The users in a step are not materialized until that step is active.\n4. All the users within the step are notified of the pending approval.\n5. If one of those users reject it, the Approval is short circuited and goes into the  REJECTED state.\n6. A level supports two modes of approval:\n  * **ANY** - if any ONE of the users approves, then after the approval step is complete, the the process moves to the next step; for example, from Level1 to Level2. After one approver has approved, the remaining approvers are not allowed to approve that level.\n  * **ALL** - All the approvers resolved in this level need to approve. Each approver is assigned a workitem. The approval flow can only move on to the next step after ALL the approvers have approved.\n\n### Notes About Criteria Associated with a Level\n\n1. Each level has its own criteria that triggers approval from that level.\n2. Criteria of every level will be evaluated in sequence.\n3. Criteria is essentially a JSON string of a `com.vmware.vcac.platform.content.criteria.Clause` object.\n4. Criteria should be set up based on the context which is defined by the corresponding `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getClassId()` and `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getTypeFilter()`\n5. The properties used in the criteria expression must be those of the client-side object identified by the `classId` and `typeFilter`. An example is the `CatalogItemRequest` client object, whose criteria expression is based on Request fields such as `RequestedBy`, `CatalogItem`, and so on, which are direct properties of the `CatalogItemRequest` class.\n6. The list of concrete Clauses are:\n  * `com.vmware.vcac.platform.content.criteria.AndClause`\n  * `com.vmware.vcac.platform.content.criteria.OrClause`\n  * `com.vmware.vcac.platform.content.criteria.NotClause`\n  * `com.vmware.vcac.platform.content.criteria.ConstantClause`\n  * `com.vmware.vcac.platform.content.criteria.Expression`\n  * `com.vmware.vcac.platform.content.criteria.WrapperClause`",
+    "version" : "7.3.0-SNAPSHOT",
+    "title" : "Approval Service API"
+  },
+  "basePath" : "/approval-service",
+  "tags" : [ {
+    "name" : "approvable-item"
+  }, {
+    "name" : "approval-evaluation"
+  }, {
+    "name" : "approval-info"
+  }, {
+    "name" : "approval-policy"
+  }, {
+    "name" : "approval-policy-type"
+  }, {
+    "name" : "approval-work-item"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/cafe-forms/forms/{formId}/{instanceId}" : {
+      "get" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Retrieve a form.",
+        "description" : "Retrieve a form.",
+        "parameters" : [ {
+          "name" : "formId",
+          "in" : "path",
+          "description" : "The form id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "instanceId",
+          "in" : "path",
+          "description" : "The instance id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "required" : true,
+          "type" : "object"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/form"
+            }
+          }
+        }
+      }
+    },
+    "/api/cafe-forms/forms/{formId}/{instanceId}/update" : {
+      "post" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "description" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "parameters" : [ {
+          "name" : "formId",
+          "in" : "path",
+          "description" : "The form id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "instanceId",
+          "in" : "path",
+          "description" : "The instance id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "required" : true,
+          "type" : "object"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/cafe-forms/forms/{formId}/{instanceId}/{elementId}/values" : {
+      "post" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Retrieves a paged list of permissible values that can be assigned to a specific field.",
+        "description" : "Retrieves a paged list of permissible values that can be assigned to a specific field.",
+        "parameters" : [ {
+          "name" : "formId",
+          "in" : "path",
+          "description" : "The form id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "instanceId",
+          "in" : "path",
+          "description" : "The instance id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "context",
+          "in" : "query",
+          "description" : "The context",
+          "required" : true,
+          "type" : "object"
+        }, {
+          "name" : "elementId",
+          "in" : "path",
+          "description" : "The element id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/data/{classId}/{id}" : {
+      "post" : {
+        "summary" : "Get a set of data for the specified object",
+        "description" : "Get a set of data for the specified object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The identifier of the type of object to get data for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique id of the object to get data for. This should be sufficient to identify the object given classId.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DynamicDataRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/DynamicDataResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/default" : {
+      "post" : {
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/types/{typeFilter}" : {
+      "post" : {
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object class",
+        "description" : "Get the schema for the specified object class.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object",
+        "description" : "This returns the schema of a particular type adjusted to the state of a specific instance..",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object type",
+        "description" : "This returns the schema of a particular type within a class of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluations" : {
+      "get" : {
+        "tags" : [ "approval-evaluation" ],
+        "summary" : "List all approval instances.",
+        "description" : "List all approval instances.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageApproval"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "approval-evaluation" ],
+        "summary" : "Evaluates a request for the given approval policy.",
+        "description" : "Evaluates a request for the given approval policy. This is an asynchronous call. The service creates a new {@link Approval} that would contain the result of the evaluation and returns it to the client and then asynchronously triggers the evaluation. Clients can check the status of the evaluation by retrieving this Approval instance. The service also has a callback mechanism to notify the clients when the evaluation is complete.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicyEvaluationSpec"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Approval"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/evaluations/workitems" : {
+      "post" : {
+        "tags" : [ "approval-work-item" ],
+        "summary" : "Work-items service invokes this API to notify that work item is completed.",
+        "description" : "Work-items service invokes this API to notify that work item is completed.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/workItemCallbackAction"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/evaluations/{id}" : {
+      "get" : {
+        "tags" : [ "approval-evaluation" ],
+        "summary" : "Retrieves an Approval instance given its unique identifier.",
+        "description" : "Retrieves an Approval instance given its unique identifier.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Approval"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvalrequests/{requestId}" : {
+      "get" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer.",
+        "description" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "The request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalRequestInfo"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvalrequests/{requestId}/form/source" : {
+      "get" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieve a read-only form providing detailed information about the source of an approval associated with a specific approval request. ",
+        "description" : "Retrieve a read-only form providing detailed information about the sourceof an approval associated with a specific approval request. There is no method-level security on this method because no single permission gives users access to approvals in general. However, there is a programmatic check to ascertain that the user has a specific relationship to the approval request that enables them to see it.",
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "The request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/form"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvalrequests/{requestId}/form/source/update" : {
+      "post" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "description" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "The request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvalrequests/{requestId}/form/source/{elementId}/values" : {
+      "post" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieves a paged list of permissible values for a specific field on the approval source details form, accessed via an approval request.",
+        "description" : "Retrieves a paged list of permissible values for a specific field on the approval source details form, accessed via an approval request.",
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "The request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "elementId",
+          "in" : "path",
+          "description" : "The element id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvals/{approvalId}" : {
+      "get" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieve information about a specific approval by its unique identifier.",
+        "description" : "Retrieve information about a specific approval by its unique identifier. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
+        "parameters" : [ {
+          "name" : "approvalId",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalInfo"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvals/{approvalId}/form/source" : {
+      "get" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieve a read-only form providing detailed information about the source of a specific approval.",
+        "description" : "Retrieve a read-only form providing detailed information about the source of a specific approval. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
+        "parameters" : [ {
+          "name" : "approvalId",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/form"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvals/{approvalId}/form/source/update" : {
+      "post" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "description" : "Retrieves the updated state of one or more layout elements in response to change in one or more layout fields' values.",
+        "parameters" : [ {
+          "name" : "approvalId",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/info/approvals/{approvalId}/form/source/{elementId}/values" : {
+      "post" : {
+        "tags" : [ "approval-info" ],
+        "summary" : "Retrieves a paged list of permissible values for a specific field on the approval source details form.",
+        "description" : "Retrieves a paged list of permissible values for a specific field on the approval source details form. ",
+        "parameters" : [ {
+          "name" : "approvalId",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "elementId",
+          "in" : "path",
+          "description" : "The element id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/policies" : {
+      "get" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Lists the approval policies.",
+        "description" : "Lists the approval policies",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of approval policies",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Creates a new approval policy.",
+        "description" : "Creates a new approval policy",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicy"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/policies/upgrade/{id}" : {
+      "put" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Updates an Approval Policy while ignoring few of the validations. This is an internal API which is used for upgrade.",
+        "description" : "Updates an Approval Policy while ignoring few of the validations. This is an internal API which is used for upgrade.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The policy id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/policies/{id}" : {
+      "get" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Retrieves an approval policy.",
+        "description" : "Retrieves an approval policy",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval policy id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicy"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Updates an approval policy.",
+        "description" : "Updates an approval policy",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval policy id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Updated approval policy",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicy"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "approval-policy" ],
+        "summary" : "Deletes an approval policy.",
+        "description" : "Deletes an approval policy.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The policy id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/policytypes" : {
+      "get" : {
+        "summary" : "Returns a page of the resources",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Creates a new approval policy type.",
+        "description" : "Creates a new approval policy type.",
+        "operationId" : "Create-Approval-Policy-Type",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicyType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicyType"
+            }
+          },
+          "201" : {
+            "description" : "Approval policy type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicyType"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{id}" : {
+      "get" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Retrieves an approval policy type given its identifier.",
+        "description" : "Retrieves an approval policy type given its identifier.",
+        "operationId" : "Retrieve-Approval-Policy-Type",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApprovalPolicyType"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Updates an existing approval policy type.",
+        "description" : "Updates an existing approval policy type.",
+        "operationId" : "Update-Approval-Policy-Type",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ApprovalPolicyType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Deletes an approval policy type with the given ID.",
+        "description" : "Deletes an approval policy type with the given ID.",
+        "operationId" : "Delete-Approval-Policy-Type",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Policy type deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema" : {
+      "get" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the schema associated with the policy type identified by the given id.",
+        "description" : "Get the schema associated with the policy type identified by the given id.A policy type is associated with a class-id and an optional type filter that restricts the sub-types of class-id.This call basically retrieves the root schema of the class-id contained in the policy type.",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema/types/{typeFilter}" : {
+      "get" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the schema associated with the policy type identified by the given id.",
+        "description" : "Get the schema associated with the policy type identified by the given id.A policy type is associated with a class-id and an optional type filter that restricts the sub-types of class-id.This call basically retrieves the root schema of the class-id contained in the policy type.",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "The type filter",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema/types/{typeFilter}/{fieldId}/schema" : {
+      "get" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the schema of a sub-field in the schema associated with the given policy type identified by the given id.",
+        "description" : "Get the schema of a sub-field in the schema associated with the given policy type identified by the given id.",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "The type filter",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The field id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema/update" : {
+      "post" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the state of a field in the schema associated with the given policy type.",
+        "description" : "Get the state of a field in the schema associated with the given policy type.",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema/{fieldId}/schema" : {
+      "get" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the schema of a sub-field in the schema associated with the given policy type.",
+        "description" : "Get the schema of a sub-field in the schema associated with the given policy type.",
+        "operationId" : "Get-subfield-schema-using-typefilter",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The field id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/policytypes/{policyTypeId}/schema/{fieldId}/values" : {
+      "post" : {
+        "tags" : [ "approval-policy-type" ],
+        "summary" : "Get the permissible values of a field in the schema associated with the given policy type.",
+        "description" : "Get the permissible values of a field in the schema associated with the given policy type.",
+        "parameters" : [ {
+          "name" : "policyTypeId",
+          "in" : "path",
+          "description" : "The approval policy type id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The field id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/services/{serviceTypeId}/approvable-items" : {
+      "get" : {
+        "tags" : [ "approvable-item" ],
+        "summary" : "Returns approvable items on which approval policy can be defined.",
+        "description" : "Returns approvable items on which approval policy can be defined. Using an approvable does not automatically make that policy applicable for all requests for the item, i.e. entitlements still need to be used to link the approval policy.",
+        "parameters" : [ {
+          "name" : "serviceTypeId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageApprovableItem"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AndClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "ApprovableItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "resourceType" : {
+          "type" : "string"
+        },
+        "typeFilter" : {
+          "type" : "string"
+        },
+        "policyTypeId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Approval" : {
+      "type" : "object",
+      "required" : [ "requestedItemApprovals", "requestingServiceId", "state" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "lastModified" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requestingServiceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 40
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 50
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestRef" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedItemName" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 1023
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "requestedFor" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "subTenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestDescription" : {
+          "type" : "string"
+        },
+        "requestReasons" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "detailsForm" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "requestedItemApprovals" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RequestedItemApproval"
+          }
+        },
+        "tenantId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ApprovalDescriptiveReference" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ApprovalForms" : {
+      "type" : "object",
+      "properties" : {
+        "detailsForm" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "approvalForm" : {
+          "$ref" : "#/definitions/FormReference"
+        }
+      }
+    },
+    "ApprovalInfo" : {
+      "type" : "object",
+      "required" : [ "requestClassId", "requestInstanceId", "requestedItemName", "requestingServiceId" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "requestingServiceId" : {
+          "type" : "string"
+        },
+        "requestClassId" : {
+          "type" : "string"
+        },
+        "requestInstanceId" : {
+          "type" : "string"
+        },
+        "requestRef" : {
+          "type" : "string"
+        },
+        "requestedItemName" : {
+          "type" : "string"
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "requestedFor" : {
+          "type" : "string"
+        },
+        "requestedBy" : {
+          "type" : "string"
+        },
+        "subTenantId" : {
+          "type" : "string"
+        },
+        "requestDescription" : {
+          "type" : "string"
+        },
+        "requestReasons" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "requestedItemApprovals" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RequestedItemApprovalInfo"
+          }
+        }
+      }
+    },
+    "ApprovalLevel" : {
+      "type" : "object",
+      "required" : [ "approvalMode", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "approvers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "approvalMode" : {
+          "type" : "string",
+          "enum" : [ "ANY", "ALL" ]
+        },
+        "criteria" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "levelNumber" : {
+          "type" : "integer",
+          "format" : "int32",
+          "minimum" : 1.0
+        },
+        "external" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "editSchema" : {
+          "$ref" : "#/definitions/FieldList"
+        }
+      },
+      "xml" : {
+        "name" : "ApprovalLevel"
+      }
+    },
+    "ApprovalLevelDecision" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "phaseNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "level" : {
+          "$ref" : "#/definitions/ApprovalLevel"
+        },
+        "approvalRequests" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalRequest"
+          }
+        },
+        "approvalMode" : {
+          "type" : "string",
+          "enum" : [ "ANY", "ALL" ]
+        }
+      }
+    },
+    "ApprovalLevelStatusInfo" : {
+      "type" : "object",
+      "required" : [ "level" ],
+      "properties" : {
+        "level" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "currentApprover" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "request" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalRequestStatusInfo"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "mode" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "ANY", "ALL" ]
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        }
+      }
+    },
+    "ApprovalPhaseType" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "forms" : {
+          "$ref" : "#/definitions/ApprovalForms"
+        },
+        "phaseOrder" : {
+          "type" : "integer",
+          "format" : "int32",
+          "minimum" : 0.0
+        },
+        "allowUpdates" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ApprovalPolicy" : {
+      "type" : "object",
+      "required" : [ "name", "phases", "policyType", "state" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "policyType" : {
+          "$ref" : "#/definitions/ApprovalPolicyType"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
+        "stateName" : {
+          "type" : "string"
+        },
+        "phases" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Phase"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        },
+        "approvableItemId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "typeFilter" : {
+          "type" : "string"
+        },
+        "approvableItemName" : {
+          "type" : "string"
+        },
+        "approvableItemServiceTypeId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "lastModified" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "lastModifiedBy" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "xml" : {
+        "name" : "ApprovalPolicy"
+      }
+    },
+    "ApprovalPolicyEvaluationSpec" : {
+      "type" : "object",
+      "required" : [ "requestClassId", "requestInstanceId", "requestedItems", "requestingServiceId" ],
+      "properties" : {
+        "requestingServiceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 40
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 50
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestRef" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedItemName" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 1023
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "requestedFor" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "subTenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestDescription" : {
+          "type" : "string"
+        },
+        "requestReasons" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "detailsForm" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "requestedItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RequestedItem"
+          }
+        }
+      }
+    },
+    "ApprovalPolicyType" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 1023
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "classId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "typeFilter" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 1000
+        },
+        "phaseTypes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPhaseType"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        }
+      }
+    },
+    "ApprovalPrincipal" : {
+      "type" : "object",
+      "required" : [ "type", "value" ],
+      "properties" : {
+        "value" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 5000
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "USER", "GROUP", "EXPRESSION" ]
+        },
+        "displayName" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        }
+      }
+    },
+    "ApprovalRequest" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "approvers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "creationTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "assignTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completedBy" : {
+          "type" : "string"
+        },
+        "action" : {
+          "type" : "string",
+          "enum" : [ "APPROVE", "REJECT", "NONE" ]
+        },
+        "businessJustification" : {
+          "type" : "string"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "NOT_REQUESTED_YET", "PENDING", "COMPLETED", "NOT_NECESSARY" ]
+        },
+        "workItemId" : {
+          "type" : "string"
+        },
+        "workItemNumber" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "wiqServiceId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ApprovalRequestCosts" : {
+      "type" : "object",
+      "properties" : {
+        "lease" : {
+          "$ref" : "#/definitions/timeSpan"
+        },
+        "leaseRate" : {
+          "$ref" : "#/definitions/moneyTimeRate"
+        },
+        "quoteProvided" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "totalLeaseCost" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "leaseForDisplay" : {
+          "$ref" : "#/definitions/timeSpan"
+        }
+      }
+    },
+    "ApprovalRequestInfo" : {
+      "type" : "object",
+      "required" : [ "level", "requestedItemApproval" ],
+      "properties" : {
+        "requestedItemApproval" : {
+          "$ref" : "#/definitions/RequestedItemApprovalStatusInfo"
+        },
+        "level" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "approver" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "workItem" : {
+          "$ref" : "#/definitions/ApprovalWorkItemInfo"
+        },
+        "businessJustification" : {
+          "type" : "string"
+        },
+        "infoItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalRequestItemInfo"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "NOT_REQUESTED_YET", "PENDING", "COMPLETED", "NOT_NECESSARY" ]
+        },
+        "completionAction" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "APPROVE", "REJECT", "NONE" ]
+        }
+      }
+    },
+    "ApprovalRequestItemInfo" : {
+      "type" : "object",
+      "required" : [ "approval", "level" ],
+      "properties" : {
+        "approval" : {
+          "$ref" : "#/definitions/RequestedItemApprovalStatusInfo"
+        },
+        "level" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "approver" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "businessJustification" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "ApprovalRequestStatusInfo" : {
+      "type" : "object",
+      "properties" : {
+        "assignDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completedBy" : {
+          "type" : "string"
+        },
+        "businessJustification" : {
+          "type" : "string"
+        },
+        "approvers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "workItemId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "workItemNumber" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "NOT_REQUESTED_YET", "PENDING", "COMPLETED", "NOT_NECESSARY" ]
+        },
+        "completionAction" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "APPROVE", "REJECT", "NONE" ]
+        }
+      }
+    },
+    "ApprovalWorkItemInfo" : {
+      "type" : "object",
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "assignedDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "assignedTo" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalPrincipal"
+          }
+        },
+        "completedDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completedBy" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "status" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "BooleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "CallbackEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Clause" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CoalesceEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ComplexDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        }
+      } ]
+    },
+    "ComplexEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "values" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cases" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "case"
+            },
+            "items" : {
+              "$ref" : "#/definitions/ConditionalEvaluatorCase"
+            }
+          },
+          "defaulValue" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluatorCase" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ConstantClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/booleanLiteral"
+          }
+        }
+      } ]
+    },
+    "ConstantValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/literal"
+          }
+        }
+      } ]
+    },
+    "Constraint" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ContainsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ContextPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CriteriaOperator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CustomPropertyDefinitionMetadata" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "required" : [ "field" ],
+        "properties" : {
+          "field" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "CustomValidationConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DataContext" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "DataType" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "typeId" : {
+          "type" : "string",
+          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+        }
+      }
+    },
+    "DefaultValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DynamicDataRequest" : {
+      "type" : "object",
+      "properties" : {
+        "tenantId" : {
+          "type" : "string"
+        },
+        "ignoreUnknownFields" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "ids" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "id"
+          },
+          "readOnly" : true,
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "DynamicDataResponse" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "DynamicLayoutReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "context" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          },
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicValueContext" : {
+      "type" : "object",
+      "required" : [ "parameterMappings" ],
+      "properties" : {
+        "providerEntityId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "EditableBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ElementState" : {
+      "type" : "object",
+      "properties" : {
+        "dependencies" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "dependency",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Constraint"
+          }
+        }
+      }
+    },
+    "ElementValuesPagingInfo" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "EmbeddedDataContext" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataContext"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "$ref" : "#/definitions/literalMap"
+          }
+        }
+      } ]
+    },
+    "EmbeddedFieldInsinuation" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FieldInsinuation"
+      }, {
+        "type" : "object",
+        "required" : [ "definition" ],
+        "properties" : {
+          "definition" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "EncryptedBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EndsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntityReferenceDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Evaluator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "Expression" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "operator" : {
+            "$ref" : "#/definitions/CriteriaOperator"
+          },
+          "leftOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          },
+          "rightOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ExtensionForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExtensionRendererContext" : {
+      "type" : "object",
+      "properties" : {
+        "extensionId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "ExternalDataContext" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataContext"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "instanceId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExternalFormReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "formId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExternalValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "dynamicValueProviderInfo" ],
+        "properties" : {
+          "dynamicValueProviderInfo" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          }
+        }
+      } ]
+    },
+    "FacetValueMap" : {
+      "type" : "object",
+      "properties" : {
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/FacetValueMapEntry"
+          }
+        }
+      }
+    },
+    "FacetValueMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "Field" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "displayAdvice" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+        },
+        "orderIndex" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "permissibleValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "isMultiValued" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "columns" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "column",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "FieldInsinuation" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "FieldList" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FieldInsinuation"
+          }
+        }
+      }
+    },
+    "FieldReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FieldReferenceInsinuation" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FieldInsinuation"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FixedValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "FormReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "GreaterThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IaasPropertyNameBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IncrementBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InternalConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IsDefinedOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutCell" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LayoutExtension" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "fieldPrefix" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LayoutField" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "orderIndex" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "dataType" : {
+            "$ref" : "#/definitions/DataType"
+          },
+          "displayAdvice" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          },
+          "permissibleValues" : {
+            "$ref" : "#/definitions/PermissibleValueList"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "labelSize" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "detailLayout" : {
+            "$ref" : "#/definitions/LayoutReference"
+          },
+          "extensionRendererContext" : {
+            "$ref" : "#/definitions/ExtensionRendererContext"
+          },
+          "isMultiValued" : {
+            "type" : "boolean",
+            "xml" : {
+              "attribute" : true
+            },
+            "default" : false
+          },
+          "columns" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "column",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutField"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlow" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "parts" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "part",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutFlowElement"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlowElement" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutPage" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "sections" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "section",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutSection"
+          }
+        }
+      }
+    },
+    "LayoutPlaceholderCell" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "LayoutRow" : {
+      "type" : "object",
+      "properties" : {
+        "items" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "item",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutCell"
+          }
+        }
+      }
+    },
+    "LayoutSection" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "rows" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "row",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutRow"
+          }
+        }
+      }
+    },
+    "LayoutText" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LessThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "MandatoryConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaximumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MinCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinimumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "MoneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "MultipleEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "NotClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClause" : {
+            "$ref" : "#/definitions/Clause"
+          }
+        }
+      } ]
+    },
+    "NotEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "NullDisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ObjectDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "OrClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "PageApprovableItem" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovableItem"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageApproval" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Approval"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ParameterMapping" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ParameterMappingCollection" : {
+      "type" : "object",
+      "properties" : {
+        "params" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "param",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/ParameterMapping"
+          }
+        }
+      }
+    },
+    "PermissibleValueList" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "customAllowed" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "Phase" : {
+      "type" : "object",
+      "required" : [ "phasetype" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "phasetype" : {
+          "$ref" : "#/definitions/ApprovalPhaseType"
+        },
+        "levels" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalLevel"
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "Phase"
+      }
+    },
+    "PhaseDecision" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "phaseNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "phase" : {
+          "$ref" : "#/definitions/Phase"
+        },
+        "decisions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalLevelDecision"
+          }
+        }
+      }
+    },
+    "PrimitiveDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "typeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          }
+        }
+      } ]
+    },
+    "ReadOnlyConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RefreshOnChangeBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RegexpConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "errorMessage" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "RequestedItem" : {
+      "type" : "object",
+      "required" : [ "context", "phaseId", "policyId", "requestClassId", "requestInstanceId", "requestedItemName" ],
+      "properties" : {
+        "policyId" : {
+          "type" : "string"
+        },
+        "phaseId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 50
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestedItemName" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 1023
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "context" : {
+          "$ref" : "#/definitions/DataContext"
+        }
+      }
+    },
+    "RequestedItemApproval" : {
+      "type" : "object",
+      "required" : [ "context", "phaseId", "policy", "requestClassId", "requestInstanceId", "requestedItemName", "state" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "lastModified" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 50
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestedItemName" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 1023
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "context" : {
+          "$ref" : "#/definitions/DataContext"
+        },
+        "policy" : {
+          "$ref" : "#/definitions/ApprovalPolicy"
+        },
+        "phaseDecision" : {
+          "$ref" : "#/definitions/PhaseDecision"
+        },
+        "phaseId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "phaseNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "RequestedItemApprovalInfo" : {
+      "type" : "object",
+      "required" : [ "context", "phase", "policy", "policyType", "requestClassId", "requestInstanceId", "requestedItemName", "requestingServiceId" ],
+      "discriminator" : "type",
+      "properties" : {
+        "pastLevel" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalLevelStatusInfo"
+          }
+        },
+        "currentLevel" : {
+          "$ref" : "#/definitions/ApprovalLevelStatusInfo"
+        },
+        "futureLevel" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ApprovalLevelStatusInfo"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "policy" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "policyType" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "phase" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "requestedItemName" : {
+          "type" : "string"
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "context" : {
+          "$ref" : "#/definitions/DataContext"
+        },
+        "requestingServiceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestRef" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedFor" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "subTenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestDescription" : {
+          "type" : "string"
+        },
+        "requestReasons" : {
+          "type" : "string"
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "hasSourceDetailsForm" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "RequestedItemApprovalStatusInfo" : {
+      "type" : "object",
+      "required" : [ "context", "phase", "policy", "policyType", "requestClassId", "requestInstanceId", "requestedItemName", "requestingServiceId" ],
+      "discriminator" : "type",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNINITIATED", "PENDING", "APPROVED", "REJECTED", "IN_ERROR" ]
+        },
+        "policy" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "policyType" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "phase" : {
+          "$ref" : "#/definitions/ApprovalDescriptiveReference"
+        },
+        "requestedItemName" : {
+          "type" : "string"
+        },
+        "requestedItemDescription" : {
+          "type" : "string"
+        },
+        "costs" : {
+          "$ref" : "#/definitions/ApprovalRequestCosts"
+        },
+        "context" : {
+          "$ref" : "#/definitions/DataContext"
+        },
+        "requestingServiceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestClassId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestInstanceId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestRef" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedFor" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "subTenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "requestDescription" : {
+          "type" : "string"
+        },
+        "requestReasons" : {
+          "type" : "string"
+        },
+        "startTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "hasSourceDetailsForm" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "ResetValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Schema" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "field"
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "SkipExportBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "StartsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StaticForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticLayout" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "value"
+            },
+            "items" : {
+              "$ref" : "#/definitions/value"
+            }
+          }
+        }
+      } ]
+    },
+    "SubsetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "SupersetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "UniqueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UnspecifiedEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "VisibilityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WithinOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WrapperClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "batchElementUpdateRequest" : {
+      "type" : "object",
+      "required" : [ "formValues" ],
+      "properties" : {
+        "formValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "trigger" : {
+          "type" : "string"
+        },
+        "triggeredDetailsLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "affectedElements" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "batchElementUpdateRequest"
+      }
+    },
+    "booleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "boolean",
+            "description" : "The boolean value.",
+            "default" : false
+          }
+        },
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "elementValues" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "elementValues"
+      }
+    },
+    "elementValuesRequest" : {
+      "type" : "object",
+      "properties" : {
+        "text" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "dependencyValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "pagingInfo" : {
+          "$ref" : "#/definitions/ElementValuesPagingInfo"
+        },
+        "associateValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "elementValuesRequest"
+      }
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "form" : {
+      "type" : "object",
+      "properties" : {
+        "layout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "values" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "fieldPrefixes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "form"
+      }
+    },
+    "formUpdateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "elementUpdates" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "elementUpdate",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/updateElementEntry"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "formUpdateResponse"
+      }
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "layout" : {
+      "type" : "object",
+      "properties" : {
+        "pages" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "page",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutPage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "layout"
+      }
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "updateElementEntry" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "detailLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "facetValues" : {
+          "$ref" : "#/definitions/FacetValueMap"
+        },
+        "extensionRendererContext" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "permissibleValues" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        },
+        "errors" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "error",
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "updateElementEntry"
+      }
+    },
+    "value" : {
+      "type" : "object",
+      "properties" : {
+        "underlyingValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "label" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "value"
+      }
+    },
+    "workItemCallbackAction" : {
+      "type" : "object",
+      "properties" : {
+        "completeActionId" : {
+          "type" : "string"
+        },
+        "targetId" : {
+          "type" : "string"
+        },
+        "workItemId" : {
+          "type" : "string"
+        },
+        "workItemTypeId" : {
+          "type" : "string"
+        },
+        "assignee" : {
+          "type" : "string"
+        },
+        "completedDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "formData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "workItemCallbackAction"
+      }
+    }
+  }
+}
