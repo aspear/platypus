@@ -27,7 +27,7 @@ else
     echo "Staging tools"
     mkdir -p ${SCRIPT_DIR}/tools
     pushd ${SCRIPT_DIR}/tools
-
+	
     unzip ${SCRIPT_DIR}/api-explorer-tools-*.zip
 
     popd
@@ -45,37 +45,35 @@ unzip ${SCRIPT_DIR}/api-explorer-dist-*.zip
 echo "overwriting config with local config"
 cp -f ${SCRIPT_DIR}/config.js .
 
-echo "overwriting config with vsphere local config"
-cp -f ${SCRIPT_DIR}/config.js .
+# run the tool to stage the swagger json files from the 
+# ${SCRIPT_DIR}/swagger-vra directory to the local/swagger
+# directory abbreviating the descriptions and then also 
+# generating overview HTML next to the json files.  when it does
+# this it generates an "overview" resource in the local.json file
+# that has all of the configuration in it
+
+#python ${TOOLS_DIR}/apiFilesToLocalJson.py \
+# --abbreviateDescription \
+# --generateOverviewHtml \
+# --apiPrepend="vRealize Automation " \
+# --productName="vRealize Automation;7.3.0" \
+# --apiVersion="(vRealize Automation 7.3.0)" \
+# --swaggerglob ${SCRIPT_DIR}/swagger-vra/api*.json \
+# --outdir=${OUTPUT_DIR}/local/swagger \
+# --htmlRootDir ${OUTPUT_DIR} \
+# --outfile ${OUTPUT_DIR}/local.json
 
 echo "Mirroring API content from ${APIX_SERVER}"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/local.json  \
- --mirror_output_dir=${OUTPUT_DIR}/local/mirror \
- --mirror_api=api_vsphere \
- --mirror_api=api_vcenter_infrastructure \
- --mirror_api=api_content \
- --mirror_api=api_vcenter_server_appliance_infrastructure \
- --mirror_api=api_vapi_infrastructure \
- --mirror_api=api_cis_management \
- --mirror_api=api_vcenter_server_appliance_management \
- --mirror_api=api_cis_infrastructure \
- --mirror_api=api_vcenter_management \
- --mirror_api=api_vapi_management \
- --mirror_api=api_vsphere_automation_java \
- --mirror_api=api_vsphere_automation_dotnet \
- --mirror_api=api_vsphere_automation_python \
- --mirror_api=api_vsphere_automation_ruby \
- --mirror_api=api_vsphere_automation_perl \
- --mirror_api=api_vsphere_automation_lookup_service \
- --mirror_api=api_vsphere_esx_agent_manager \
- --mirror_api=api_vcenter_sso \
- --mirror_api=api_storage_monitoring_service \
- --mirror_api=api_vsphere_guest \
- --mirror_api=api_vsphere_ha_application_monitor \
- --mirror_api=api_cim \
- --mirror_api=api_virtual_disk
+ --abbreviateDescription \
+ --generateOverviewHtml \
+ --apiPrepend="vRealize Automation " \
+ --productName="vRealize Automation;7.3.0" \
+ --apiVersion="(vRealize Automation 7.3.0)" \
+ --swaggerglob ${SCRIPT_DIR}/swagger/api*.json \
+ --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
 
 popd
