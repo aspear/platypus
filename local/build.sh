@@ -10,7 +10,7 @@ TOOLS_DIR=${SCRIPT_DIR}/tools
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
-export VER="0.0.20"
+export VER="0.0.21"
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
