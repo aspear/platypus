@@ -6516,6 +6516,33 @@
         }
       }
     },
+    "/api/resources/disks/{id}" : {
+      "get" : {
+        "tags" : [ "get" ],
+        "summary" : "Retrieves a DiskState.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve DiskState.",
+        "operationId" : "getDiskState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the DiskState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the DiskState",
+            "schema" : {
+              "$ref" : "#/definitions/ComputeDiskState"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no DiskState with provided <code>id</code>"
+          }
+        }
+      }
+    },
     "/api/resources/elastic-placement-zones" : {
       "get" : {
         "tags" : [ "list" ],
@@ -8568,6 +8595,61 @@
         }
       }
     },
+    "/api/resources/security-groups" : {
+      "get" : {
+        "tags" : [ "list" ],
+        "summary" : "Retrieves all SecurityGroups.",
+        "description" : "Only Solution users, Container admins, and System admins can list SecurityGroup.",
+        "operationId" : "listSecurityGroup",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/pagedEntities"
+            }
+          }
+        }
+      }
+    },
     "/api/resources/sub-networks" : {
       "get" : {
         "tags" : [ "list" ],
@@ -8957,6 +9039,30 @@
         "responses" : {
           "200" : {
             "description" : ""
+          }
+        }
+      }
+    },
+    "/api/util/long-uri-get" : {
+      "post" : {
+        "tags" : [ "post" ],
+        "summary" : "The service accepts post request with long uri as body. Then a get request is sent using the uri in the body. The service workarounds an issue when the uri is too long and netty does not accept it",
+        "description" : "",
+        "operationId" : "postToGet",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LongURIRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Ok' is returned with the Object received from the given request body.",
+            "schema" : {
+              "type" : "object"
+            }
           }
         }
       }
@@ -9963,6 +10069,37 @@
             "type" : "string"
           }
         },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "endpointLink" : {
+          "type" : "string"
+        },
+        "endpointType" : {
+          "type" : "string"
+        },
         "instanceTypeMapping" : {
           "type" : "object",
           "additionalProperties" : {
@@ -9974,6 +10111,12 @@
           "additionalProperties" : {
             "$ref" : "#/definitions/ComputeImageDescription"
           }
+        },
+        "imageProfileLink" : {
+          "type" : "string"
+        },
+        "instanceTypeProfileLink" : {
+          "type" : "string"
         }
       }
     },
@@ -12635,6 +12778,14 @@
         }
       }
     },
+    "LongURIRequest" : {
+      "type" : "object",
+      "properties" : {
+        "uri" : {
+          "type" : "string"
+        }
+      }
+    },
     "MandatoryConstraint" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Constraint"
@@ -13984,6 +14135,27 @@
         }
       }
     },
+    "Rule" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "protocol" : {
+          "type" : "string"
+        },
+        "ipRangeCidr" : {
+          "type" : "string"
+        },
+        "ports" : {
+          "type" : "string"
+        },
+        "access" : {
+          "type" : "string",
+          "enum" : [ "Allow", "Deny" ]
+        }
+      }
+    },
     "Schema" : {
       "type" : "object",
       "properties" : {
@@ -15305,6 +15477,12 @@
             "type" : "string"
           }
         },
+        "securityGroupLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
         "isolationNetworkCIDRAllocationLink" : {
           "type" : "string"
         },
@@ -15315,6 +15493,88 @@
       },
       "xml" : {
         "name" : "deploymentNetworkProfile"
+      }
+    },
+    "deploymentSecurityGroup" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "authCredentialsLink" : {
+          "type" : "string"
+        },
+        "resourcePoolLink" : {
+          "type" : "string"
+        },
+        "instanceAdapterReference" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "endpointLink" : {
+          "type" : "string"
+        },
+        "ingress" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Rule"
+          }
+        },
+        "egress" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Rule"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "deploymentSecurityGroup"
       }
     },
     "deploymentStorageProfile" : {
