@@ -4,36 +4,36 @@ apis:
     name: 'AirWatch Mobile Device Management REST API V1'
     version: '1'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'Mdm_API_V1.json'
+    api_ref_doc_url: 'MDM_API_V1.json'
   - api_uid: 'api_airwatch_mdm_v2'
     name: 'AirWatch Mobile Device Management REST API V2'
     version: '2'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'Mdm_API_V2.json'
+    api_ref_doc_url: 'MDM_API_V2.json'
   - api_uid: 'api_airwatch_mam_v1'
     name: 'AirWatch Mobile Application Management REST API V1'
     version: '1'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'Mam_API_V1.json'
+    api_ref_doc_url: 'MAM_API_V1.json'
   - api_uid: 'api_airwatch_mam_v2'
     name: 'AirWatch Mobile Application Management REST API V2'
     version: '2'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'Mam_API_V2.json'
+    api_ref_doc_url: 'MAM_API_V2.json'
   - api_uid: 'api_airwatch_system_v1'
     name: 'AirWatch System REST API V1'
     version: '1'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'System_API_V1.json'
+    api_ref_doc_url: 'SYSTEM_API_V1.json'
   - api_uid: 'api_airwatch_system_v2'
     name: 'AirWatch System REST API V2'
     version: '2'
     api_ref_doc_type: 'SWAGGER'
-    api_ref_doc_url: 'System_API_V2.json'
+    api_ref_doc_url: 'SYSTEM_API_V2.json'
 
 products:
   - product_name: AirWatch
-    product_version: 9.1.1
+    product_version: 9.2
     provided_api_uids:
     - api_airwatch_mdm_v1
     - api_airwatch_mdm_v2
