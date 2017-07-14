@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Network Service API Specification\n\n## What is the Network Service REST API?\n\nThe network service provides features that allow you to manage network and security settings. It acts as an abstraction layer over the networking and security features provided by the infrastructure (vSphere, NSX and VCNS).\n\nThe network service provides support for creating and configuring existing networks, on-demand NAT networks and on-demand routed networks, creating load balancers, and adding and configuring security groups and security tags for vSphere machines.\nIaaS is registered as a provider for all the networking domain objects.\n\nThere are five domain objects associated with the network service:\n\n1. Network\n2. Load Balancer\n3. Security Group\n4. Security Tag\n5. Security Policy\n\nEach object has its corresponding type.\nThe provider registers the a domain object type with the service.\n\n\n## Typical Use Cases\n\nYou can use the network service REST API to:\n\n * Allocate or deallocate a network or security component\n * Validate a network or security component at authoring time\n * Create, update, or delete load balancer types\n * Create or delete on-demand network objects\n * Request a network resource\n * Create, update, or delete network types\n * Return a list of on-demand networks\n * Return a list of existing security groups\n * Create, update or delete on-demand security groups\n * Assign a security group (on-demand or existing) to a machine\n * Create, update, or delete security group types\n * Return a list of existing security tags\n * Assign a security tag to a machine\n * Return a list of existing security policies\n * Create an on-demand security group with a list of selected security policies\n \nFor example, the composition service calls the network service for allocation, provisioning and day-2 operations, by using the converged blueprint format.\n\n## Key Concepts\n\n### Network\n\nA collection of nodes interconnected via physical or virtual paths/links.\n\n### Load Balancer\n\nA physical or logical device that distributes incoming requests evenly among multiple servers that can handle traffic so as to maximize throughput and avoid single points of failure. This allows cumulative network traffic to be split up into multiple paths before the traffic reaches the destination/target.\n\n### Security Group\nSecurity groups are a mechanism that enables the network administrator to dynamically associate and group workloads or objects that belong to one's vSphere inventory.\nUsers can assign machines to an existing security group or define an on-demand security group by selecting one or more existing security policies.\n\n### Security Tag\n\nA security tag is a qualifier object or categorizing entry that is used as a grouping mechanism. Using NSX, administrators define the criteria that an object must meet to be added to a security group to configure security tags.  Users can use the network component APIs to query and assign existing security tags to machines.\n\n### Security Policy\n\nA security policy is a re-usable set of specific rules spanning network and security services that can be applied to a security group. Users can define an on-demand security group by selecting one or more of the existing security policies.\n\n\n\n## Additional Information\n\nFor additional information about the VRealize Automation REST API, see the *VRealize Automation Programming Guide*  or the user documentation for VRealize Automation.\n",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Network Service API"
   },
   "basePath" : "/network-service/",
@@ -1376,6 +1376,69 @@
         }
       }
     },
+    "/api/security-groups/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security groups within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityGroupsForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityGroup"
+            }
+          }
+        }
+      }
+    },
     "/api/security-groups/types" : {
       "get" : {
         "tags" : [ "network-component-type" ],
@@ -1737,6 +1800,69 @@
         }
       }
     },
+    "/api/security-policies/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security policies within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "ListSecurityPolicyForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Pagination Information",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityPolicy"
+            }
+          }
+        }
+      }
+    },
     "/api/security-policies/types" : {
       "get" : {
         "tags" : [ "network-component-type" ],
@@ -2026,6 +2152,69 @@
         "responses" : {
           "201" : {
             "description" : "Successfully applied security tags to machines"
+          }
+        }
+      }
+    },
+    "/api/security-tags/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security tags within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityTagsForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityTag"
+            }
           }
         }
       }
@@ -2780,7 +2969,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -2961,7 +3150,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -4152,12 +4341,12 @@
     "OrderByExpression" : {
       "type" : "object",
       "properties" : {
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        },
         "direction" : {
           "type" : "string",
           "enum" : [ "ASCENDING", "DESCENDING" ]
-        },
-        "expression" : {
-          "$ref" : "#/definitions/CommonExpression"
         }
       }
     },
@@ -4195,13 +4384,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4217,12 +4401,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4237,13 +4426,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4259,12 +4443,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4279,13 +4468,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4301,12 +4485,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4321,13 +4510,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4343,12 +4527,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4363,13 +4552,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4385,12 +4569,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4405,13 +4594,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4427,12 +4611,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4447,13 +4636,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4469,12 +4653,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4489,13 +4678,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4511,12 +4695,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4531,13 +4720,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4553,12 +4737,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4573,13 +4762,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4595,12 +4779,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4890,28 +5079,51 @@
       }
     },
     "SecurityPolicy" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/NetworkObject"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "securityPolicyTypeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            },
-            "minLength" : 1,
-            "maxLength" : 255
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
           },
-          "internal" : {
-            "type" : "boolean",
-            "xml" : {
-              "attribute" : true
-            },
-            "default" : false
-          }
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "securityPolicyTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "internal" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
         }
-      } ]
+      }
     },
     "SecurityPolicyType" : {
       "type" : "object",
@@ -4988,21 +5200,44 @@
       }
     },
     "SecurityTag" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/NetworkObject"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "securityTagTypeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            },
-            "minLength" : 1,
-            "maxLength" : 255
-          }
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "securityTagTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
         }
-      } ]
+      }
     },
     "SecurityTagType" : {
       "type" : "object",

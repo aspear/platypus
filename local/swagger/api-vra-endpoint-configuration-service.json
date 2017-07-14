@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Endpoint Configuration Service API Specification\n\n## What Is the Endpoint Configuration Service?\n\nYou can use the endpoint configuration service REST API to create, read, update and delete endpoint types, endpoint categories, and endpoints.\n\n## Typical Use Cases\n\nTypical use cases for the endpoint configuration service are:\n\n* A vRA Administrator or a Solution User creates an endpoint category.\n* The vRA administrator registers a new endpoint type with the endpoint configuration service.\n* The IaaS administrator creates, updates or deletes an endpoint through the UI. vRA  then calls the endpoint configuration service to create, update or delete endpoint information.\n\n## Key Concepts\n\n### Endpoint Category Operations\n\nBefore creating an endpoint type, an endpoint category should be registered with endpoint configuration service.  Examples of endpoint categories include Virtual, Physical, IPAM, and so on. An application can call the `POST /api/categories` API to create endpoint categories as required.\n\nWhen an endpoint category is created, the endpoint configuration service creates the endpoint category in the Postgres database.\n\n### Endpoint Type\n\nA value that represents the type of an endpoint. A service provider creates an endpoint type within a specified category.  For example, a provider of an IPAM service could create an endpoint type called \"MyIPAMapp\" within the IPAM endpoint category.\n\nIf a customer wants to use a new endpoint, the customer must follow a two step process:\n\n1. Add a new endpoint type, through the endpoint configuration service.\n2. Add a new endpoint instance of that endpoint type.\n\n### Endpoint Type Operations\n\nBefore creating an endpoint, the endpoint type and schema should be registered with the endpoint configuration service. When an endpoint type is created, the endpoint configuration service creates an endpoint type category in a Postgres database.\n\nAn endpoint type schema is stored only in the Postgres database. However, endpoint type information is stored in both the Postgres database and in the `InterfaceTypes` table on the SQL server.\n\n## How the Endpoint Configuration Service Works\n\nWhen an administrator creates an endpoint instance, the UI calls the endpoint service with endpoint data. The endpoint service performs the following steps:\n\n- Validates the data against the schema.\n- Gets the IaaS repository endpoint from the component registry.\n- Saves the new endpoint data to the Postgres database.\n- Calls the repository service to save the data.\n- Returns SUCCESS to the endpoint UI.\n\nThe logic for update and delete is same as for create.\n\n### User Roles and Permissions\n\nDifferent user roles have different permissions for working with endpoints.\n\n#### Endpoint Type Operations and Endpoint Type Categories\n\nThe following user roles have permission for the following:\n\n* GET - IaaS Administrators, vRA Administrators, Solution Users.\n\n* PUT/POST/DELETE  - vRA Administrators, Solution Users.\n\n#### Endpoint Operations\n\n* GET (global endpoint, without secure data) - IaaS Administrators, Solution Users.\n* GET (any endpoint, secure data) - Solution Users.\n* PUT/POST/DELETE -  Solution Users.\n* PUT/POST/DELETE - IaaS Administrators, Solution Users.\n\n### Handling Credentials\n\nIn vRA 7.0,  credential information is stored separately from the management endpoint information. So, when creating an infrastructure endpoint, the customer must specify the credential information separately, making endpoint creation a two-step process. With the vRA 7.1 endpoint configuration service, the endpoint information is specified along with the credential information. The UI displays all the information in a single place, and the endpoint data is stored together at a single place as well.\n\nPassword information must be encrypted when saved to the database. To specify that a field needs to be encrypted, the corresponding field must be marked as `securestring` in the database schema. When saving endpoint information, the endpoint service goes through all the fields of type `securestring` and encrypts the field data, before saving it to the database. This ensures that passwords are not saved as plain text in the database.\n\nWhen retrieving  endpoint information from the endpoint service, by default, all the fields that use `securestring` are set to empty. Only specific APIs return fields marked with `securestring`. Only solution users can retrieve secure fields.\n\n### Creating New Endpoint Types\n\nTo consume a new endpoint that belongs to a new endpoint type, a service provider must:\n\n1. Add a new endpoint type, through the endpoint configuration service.\n2. Add a new endpoint instance of that endpoint type.\n\nFor step 1, the customer (service provider) must also define a new schema for the endpoint type. The schema should indicate all the permissible fields and their corresponding values for the endpoint type. The endpoint object used for creating the endpoint should confirm to the schema of the endpoint type that the endpoint belongs to.\n\n## Additional Information\n\nFor more detailed information on using the the API, refer to the *vRA Programming Guide*.\n",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Endpoint Configuration Service API"
   },
   "basePath" : "/endpoint-configuration-service",
@@ -24,7 +24,7 @@
         "tags" : [ "AssocationTypes" ],
         "summary" : "Gets paged list of association types",
         "description" : "The API returns paged list of association types.",
-        "operationId" : "Get the list of association types",
+        "operationId" : "getAssociationTypes",
         "parameters" : [ {
           "name" : "endpointType",
           "in" : "query",
@@ -89,7 +89,7 @@
         "tags" : [ "AssocationTypes" ],
         "summary" : "Creates a new association type",
         "description" : "The API creates a new association type. The API performs the following validation before creating the association type: <br>1. There is an no existing association type with the specified id.</br><br>2. The From Endpoint Type and To Endpoint Type values are checked  to make sure they exist.</br><br>3. Make sure the cardinality value is valid (0-3). </br>",
-        "operationId" : "Create a new association type",
+        "operationId" : "createAssociationType",
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -126,7 +126,7 @@
         "tags" : [ "AssocationTypes" ],
         "summary" : "Get association type",
         "description" : "The API returns a specific association type, based on the association type id.",
-        "operationId" : "Get association type, based on id",
+        "operationId" : "getAssociationTypeById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -154,7 +154,7 @@
         "tags" : [ "AssocationTypes" ],
         "summary" : "Updates an existing association type",
         "description" : "The API updates an existing association type. The API performs the following validation before updating the association type:<br>1. There is an existing association type with the specified id.</br><br>2. Another association type wth the same name does not exist.</br>",
-        "operationId" : "Update an existing association type",
+        "operationId" : "updateAssociationType",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -191,7 +191,7 @@
         "tags" : [ "AssocationTypes" ],
         "summary" : "Deletes an existing association type",
         "description" : "The API deletes an existing association type. The API returns an error, ifassociation type with the specified id does not exist.",
-        "operationId" : "Delete an existing association type",
+        "operationId" : "deleteAssociationType",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -221,7 +221,7 @@
         "tags" : [ "EndpointTypeCategories" ],
         "summary" : "Gets paged list of endpoint type categories",
         "description" : "The API returns paged list of endpoint type categories.",
-        "operationId" : "Get the list of endpoint type categories",
+        "operationId" : "getEndpointTypeCategories",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -280,7 +280,7 @@
         "tags" : [ "EndpointTypeCategories" ],
         "summary" : "Creates a new endpoint type category",
         "description" : "The API creates a new endpoint type category. The API validates that the endpoint type category does not exist already, before creating new endpoint type category",
-        "operationId" : "Create a new endpoint type category",
+        "operationId" : "createEndpointTypeCategory",
         "parameters" : [ {
           "in" : "body",
           "name" : "endpointCategory",
@@ -314,7 +314,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Gets paged list of endpoints, optionally based on category",
         "description" : "The API returns paged list of endpoints.",
-        "operationId" : "Get the list of endpoints by category",
+        "operationId" : "getEndpointsByCategory",
         "parameters" : [ {
           "name" : "endpoint-category-id",
           "in" : "path",
@@ -387,7 +387,7 @@
         "tags" : [ "EndpointTypeCategories" ],
         "summary" : "Get endpoint type category, based on the category id",
         "description" : "The API returns a specific endpoint type category, based on the category id.",
-        "operationId" : "Get the endpoint type category based on id",
+        "operationId" : "getEndpointTypeCategoryById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -417,7 +417,7 @@
         "tags" : [ "EndpointTypeCategories" ],
         "summary" : "Updates an existing endpoint type category",
         "description" : "The API updates an existing endpoint type category. If the category exists, it is updated.Otherwise, a new endpoint type category is created",
-        "operationId" : "Update an existing unified endpoint",
+        "operationId" : "updateEndpointTypeCategory",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -449,7 +449,7 @@
         "tags" : [ "EndpointTypeCategories" ],
         "summary" : "Deletes an existing endpoint type category",
         "description" : "The API deletes an existing endpoint type category. The API returns an error, ifendpoint type category with the specified id does not exist or if there are existing endpoint types under the specified category.",
-        "operationId" : "Delete an existing endpoint type category",
+        "operationId" : "deleteEndpointTypeCategory",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -578,7 +578,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Gets paged list of endpoints, optionally based on type or category",
         "description" : "The API returns paged list of endpoints.",
-        "operationId" : "Get the list of endpoints",
+        "operationId" : "getEndpoints",
         "parameters" : [ {
           "name" : "category",
           "in" : "query",
@@ -655,7 +655,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Creates a new endpoint",
         "description" : "The API creates a new endpoint. The API performs the following validation before creating the endpoint:<br>1. The id of the endpoint is null.</br><br>2. Another endpoint wth the same name exist.</br><br>3. The type of the endpoint is already registered.</br><br>4. The endpoint passes schema validation, based on the endpoint type's schema.</br>",
-        "operationId" : "Create a new endpoint",
+        "operationId" : "createEndpoint",
         "parameters" : [ {
           "in" : "body",
           "name" : "endpoint",
@@ -689,7 +689,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Validate endpoint data",
         "description" : "The API validates an endpoint",
-        "operationId" : "Validate endpoint",
+        "operationId" : "validateEndpoint",
         "parameters" : [ {
           "in" : "body",
           "name" : "endpoint",
@@ -717,7 +717,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Get endpoint, based on the endpoint id",
         "description" : "The API returns a specific endpoint, based on the endpoint id.",
-        "operationId" : "Get the endpoint based on id",
+        "operationId" : "getEndpointById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -754,7 +754,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Updates an existing endpoint",
         "description" : "The API updates an existing endpoint. The API performs the following validation before updating the endpoint:<br>1. There is an existing endpoint with the specified id.</br><br>2. Another endpoint wth the same name does exist.</br><br>3. The type of the endpoint is already registered.</br><br>4. The endpoint passes schema validation, based on the endpoint type's schema.</br>",
-        "operationId" : "Update an existing endpoint",
+        "operationId" : "updateEndpoint",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -793,7 +793,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Deletes an existing endpoint",
         "description" : "The API deletes an existing endpoint. The API returns an error, ifendpoint with the specified id does not exist.",
-        "operationId" : "Delete an existing endpoint",
+        "operationId" : "deleteEndpoint",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -823,7 +823,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Can delete an existing endpoint",
         "description" : "The API checks an existing endpoint to see if it can be deleted. The API returns falseendpoint with the specified id cannot be deleted. It returns true otherwise.",
-        "operationId" : "Can delete an existing endpoint",
+        "operationId" : "canDeleteEndpoint",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -853,7 +853,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Can edit an existing endpoint",
         "description" : "The API checks an existing endpoint to see if it can be edited. The API returns falseendpoint with the specified id cannot be edited. It returns true otherwise.",
-        "operationId" : "Can edit an existing endpoint",
+        "operationId" : "canEditExistingEndpoint",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -883,7 +883,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Gets paged list of endpoint types",
         "description" : "The API returns paged list of endpoint types.",
-        "operationId" : "Get the list of endpoint types",
+        "operationId" : "getEndpointTypes",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -942,7 +942,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Creates a new endpoint type",
         "description" : "The API creates a new endpoint type. The API performs the following validation before updating the endpoint type: <br>1. There is an no existing endpoint type with the specified id.</br><br>2. Another endpoint type wth the same name does not exist.</br>",
-        "operationId" : "Create a new endpoint type",
+        "operationId" : "createEndpointType",
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
@@ -976,7 +976,7 @@
         "tags" : [ "Endpoints" ],
         "summary" : "Gets paged list of endpoints, based on type",
         "description" : "The API returns paged list of endpoints.",
-        "operationId" : "Get the list of endpoints by type",
+        "operationId" : "getEndpointsByType",
         "parameters" : [ {
           "name" : "endpoint-type-id",
           "in" : "path",
@@ -1049,7 +1049,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Get endpoint type",
         "description" : "The API returns a specific endpoint type, based on the endpoint type id.",
-        "operationId" : "Get endpoint type, based on id",
+        "operationId" : "getEndpointTypeById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -1076,7 +1076,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Updates an existing endpoint type",
         "description" : "The API updates an existing endpoint type. The API performs the following validation before updating the endpoint type:<br>1. There is an existing endpoint type with the specified id.</br><br>2. Another endpoint type wth the same name does not exist.</br>",
-        "operationId" : "Update an existing endpoint type",
+        "operationId" : "updateEndpointType",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -1115,7 +1115,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Deletes an existing endpoint type",
         "description" : "The API deletes an existing endpoint type. The API returns an error, ifendpoint type with the specified id does not exist.",
-        "operationId" : "Delete an existing endpoint type",
+        "operationId" : "deleteEndpointType",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -1145,7 +1145,7 @@
         "tags" : [ "EndpointTypes" ],
         "summary" : "Get association types for an endpoint type",
         "description" : "The API returns list of association types, based on the endpoint type id.",
-        "operationId" : "Get association types, based on an endpoint id",
+        "operationId" : "getAssociationTypesByEndpointId",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -2089,7 +2089,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -2439,13 +2439,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2461,12 +2456,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2481,13 +2481,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2503,12 +2498,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2523,13 +2523,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2545,12 +2540,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2565,13 +2565,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2587,12 +2582,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },

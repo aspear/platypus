@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Catalog Service API Specification\n\n## What is the Catalog Service REST API?\n\nThe catalog service REST API is designed to be used by the consumers of the service catalog; for example, an end user who wants to request a catalog item would be a consumer of this API. The catalog service imposes a maximum limit on the number of elements that can be retrieved with a single API call. This limit is currently set to 5000.\n\n\n## How the Catalog Service Works\n\nThe Catalog Service REST API comprises three APIs:\n\n* **Catalog Consumer REST API** - When end users request catalog items, the catalog consumer REST API is called.\n* **Catalog Service Provider API** - Service providers use the catalog Service Provider API to design and publish catalog items and fulfill requests for them.\n* **Catalog Service Admin API** - When system administrators interact with catalog items, the catalog Service Admin API is called.\n\n## Key Concepts\n\n### Catalog Item\n\nAn item that is listed in a service catalog. Some catalog items result in an item being provisioned that the user can manage through its life cycle. For example, an application developer can request storage as a service, then later add capacity, request backups, and restore previous backups.\n\nOther catalog items do not result in provisioned items. For example, a cell phone user can submit a request for additional minutes on a mobile plan. \n\n### Catalog Consumer\n\nAn end user of a service. Consumers can request catalog items from the service catalog.\n\n### Catalog Service Provider\n\nA service provider who designs, publishes, and fulfills requests for catalog items provided to catalog consumers.\n\n\n## Using the Catalog Consumer API\n\nThe catalog consumer REST API is designed to be used by the consumers of the service catalog; for example, an end user who wants to request a catalog item would be a consumer of this API.\n\n    Base URI : /api/consumer\n\n<div style=\"page-break-inside: avoid;\">\n<table class=\"prettytable\">\n<tr>\n<th>Resource </th>\n<th>Resource URI </th>\n<th>Notes</th></tr>\n<tr>\n<td width=\"15%\"><strong>Catalog Items</strong></td>\n<td width=\"15%\">/catalogItems<br/> </td>\n\n<td width=\"70%\">Consumer REST API for catalog items. This API does not take entitlements into account but only global user permissions.<br/>\nHowever, if a request is submitted for a catalog item without the appropriate entitlement, it will be rejected.<br/></td></tr>\n<tr>\n<td><strong>Entitled Catalog Items</strong></td>\n<td>&nbsp;/entitledCatalogItems<br/> </td>\n\n<td> Consumer REST API for entitled catalog items exposed for users. Consumer entitled catalogItem(s) are basically catalog items that:<br/>\n  - are in an active state.<br/>\n  - the current user has the right to consume.<br/>\n  - the current user is entitled to consume.<br/>\n  - are associated to a service.</td></tr>\n<tr>\n<td><strong>Requests</strong></td>\n<td>/requests<br/> </td>\n\n<td> Consumer request API exposed to users. The request captures the user's input (done through a form) and triggers the process that fulfills that order on the appropriate provider.</td></tr>\n<tr>\n<td><strong>Resources</strong></td>\n<td>/resources<br/> </td>\n\n<td>Consumer resource API exposed to users. A Resource represents a deployed artifact that has been provisioned by a provider.</td></tr>\n<tr>\n<td><strong>Resource Operations</strong></td>\n<td>/resourceOperations<br/> </td>\n\n<td>Consumer resource operation API exposed to users. A resource operation represents a Day-2 operation that can be performed on a resource. Resource operations  are registered in the Service Catalog and target a specific resource type. These\n  operations can be invoked / accessed by consumers through the self-service interface on the resources they own.</td></tr>\n\n  <tr>\n<td><strong>Resource Types</strong></td>\n<td>/resourceTypes<br/> </td>\n\n<td>Consumer resource type API exposed to users. Resource types is a type assigned to resources. The types are defined by the provider types. It allows similar resources to be grouped together.</td></tr>\n  <tr>\n<td><strong>Services</strong></td>\n<td>/services<br/> </td>\n\n<td>Consumer service API exposed to users. A service represents a customer-facing/user friendly set of activities.  In the context of this service catalog, these activities are the catalog item. A service must be owned by a specific organization (tenant and subtenant, i.e., business group), and all the activities it contains should belong to the same organization.</td></tr>\n\n </table></div>\n\n \n## Using the Catalog Service Provider API \n\nThe catalog service provider API is designed for use by service providers who want their services to be consumed by the vRA catalog. A service catalog provider is responsible for: \n\n* The design and the maintenance of the catalog items in its own UI.\n* The publication of the catalog items to the service catalog.\n* The fulfillment of the catalog items request.\n\n```\nBase URI : /api/provider\n```\n\n<div style=\"page-break-inside: avoid;\">\n<table class=\"prettytable\">\n<tr>\n<th>Resource  </th>\n<th>Resource URI</th>\n<th>Notes </th></tr>\n<tr>\n<td><strong>Catalog Items</strong></td>\n<td width=\"15%\">/providers/{providerId}/catalogItems<br/> </td>\n\n<td>Provider REST API for provider catalog items. Provider catalog item represents the catalog item object submitted by a provider. This object is very similar to the catalog item entity. The only noticeable difference is that the ID field does not represent the entity ID but the external ID used by the provider. (This ID\nis stored as a `bindingId` field in the catalog item entity because it may not be unique in the service catalog context).<br/></td></tr>\n<tr>\n<td width=\"15%\"><strong>Catalog Item Types</strong></td>\n<td>/catalogItemTypes<br/> </td>\n\n<td width=\"70%\"> Provider REST API for catalog items exposed for users. Catalog item types define various common properties shared by catalog items (such as the output). They also enable  presentation and comparison of similar catalog items for the consumer. Catalog item types can also define the tracked resource produced (such as a deployed VM) if any.</td></tr>\n<tr>\n<td><strong>Requests</strong></td>\n<td>/providers/{providerId}/requests<br/> </td>\n\n<td> Provider Request API exposed to users. The request captures the user's input (done through a form) and trigger the process that fulfils that order on the appropriate provider.</td></tr>\n<tr>\n<td><strong>Resources</strong></td>\n<td>/providers/{providerId}/resources<br/> </td>\n\n<td>Provider resource API exposed to users. A Resource represents a deployed artifact that has been provisioned by a provider.</td></tr>\n<tr>\n<td><strong>Resource Actions</strong></td>\n<td>/resourceActions<br/> </td>\n\n<td>Provider Resource Action API exposed to users. A resource action represents a Day-2 operation that can be performed on a resource. Resource actions  are registered in the service catalog and target a specific resource type. These\n  operations can be invoked / accessed by consumers through the self-service interface on the resources they own. Resource actions must be unique based on the combo of binding id and\n  provider type/ provider. When a new resource action is registered without a catalog-assigned  id, the catalog will  attempt to match that action to an existing record with the same provider-binding. If\n  successful, the existing resource action is updated. If not, the resource action is registered as a new record.</td></tr>\n\n  <tr>\n<td><strong>Resource Types</strong></td>\n<td>/resourceTypes<br/> </td>\n\n<td>Provider resource type API exposed to users. Resource types is a type assigned to resources. The types are defined by the provider types. It allows similar resources to be grouped together.</td></tr>\n  <tr>\n<td><strong>Icons</strong></td>\n<td>/icons<br/> </td>\n\n<td>Provider REST API exposed to users for to publish icons to the service catalog.. It represents an icon with all its descriptive meta data (fileName, MIME Type...). The actual content of the icon is stored as a byte[]. Icons can be solution-level or belong to a specific\n  tenant. Solution-level icons are created through the provider API, and the fileName will be the same as  the ID for these icons. Organization will be null in this case.\n  Organization-specific icons are uploaded through the admin API. For these icons, the fileName will be specified, but the ID will be generated. Oganization will be set (Tenant mandatory,\n  team optional).</td></tr>\n\n </table></div>\n\n### Using the Catalog Admin API\n\nThe catalog admin API is an API for catalog items that a system administrator can interact with. It allows the user to interact with catalog items that the user is permitted to review, even if the items were not published or the user is not entitled to them. \n\n```\nBase URI : /api\n```\n\n</pre>\n<div style=\"page-break-inside: avoid;\">\n<table class=\"prettytable\">\n<tr>\n<th>Resource </th>\n<th>Resource URI </th>\n<th>Notes</th></tr>\n<tr>\n<td width=\"15%\"><strong>Catalog Items</strong></td>\n<td width=\"15%\">/catalogItems<br/> </td>\n\n<td width=\"70%\">REST API for catalog items that a system administrator can interact with. It allows the user to interact with catalog items that the user is permitted to review, even if\n they were not published or entitled to them.<br/></td></tr>\n<tr>\n<td><strong>Entitled Catalog Items</strong></td>\n<td>&nbsp;/entitledCatalogItems<br/> </td>\n\n<td> REST API for administrators to interact with catalog items that they are entitled to. Consumer-entitled catalog item(s) are basically catalog items that:<br/>\n  - are in an active state.<br/>\n  - the current user has the right to consume.<br/>\n  - the current user is entitled to consume.<br/>\n  - are associated to a service.</td></tr>\n<tr>\n<td><strong>Requests</strong></td>\n<td>/requests<br/> </td>\n\n<td> Request API exposed to administrators. The request captures the user's input (done through a form) and trigger the process that fulfills that order on the appropriate provider.</td></tr>\n<tr>\n<td><strong>Resources</strong></td>\n<td>/resources<br/> </td>\n\n<td>Resource API exposed to administrators. A resource represents a deployed artifact that has been provisioned by a provider.</td></tr>\n<tr>\n<td><strong>Resource Operations</strong></td>\n<td>/resourceOperations<br/> </td>\n\n<td>Resource operation API exposed to administrators. A resource operation represents a Day-2 operation that can be performed on a resource. Resource operations  are registered in the service catalog and target a specific resource type. These\n  operations can be invoked / accessed by consumers through the self-service interface on the resources they own.</td></tr>\n\n  <tr>\n<td><strong>Resource Types</strong></td>\n<td>/resourceTypes<br/> </td>\n\n<td>Resource type API exposed to administrators. Resource types is a type assigned to resources. The types are defined by the provider types. It allows similar resources to be grouped together.</td></tr>\n  <tr>\n<td><strong>Services</strong></td>\n<td>/services<br/> </td>\n\n<td>Service API exposed to administrators. A service represents a customer-facing/user friendly set of activities.  In the context of this service catalog, these activities are the catalog items and resource\n  actions. A service must be owned by a specific organization (tenant and subtenant, i.e., business group), and all the activities it contains should belong to the same organization.</td></tr>\n\n<tr>\n<td><strong>Icons</strong></td>\n<td>/icons<br/> </td>\n\n<td>Icons API exposed to administrators. Icons can be published to the catalog.</td></tr>\n\n</table></div>\n\n\n#### Usage Examples\n\nGetting a list of catalog items:\n\n     GET /consumer/catalogItems\n\nGetting a catalog item by id:\n\n     GET consumer/catalogItems/0581d671-93fd-4bca-aa05-2e14514c4ef9>\n\n## Important Notes About catalog-service and OData Queries\n\n`catalog-service` behaves differently than other vRA services when it comes to OData queries. Before proceeding, please familiarize yourself with the generic use case of <a href=\"/component-registry/api/docs/tips.html\">how to use OData in the vRA REST API</a>, including that page's <a href=\"/component-registry/api/docs/tips.html#odataWalkthrough\">walkthrough</a>.\n\nThe steps in the <a href=\"/component-registry/api/docs/tips.html#odataWalkthrough\">walkthrough</a> are the same, with one slight nuance. Some `catalog-service` domain models contain nested objects ending in 'Ref' (which denotes the nested object is a reference to an object rather than a full-blown nested object). When crafting your `$filter` query, you must remove 'Ref'. Also, each 'Ref' object contains an `id` and sometimes a `label`. When attempting to filter on these fields, you must use OData resources of `id` and `name` (respectively).\n\nHere's an example to make things clearer. Let's say you want to see all consumer catalog items that are associated with a specific catalog service name. As mentioned in the walkthrough, you'll want to look at the catalogItem domain object (which is linked from the CatalogItem REST Resource documentation page).\n\nThe `catalogItem` domain object contains a `serviceRef`, which itself has a `id` and `label`. If we want to filter based on a service name, we would use a 'curl' command like this:\n\n     curl -H \"Accept: $ACCEPT\" -H \"Authorization: $AUTH\"\n     \"https://$VRA/catalog-service/api/consumer/catalogItems?%24filter=service/name+eq+'some-service'\" \n\n**Note**: Notice how even though the `serviceRef` object contains a `label` element, we use <strong><tt>service</tt></strong> (and not `serviceRef`) and <strong><tt>name</tt></strong> (and not `label`) to craft the filter: `$filter=service/name eq 'theName'`\n\nFollow this pattern when crafting any OData queries against `>catalog-service` when you encounter domain objects containing 'Ref'. Also, look at the REST resource API documentation, which may give more details on supported OData queries.\n",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Catalog Service API"
   },
   "basePath" : "/catalog-service",
@@ -3160,19 +3160,19 @@
         "catalogItemProviderBinding" : {
           "$ref" : "#/definitions/ProviderBinding"
         },
+        "phase" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
+        },
         "executionStatus" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
           "enum" : [ "NOT_STARTED", "STARTED", "STOPPED" ]
-        },
-        "waitingStatus" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         },
         "approvalStatus" : {
           "type" : "string",
@@ -3181,12 +3181,12 @@
           },
           "enum" : [ "PENDING", "PRE_APPROVED", "POST_APPROVED", "REJECTED" ]
         },
-        "phase" : {
+        "waitingStatus" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         }
       }
     },
@@ -3255,6 +3255,9 @@
           "format" : "uuid"
         },
         "description" : {
+          "type" : "string"
+        },
+        "reasons" : {
           "type" : "string"
         },
         "data" : {
@@ -3451,7 +3454,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "permissibleValues" : {
           "$ref" : "#/definitions/PermissibleValueList"
@@ -3890,22 +3893,22 @@
         "approvalPolicyId" : {
           "type" : "string"
         },
+        "active" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "externalId" : {
+          "type" : "string"
+        },
         "targetResourceTypeRef" : {
           "$ref" : "#/definitions/ResourceType"
         },
         "resourceOperationRef" : {
           "$ref" : "#/definitions/ResourceOperation"
         },
-        "externalId" : {
-          "type" : "string"
-        },
         "resourceOperationType" : {
           "type" : "string",
           "enum" : [ "ACTION", "EXTENSION" ]
-        },
-        "active" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
@@ -4156,7 +4159,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -4361,7 +4364,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -4821,13 +4824,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4843,12 +4841,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4863,13 +4866,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4885,12 +4883,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4905,13 +4908,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4927,12 +4925,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4947,13 +4950,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4969,12 +4967,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4989,13 +4992,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5011,12 +5009,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5031,13 +5034,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5053,12 +5051,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5073,13 +5076,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5095,12 +5093,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5115,13 +5118,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5137,12 +5135,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5157,13 +5160,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5179,12 +5177,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5199,13 +5202,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5221,12 +5219,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5241,13 +5244,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5263,12 +5261,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5283,13 +5286,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5305,12 +5303,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5578,19 +5581,19 @@
             "attribute" : true
           }
         },
+        "phase" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
+        },
         "executionStatus" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
           "enum" : [ "NOT_STARTED", "STARTED", "STOPPED" ]
-        },
-        "waitingStatus" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         },
         "approvalStatus" : {
           "type" : "string",
@@ -5599,12 +5602,12 @@
           },
           "enum" : [ "PENDING", "PRE_APPROVED", "POST_APPROVED", "REJECTED" ]
         },
-        "phase" : {
+        "waitingStatus" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         }
       }
     },
@@ -5777,20 +5780,11 @@
         "icon" : {
           "$ref" : "#/definitions/Icon"
         },
-        "pendingRequests" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ResourceActionRequest"
-          }
-        },
         "expenseMonthToDate" : {
           "$ref" : "#/definitions/CostToDate"
         },
         "requestBindingId" : {
           "type" : "string"
-        },
-        "totalLeaseCost" : {
-          "$ref" : "#/definitions/literal"
         },
         "linkedIcon" : {
           "$ref" : "#/definitions/Icon"
@@ -5801,15 +5795,18 @@
             "$ref" : "#/definitions/Resource"
           }
         },
+        "totalLeaseCost" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
         "leaseForDisplay" : {
           "$ref" : "#/definitions/timeSpan"
         },
         "costToDate" : {
           "description" : "Deprecated since version 7.3. Use expenseMonthToDate to get the expense information.",
           "$ref" : "#/definitions/literal"
-        },
-        "tenantId" : {
-          "type" : "string"
         },
         "tenant" : {
           "$ref" : "#/definitions/CatalogTenant"
@@ -6554,12 +6551,6 @@
         "destroyDate" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "pendingRequests" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ResourceActionRequest"
-          }
         }
       },
       "xml" : {

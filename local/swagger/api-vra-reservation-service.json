@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Reservation Service\n\nYou can use the Reservation Service to manage reservations.\n\nA reservation is a pool of resources for provisioning, consisting of several different types of resources. For example, a virtual reservation allocates a share of the memory, CPU and storage resources on a particular compute resource for a business group to use.\n\nA reservation must belong to a business group, and a business group could have multiple reservations on the same resources or different resources.\n\nYou can use this generic Reservation Service for any artifact from any provider. For example, a service which follows its own provider-specified behaviors. The Reservation Service is extensible and you can add new types of reservations from third-party providers by using the Reservation Provider component.\n\n## High Level View\n\nThe Reservation Service contains two parts following vRealize Automation's architecture:\n\n1.  Reservation Service\n2.  Reservation Provider\n\nReservation Service faces consumers directly to provide all reservation-related functionalities.\n\nReservation Provider registers the reservation and reservation policy types to Reservation Service, and handles all reservation-related requests. It is not exposed to consumers directly.\n\nThere might be one or more reservation providers and each reservation provider could register one or more reservation/reservation policy types to the Reservation Service.\n\n![](/reservation-service/api/docs/ReservationService.png)\n\nFollowing sections provide more details about Reservation Service and Reservation Provider.\n\n### Reservation Service\n\nThe Reservation Service is one typical component of vRealize Automation, which defines particular domain entities, registers Data and Schema Service endpoint, and provides corresponding API sets:\n\n1.  Domain Entities\n\n    1.  Reservation\n    2.  ReservationType\n    3.  ReservationPolicy\n    4.  ReservationPolicyType\n    5.  AlertPolicy\n    6.  Alert\n    7.  AlertType\n\n2.  Registered Endpoints\n\n    1.  Data and Schema Service\n\n3.  Defined Endpoints\n\n    1.  Reservation Callback\n\n4.  API Sets\n\n    1.  Reservation Type Management API\n    2.  Reservation Management API\n    3.  Reservation Policy Type Management API\n    4.  Reservation Policy Management API\n    5.  Data and Schema Service API\n\n#### Domain Entities\n\nHere is a diagram of reservation domain entities:\n\n![](/reservation-service/api/docs/ReservationDomainEntities.png)\n\nReservation Service defines only the basic fields for the _Reservation_ entity, and Reservation Providers define the _ReservationType_, _AlertType_ and _ReservationPolicyType_. The _ReservationType_s provided by Reservation Providers defines the extensions for the _Reservation_, all those extension data are put into _extensionData_ field in _Reservation_.\n\nYou can use Data and Schema Service API to get the schema for the _extensionData_ by reservation type ID, and query the permissible values for particular fields declared in the schema if the fields support permissible values through the Data and Schema Service API.\n\n### Reservation Provider\n\nReservation Providers are provided by Service Provider, and are used to handle all reservation-related requests, including:\n\n1.  Register Reservation Types.\n2.  Register Reservation Policy Types.\n3.  Provide Reservation Callback implementation to manage all types of Reservation/Reservation Policy that were registered by it.\n4.  Provide Data and Schema Callback implementation for schema and permissible value query.\n\n### Sample Flows\n\nHere is the simple sample flows about how to use Reservation Service, it lists only the API names needed for the flow rather than the full request/response, please refer to _vRealize Automation API Programming Guide_ for more details.\n\n#### Create a Reservation\n\n1.  Query available reservation types.\n\nThe following API call returns available reservation types:\n\n`GET /reservation-service/api/reservations/types`\n\n2.  Set value to the fields defined in the _Reservation_ entity (do not include _extensionData_ field).\n\nIt may to need to get the sub tenant ID by using the following API call:\n\n`GET /identity/api/tenants/$tenantId/subtenants`\n\n3.  Put the data into _extensionData_ field in _Reservation_ entity.\n\n    1.  Query the schema definition by reservation type ID.\n\nThe following API call returns the schema definition for the specified reservation type:\n\n`GET /reservation-service/api/data-service/schema/$reservationTypeId/default`\n\n    2.  Put the data into _extensionData_ field in _Reservation_ entity based on the schema retrieved in previous step.\n\nYou may need to call the Data and Schema service to get the permissible values for the fields defined in schema:\n\n`POST /reservation-service/api/data-service/schema/$reservationTypeIdOrSchemaId/default/$fieldId/values`\n\n4.  Create the _Reservation_.\n\nThe following API call is used to create the target _Reservation_\n\n`POST /reservation-service/api/reservations`\n\n#### Register a Reservation Type\n\n1.  Register the Reservation Provider to vRealize Automation.\n2.  Register the i18n properties file for target reservation type to vRealize Automation.\n3.  Register the Reservation Provider to the following endpoints:\n    1.  com.vmware.csp.core.cafe.data\n    2.  com.vmware.vcac.core.cafe.reservation-callback.provider\n4.  Construct and register the _ReservationType_:\n\n`POST /reservation-service/api/reservations/types`\n",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Reservation Service API"
   },
   "basePath" : "/reservation-service",
@@ -1161,7 +1161,7 @@
     },
     "BooleanLiteral" : {
       "allOf" : [ {
-        "$ref" : "#/definitions/booleanLiteral"
+        "$ref" : "#/definitions/literal"
       }, {
         "type" : "object",
         "description" : "Wraps a boolean value.",
@@ -1659,7 +1659,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -1836,7 +1836,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -2313,12 +2313,12 @@
     "OrderByExpression" : {
       "type" : "object",
       "properties" : {
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        },
         "direction" : {
           "type" : "string",
           "enum" : [ "ASCENDING", "DESCENDING" ]
-        },
-        "expression" : {
-          "$ref" : "#/definitions/CommonExpression"
         }
       }
     },
@@ -2333,13 +2333,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2355,12 +2350,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2398,13 +2398,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2420,12 +2415,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2440,13 +2440,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2462,12 +2457,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2482,13 +2482,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2504,12 +2499,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -2524,13 +2524,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2546,12 +2541,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -3204,8 +3204,8 @@
         },
         "resolutionMode" : {
           "type" : "string",
-          "enum" : [ "SKIP", "OVERWRITE" ],
-          "default" : "OVERWRITE"
+          "default" : "OVERWRITE",
+          "enum" : [ "SKIP", "OVERWRITE" ]
         },
         "mimeType" : {
           "type" : "string",

@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# XaaS (Advanced Service Designer) Service API Specification\n\n## What Is the XaaS REST API? \n\nThe advanced service designer (XaaS) REST API enables creation of custom services by exposing any vRealize Orchestrator (vRO) workflow to vRA's Service Catalog to provide custom functionality.\n\n## Typical Use Cases\n\nYou can use the XaaS REST API \nto:\n\n* Create XaaS Custom Resources, Blueprints, Resource Mappings and Actions.\n\n* Import and export XaaS components, such as custom resources, blueprints, and so on, from one vRealize Automation system to another. \n\nAdministrative users use the advanced designer service as follows:\n\n* Tenant administrators create and manage the workflow subscriptions that are specific to their tenant.\n\n* System administrators create and manage system workflow subscriptions.\n\nThe created system workflow subscriptions are active for events in any tenant and for system events.\n\n## Key Concepts\n\nThe XaaS domain model includes four basic objects - resource types, resource mappings, \nservice blueprints and resource actions.\n\n### Resource Type\n \nA resource type provides an abstraction of a resource from the physical and virtual IT world - a virtual \nmachine, a user, an account, a network card, and so on.\n\nTo enable ASD to use resources, you must create a resource type object in XaaS. \n\n### Service Blueprint\n\nA service blueprint is a blueprint for a service. It is based on a vRO workflow, but its request \nform (used to get input from users of the service) can be customized. \n\nThe key feature of service blueprints is that, when you request them, they produce (provision) resources \nof a spcified resource type. \n\n### Resource Mapping\n\nA resource mapping is a workflow that maps one resource type to another resource type. It allows resource actions to be performed over types that \ncan be mapped. \n\n### Resource Actions\n\nLike service blueprints, resource actions are built around \na vRO workflow. They have a resource as an input, and usually are used to change the state of a resource. They are also referred as \"2nd day operations.\" \n\n### Import and Export of Content\n\nXaaS is a provider of content, and if CMS is present, \nXaaS objects can be registered as content. After an ASD object is registered, it can be exported/imported \ncentrally from CMS. Note that this is not to be confused with ASD internal content management -- this feature is deprecated.\n\nFor more detailed usage information on importing and exporting content, see the \"Import and Export Content\" use case in the \"Use Cases\" chapter of the *vRA Programming Guide*.\n\n### Workflow Subscriptions \n\nWorkflow subscriptions use the event broker service to monitor the registered services for event messages in vRealize Automation, and then run a specified vRealize Orchestrator workflow when the conditions in the subscription are met.\n\nTo configure the subscription, you specify the event topic, the triggering conditions, and the workflow that runs when triggered.\n\nTenant administrators can create and manage the workflow subscriptions that are specific to their tenant. The system administrator can create and manage system workflow subscriptions. The created system workflow subscriptions are active for events in any tenant and for system events.\n",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Advanced Designer Service API"
   },
   "basePath" : "/advanced-designer-service",
@@ -18,6 +18,8 @@
     "name" : "get"
   }, {
     "name" : "get-all"
+  }, {
+    "name" : "get-all-by-hrid"
   }, {
     "name" : "get-operation"
   }, {
@@ -721,6 +723,67 @@
           },
           "404" : {
             "description" : "'Not found' if no Policy with provided hrid"
+          }
+        }
+      }
+    },
+    "/api/policies/hrids" : {
+      "get" : {
+        "tags" : [ "policy", "get", "get-all-by-hrid" ],
+        "summary" : "Gets policies matching the filtering criteria",
+        "description" : "Gets policies matching the filtering criteria.",
+        "operationId" : "getPoliciesByHrid",
+        "parameters" : [ {
+          "name" : "hrid",
+          "in" : "query",
+          "description" : "Policy human-readable ID filter string",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with Policy on pages",
+            "schema" : {
+              "$ref" : "#/definitions/Page"
+            }
           }
         }
       }
@@ -2755,7 +2818,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -3191,7 +3254,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -3474,7 +3537,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -3920,13 +3983,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -3942,12 +4000,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },

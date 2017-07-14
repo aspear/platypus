@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Forms Service API Specification\n\n## What Is the Forms Service?\n\nThe forms service is used internally by the vRealize Automation system to create, read, update and delete (perform CRUD operations on) request forms for XaaS components.\n\nA typical use case is creation, update, and deletion of a catalog item request form.\n\n## Key Concepts\n\n### Form\n\nA form used to configure vRealize Automation provisioning requests for XaaS components.\n\n### XaaS component\n\nA custom service that is created by a vRealize Automation tenant administrator or XaaS administrator.",
-    "version" : "7.3.0-SNAPSHOT",
+    "version" : "7.4.0-SNAPSHOT",
     "title" : "Forms Service API"
   },
   "basePath" : "/forms-service",
@@ -19,6 +19,8 @@
   }, {
     "name" : "generate"
   }, {
+    "name" : "generateformdesignerelements"
+  }, {
     "name" : "get"
   }, {
     "name" : "get-all"
@@ -26,6 +28,8 @@
     "name" : "request-form-callback-operation"
   }, {
     "name" : "update"
+  }, {
+    "name" : "validate"
   }, {
     "name" : "validateSchema"
   } ],
@@ -218,6 +222,36 @@
         }
       }
     },
+    "/api/formsprovider/designer/generateElements" : {
+      "post" : {
+        "tags" : [ "formprovider", "generateformdesignerelements" ],
+        "summary" : "Generate Form Designer Elements from Composite blueprint schema",
+        "description" : "Retrieve generated form designer elements.",
+        "operationId" : "generateFormDesignerElements",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the Form Designer Elements",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
     "/api/formsprovider/formElementsUpdate" : {
       "post" : {
         "tags" : [ "request-form-callback-operation" ],
@@ -270,11 +304,50 @@
           },
           "403" : {
             "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Not found."
           }
         }
       }
     },
     "/api/formsprovider/{formType}/validate" : {
+      "post" : {
+        "tags" : [ "formprovider", "validate" ],
+        "summary" : "Validate Custom form",
+        "description" : "Validate Custom form.",
+        "operationId" : "validate",
+        "parameters" : [ {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/FormValidationData"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the validation result",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/formsprovider/{formType}/validateSchema" : {
       "post" : {
         "tags" : [ "formprovider", "validateSchema" ],
         "summary" : "Validate Custom form schema",
@@ -650,7 +723,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
           },
           "permissibleValues" : {
             "$ref" : "#/definitions/PermissibleValueList"
@@ -1018,7 +1091,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER" ]
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
         },
         "orderIndex" : {
           "type" : "integer",
@@ -1079,7 +1152,7 @@
       "properties" : {
         "dataType" : {
           "type" : "string",
-          "enum" : [ "STRING", "SECURE_STRING", "INTEGER", "DECIMAL", "BOOLEAN" ]
+          "enum" : [ "STRING", "SECURE_STRING", "INTEGER", "DECIMAL", "BOOLEAN", "REFERENCE" ]
         },
         "value" : {
           "type" : "string"
@@ -1123,6 +1196,17 @@
               "$ref" : "#/definitions/FormElementTrigger"
             }
           }
+        }
+      }
+    },
+    "FormValidationData" : {
+      "type" : "object",
+      "properties" : {
+        "formDefinition" : {
+          "type" : "string"
+        },
+        "blueprintSchema" : {
+          "$ref" : "#/definitions/Schema"
         }
       }
     },
@@ -1420,13 +1504,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -1442,12 +1521,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
