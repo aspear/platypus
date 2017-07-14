@@ -10,7 +10,7 @@ TOOLS_DIR=${SCRIPT_DIR}/tools
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
-export VER="0.0.22"
+export VER="0.0.24"
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
@@ -70,9 +70,8 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviateDescription \
  --generateOverviewHtml \
- --apiPrepend="vRealize Automation " \
  --productName="vRealize Automation;7.3.0" \
- --apiVersion="(vRealize Automation 7.3.0)" \
+ --apiVersion="(vRA 7.3.0)" \
  --swaggerglob ${SCRIPT_DIR}/swagger/api*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
 
