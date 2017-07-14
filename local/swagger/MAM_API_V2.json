@@ -1,7 +1,7 @@
 {"swagger":"2.0",
 "info": {
     "version": "2",
-    "title": "AirWatch Mobile Application Management REST API",
+    "title": "MAM (Mobile Application Management) V2",
     "description": "AirWatch Mobile Application Management (MAM) REST API V2"
   },
 

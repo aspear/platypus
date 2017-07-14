@@ -1,7 +1,7 @@
 {"swagger":"2.0",
  "info": {
     "version": "1",
-    "title": "AirWatch Mobile Device Management REST API",
+    "title": "MDM (Mobile Device Management) V1",
     "description": "AirWatch Mobile Device Management (MDM) REST API V1"
   },
 
