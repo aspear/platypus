@@ -2,7 +2,7 @@
     "info": {
         "termsOfService": "http://swagger.io/terms/", 
         "description": "The vCenter Server Appliance is a preconfigured Linux-based virtual machine optimized for running vCenter Server and associated services.", 
-        "title": "appliance"
+        "title": "vCenter Appliance API"
     }, 
     "paths": {
         "/appliance/access/consolecli": {

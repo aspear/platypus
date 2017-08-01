@@ -1,8 +1,8 @@
 {
     "info": {
         "termsOfService": "http://swagger.io/terms/", 
-        "description": "", 
-        "title": "cis"
+        "description": "The Common Infrastructure Services API provides access to common APIs used in the VMware infrastructure", 
+        "title": "Common Infrastructure Services API"
     }, 
     "paths": {
         "/com/vmware/cis/session": {

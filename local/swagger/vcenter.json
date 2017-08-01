@@ -2,7 +2,7 @@
     "info": {
         "termsOfService": "http://swagger.io/terms/", 
         "description": "VMware vCenter Server provides a centralized platform for managing your VMware vSphere environments", 
-        "title": "vcenter"
+        "title": "vCenter API"
     }, 
     "paths": {
         "/com/vmware/vcenter/inventory/datastore?~action=find": {

@@ -1,8 +1,8 @@
 {
     "info": {
         "termsOfService": "http://swagger.io/terms/", 
-        "description": "VMware vSphere\u00ae Content Library empowers vSphere Admins to effectively manage VM templates, vApps, ISO images and scripts with ease.", 
-        "title": "content"
+        "description": "VMware vSphere Content Library empowers vSphere Admins to effectively manage VM templates, vApps, ISO images and scripts with ease.", 
+        "title": "Content Library API"
     }, 
     "paths": {
         "/com/vmware/content/configuration": {

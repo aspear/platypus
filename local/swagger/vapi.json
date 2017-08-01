@@ -1,8 +1,8 @@
 {
     "info": {
         "termsOfService": "http://swagger.io/terms/", 
-        "description": "vAPI is an extensible API Platform for modelling and delivering APIs/SDKs/CLIs.", 
-        "title": "vapi"
+        "description": "vSphere Extensibility API (vAPI), is an extensible API Platform for modelling and delivering APIs/SDKs/CLIs.", 
+        "title": "vSphere Extensibility API"
     }, 
     "paths": {
         "/com/vmware/vapi/metadata/authentication/component": {

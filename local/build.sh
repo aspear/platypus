@@ -48,6 +48,16 @@ cp -f ${SCRIPT_DIR}/config.js .
 echo "overwriting config with vsphere local config"
 cp -f ${SCRIPT_DIR}/config.js .
 
+echo "Generating local.json for vSphere APIs"
+python ${TOOLS_DIR}/apixlocal/apixlocal.py \
+ --productName="vSphere;6.5.0" \
+ --apiVersion="(vSphere 6.5.0)" \
+ --swaggerglob ${SCRIPT_DIR}/swagger/*.json \
+ --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
+ --html_root_dir ${OUTPUT_DIR} \
+ --output_file ${OUTPUT_DIR}/local.json
+
+
 # the code below actually mirrors API content from code.vmware.com.
 #echo "Mirroring API content from ${APIX_SERVER}"
 #python ${TOOLS_DIR}/apixlocal/apixlocal.py \
