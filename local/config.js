@@ -29,25 +29,28 @@
       products : ["vSphere"],
       languages: [],
       types: [],
-      sources: ["local","remote"]
+      sources: ["local"]
   };
 
   // Default control over display of filters.  This has nothing to do do with the actual values of the filters,
   // only over the display of them.  If all filters or a particular filter pane are not displayed and yet there is
   // a defaultFilters value for it, the user will not be able to change the value. This can be used to scope to a
   // particular product for example.
-  window.config.hideFilters = false;             // if true, the filter pane is not displayed at all
+  window.config.hideFilters = true;             // if true, the filter pane is not displayed at all
   window.config.hideProductFilter = true;       // if true, the products filter is hidden
   window.config.hideLanguageFilter = true;      // if true, the language filter is hidden
   window.config.hideSourcesFilter = false;       // if true, the sources filter is hidden
   
-  // Remote APIs endpoint.  
-  window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
+  // Remote APIs endpoint. 
+
+  window.config.remoteSampleExchangeApiEndPoint = "https://vdc-repo.vmware.com/sampleExchange/v1";
   window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
 
+  // this is the internal test server
   //window.config.remoteSampleExchangeApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/sampleExchange/v1";
   //window.config.remoteApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/dcr/rest/apix";
 
+  // internal staging server
   //window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
   //window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest/apix";
 
