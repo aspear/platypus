@@ -28,7 +28,11 @@ else
     mkdir -p ${SCRIPT_DIR}/tools
     pushd ${SCRIPT_DIR}/tools
 	
-    unzip ${SCRIPT_DIR}/api-explorer-tools-*.zip
+    #unzip ${SCRIPT_DIR}/api-explorer-tools-*.zip
+
+    #FIXME this uses a hack version of apixlocal
+    mkdir apixlocal; cd apixlocal
+    unzip ${SCRIPT_DIR}/apixlocal.zip
 
     popd
 fi
