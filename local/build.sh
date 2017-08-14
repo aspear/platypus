@@ -56,16 +56,16 @@ cp -f ${SCRIPT_DIR}/config.js .
 # this it generates an "overview" resource in the local.json file
 # that has all of the configuration in it
 
-echo "Staging RAML file"
+echo "Staging Log Insight RAML file"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/local.json  \
- --abbreviateDescription \
- --generateOverviewHtml \
- --productName="Log Insight;4.6" \
- --apiVersion="(Log Insight 4.6)" \
+ --abbreviate_description \
+ --generate_overview_html \
+ --product_name="Log Insight;4.6" \
+ --api_version="(Log Insight 4.6)" \
  --raml_glob ${SCRIPT_DIR}/raml/*.raml \
  --raml_output_dir=${OUTPUT_DIR}/local/raml \
 
