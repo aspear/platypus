@@ -10,7 +10,7 @@ TOOLS_DIR=${SCRIPT_DIR}/tools
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
-export VER="0.0.24"
+export VER="0.0.27"
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
@@ -35,7 +35,7 @@ fi
 
 # remove all of the locally generated files.
 rm -rf ${OUTPUT_DIR}/*
-mkdir -p ${OUTPUT_DIR}/local/swagger
+mkdir -p ${OUTPUT_DIR}/local/raml
 
 pushd ${OUTPUT_DIR}
 
@@ -52,27 +52,17 @@ cp -f ${SCRIPT_DIR}/config.js .
 # this it generates an "overview" resource in the local.json file
 # that has all of the configuration in it
 
-#python ${TOOLS_DIR}/apiFilesToLocalJson.py \
-# --abbreviateDescription \
-# --generateOverviewHtml \
-# --apiPrepend="vRealize Automation " \
-# --productName="vRealize Automation;7.3.0" \
-# --apiVersion="(vRealize Automation 7.3.0)" \
-# --swaggerglob ${SCRIPT_DIR}/swagger-vra/api*.json \
-# --outdir=${OUTPUT_DIR}/local/swagger \
-# --htmlRootDir ${OUTPUT_DIR} \
-# --outfile ${OUTPUT_DIR}/local.json
-
-echo "Mirroring API content from ${APIX_SERVER}"
+echo "Staging RAML file"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
+ stage \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviateDescription \
  --generateOverviewHtml \
- --productName="vRealize Automation;7.3.0" \
- --apiVersion="(vRA 7.3.0)" \
- --swaggerglob ${SCRIPT_DIR}/swagger/api*.json \
- --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
+ --productName="Log Insight;4.6" \
+ --apiVersion="(Log Insight 4.6)" \
+ --raml_glob ${SCRIPT_DIR}/raml/*.raml \
+ --raml_output_dir=${OUTPUT_DIR}/local/raml \
 
 popd
