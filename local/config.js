@@ -26,7 +26,7 @@
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
       keywords : "",
-      products : [""],
+      products : [],
       languages: [],
       types: [],
       sources: ["local"]
