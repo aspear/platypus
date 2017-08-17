@@ -28,12 +28,13 @@ RUN export VER="0.0.31" && \
     wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-dist-${VER}.zip && \
     wget https://github.com/vmware/api-explorer/releases/download/${VER}/api-explorer-tools-${VER}.zip && \
     unzip -o api-explorer-dist-${VER}.zip && unzip -o api-explorer-tools-${VER}.zip  && \
-    python ./apixlocal/apixlocal.py --server=https://vdc-repo.vmware.com \
+    python ./apixlocal/apixlocal.py stage \
+                --server=https://vdc-repo.vmware.com \
                 --html_root_dir=./ \
                 --input_file=./local/local-apis.json \
                 --output_file=./local.json \
                 --swagger_output_dir=./local/swagger \
-                --swaggerglob=./local/swagger/api*.json \
+                --swagger_glob=./local/swagger/api*.json \
                 --mirror_output_dir=./local/mirror && \
     mv -f ./local/config.js . && \
     rm *.py  api-explorer*.zip ./local/local-apis.json && \
