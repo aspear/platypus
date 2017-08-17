@@ -90,7 +90,7 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --abbreviate_description \
  --generate_overview_html \
  --product_name="AirWatch;9.2" \
- --swagger_global ${SCRIPT_DIR}/swagger/*.json \
+ --swagger_glob=${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
 
 popd
