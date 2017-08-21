@@ -91,6 +91,21 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --product_name="vRealize Automation;7.3.0" \
  --api_version="(vRA 7.3.0)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
+ --swagger_output_dir=${OUTPUT_DIR}/local/swagger 
+
+# inline replace title on the API Explorer index.html file to reflect our product branding
+sed -i 's/API Explorer/VMware vRealize Automation API Explorer/' ${OUTPUT_DIR}/index.html
+
+# now create a war file that is simply a wrapper on the image 
+WAR_FILE_NAME=api-explorer-vra.war
+mkdir -p ${OUTPUT_DIR}/WEB-INF
+cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<display-name>VMware vRealize Automation API Explorer</display-name>
+<welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
+</web-app>
+EOF
+
+zip -r ${OUTPUT_DIR}/${WAR_FILE_NAME} *
 
 popd
