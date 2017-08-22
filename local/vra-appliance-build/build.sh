@@ -36,16 +36,16 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="0.0.34"
+export VER="0.0.35"
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 # download zips of the distribution and tools if not cached locally
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
+    wget --no-check-certificate --output-document=api-explorer-dist-${VER}.zip ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
 fi
 
 if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
+    wget --no-check-certificate --output-document=api-explorer-tools-${VER}.zip ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
     rm -rf ${SCRIPT_DIR}/tools  # if we downloaded new tools, wipe the old ones
 fi
 
@@ -96,6 +96,18 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
 # inline replace title on the API Explorer index.html file to reflect our product branding
 sed -i 's/API Explorer/VMware vRealize Automation API Explorer/' ${OUTPUT_DIR}/index.html
 
+# the stock API Explorer puts a version.json file in the root of the web image with some
+# version information.  Here we are going to replace some values in it with values specific
+# to this packaging. TODO get some other version string?
+TIMESTAMP=`date +%Y%m%d_%H%M%S`
+sed -i 's/PACKAGE_VERSION/vRealize Automation 7.4/' ${OUTPUT_DIR}/version.json
+sed -i "s/PACKAGE_DATE/${TIMESTAMP}/" ${OUTPUT_DIR}/version.json
+
+# fixup the machine name in the config.js file to be the appropriate value
+#HOSTNAME=`hostname -f`
+#python ${TOOLS_DIR}/apixlocal/replace_variable.py --variable_name=window.config.authApiEndPoint --variable_value=${HOSTNAME} ./config.js
+
+
 # now create a war file that is simply a wrapper on the image 
 WAR_FILE_NAME=api-explorer-vra.war
 mkdir -p ${OUTPUT_DIR}/WEB-INF
@@ -105,7 +117,9 @@ cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
 <welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
 </web-app>
 EOF
-
+echo "Creating war file ${OUTPUT_DIR}/${WAR_FILE_NAME}"
 zip -r ${OUTPUT_DIR}/${WAR_FILE_NAME} *
 
 popd
+
+echo "DONE with apix build!"

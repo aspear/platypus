@@ -54,6 +54,7 @@
 
   //vRA SSO
   window.config.ssoId = "vra_sso";
-  window.config.authApiEndPoint = "https://cava-p-14-062.eng.vmware.com/identity/api/tokens";
+  window.config.authApiEndPoint = "https://localhost/identity/api/tokens";
+
 
 }(this));
