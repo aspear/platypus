@@ -20,4 +20,4 @@ python ${SCRIPT_DIR}/tools/apixlocal/replace_variable.py \
  ./config.js
 
 echo "deploy the built local site on this appliance"
-#source ${SCRIPT_DIR}/deploy-apix.sh
+source ${SCRIPT_DIR}/deploy-apix.sh
