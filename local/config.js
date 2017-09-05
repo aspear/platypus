@@ -21,12 +21,12 @@
 
     // you can customize the text that is displayed above the APIs, to scope
   // to a particular product for example.
-  window.config.apiListHeaderText = "vSphere APIs";
+  window.config.apiListHeaderText = "VMware Cloud Services APIs";
 
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
       keywords : "",
-      products : ["vSphere"],
+      products : ["VMware Cloud Services"],
       languages: [],
       types: [],
       sources: ["local"]
@@ -44,7 +44,7 @@
   // This is for vSphere SSO only.  To enable the SSO, set the ssoEnabled = true.  Note that currently
   // we have to define the hostname or IP of the endpoint in this file.  This can be made driven by a selection
   // in the UI as well, but this requires some code change.
-  window.config.ssoEnabled = true;
+  window.config.ssoEnabled = false;
   window.config.authApiEndPoint = "https://10.154.10.43/rest/com/vmware/cis/session";
   
   // Remote APIs endpoint. 

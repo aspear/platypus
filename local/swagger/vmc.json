@@ -1,0 +1,1941 @@
+{
+  "info": {
+    "termsOfService": "https://vmc.vmware.com/terms-and-conditions", 
+    "contact": {
+      "name": "VMware"
+    }, 
+    "description": "* All VMware Cloud APIs require a valid authentication token; which can be obtained by issuing a `POST` to\n  `/api/csp/am/api/auth/api-tokens/authorize` with a query parameter `refresh_token={refresh_token}` eg.\n  ```\n  curl -s -X POST \\\n      -H \"Content-Type: application/json\" \\\n      https://console.cloud.vmware.com/csp/gateway/am/api/auth/api-tokens/authorize?refresh_token={{refresh-token}}\n  ```\n* This CSP API is defined at: `https://console.cloud.vmware.com/csp/gateway/api-docs#!/Authentication/getAccessTokenByApiRefreshToken`\n\n* The `refresh_token` used to get a valid authentication token can be obtained after successful login to\n  following URL via a web browser: https://console.cloud.vmware.com/csp/gateway/portal/#/user/account. Be sure to\n  get use the `manage account` and not the `Access Key`.\n* Most VMware Cloud APIs require an org identifier.\n  This can be obtained by issuing a `GET` on `/vmc/api/orgs` and extracting the `id` field\n", 
+    "license": {
+      "name": "Copyright (c) 2016-2017 VMware, Inc. All rights reserved."
+    }, 
+    "title": "VMware Cloud APIs", 
+    "version": "1.0", 
+    "x-vmw-vapi-codegenconfig": {
+      "package-name": "com.vmware.vmc", 
+      "tag-resources-by-url-path": true
+    }
+  }, 
+  "paths": {
+    "/orgs/{org}/subscriptions": {
+      "post": {
+        "responses": {
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "500": {
+            "description": "Server error.\nCheck retryable flag to see if request should be retried.\n", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "x-vmc-ui-servicename": "subscriptions", 
+        "description": "Initiates subscription", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "required": true, 
+            "in": "body", 
+            "description": "subscriptionRequest", 
+            "name": "subscriptionRequest", 
+            "schema": {
+              "$ref": "#/definitions/SubscriptionRequest"
+            }
+          }
+        ], 
+        "tags": [
+          "subscription"
+        ], 
+        "x-vmw-vapi-methodname": "create", 
+        "summary": "Start subscription"
+      }
+    }, 
+    "/orgs/{org}": {
+      "get": {
+        "x-vmc-ui-servicename": "orgs", 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          }, 
+          "404": {
+            "description": "Organization doesn't exist", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }
+        ], 
+        "tags": [
+          "orgs"
+        ], 
+        "x-vmw-vapi-methodname": "get", 
+        "summary": "Get details of organization"
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}/publicips/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/SddcPublicIp"
+            }
+          }, 
+          "404": {
+            "description": "Cannot find the public IP with given IP address", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "publicips", 
+        "description": "Get one public IP for a SDDC", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }, 
+          {
+            "$ref": "#/parameters/ipParam"
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "publicip"
+        ], 
+        "x-vmw-vapi-methodname": "get", 
+        "summary": "Get one public IP for a SDDC"
+      }, 
+      "delete": {
+        "x-vmc-ui-servicename": "publicips", 
+        "responses": {
+          "404": {
+            "description": "Cannot find the public IP with given IP address", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Access not allowed to the operation for the current user", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }, 
+          {
+            "$ref": "#/parameters/ipParam"
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "publicip"
+        ], 
+        "x-vmw-vapi-methodname": "delete", 
+        "summary": "Free one public IP for a SDDC"
+      }, 
+      "patch": {
+        "x-vmc-ui-servicename": "publicips", 
+        "responses": {
+          "404": {
+            "description": "Cannot find the public IP with given IP address", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Access not allowed to the operation for the current user", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }, 
+          {
+            "$ref": "#/parameters/ipParam"
+          }, 
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "Type of action as 'attach', 'detach', 'reattach', or 'rename'.\nFor 'attch', the public IP must not be attached and 'associated_private_ip'\nin the payload needs to be set with a workload VM private IP.\nFor 'detach', the public IP must be attached and 'associated_private_ip'\nin the payload should not be set with any value.\nFor 'reattach', the public IP must be attached and 'associated_private_ip'\nin the payload needs to be set with a new workload VM private IP.\nFor 'rename', the 'name' in the payload needs to have a new name string.\n", 
+            "in": "query", 
+            "name": "action"
+          }, 
+          {
+            "required": true, 
+            "in": "body", 
+            "description": "SddcPublicIp object to update", 
+            "name": "SddcPublicIp object", 
+            "schema": {
+              "$ref": "#/definitions/SddcPublicIp"
+            }
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "publicip"
+        ], 
+        "x-vmw-vapi-methodname": "update", 
+        "summary": "Attach or detach a public IP to workload VM for a SDDC"
+      }
+    }, 
+    "/orgs/{org}/tasks/{taskId}": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "404": {
+            "description": "Cannot find the task with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "400": {
+            "description": "Invalid action or bad argument", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "x-vmc-ui-servicename": "tasks", 
+        "description": "Request that a running task be canceled.\nThis is advisory only, some tasks may not be cancelable, and some tasks might take\nan arbitrary amount of time to respond to a cancelation request. The task must be monitored\nto determine subsequent status.\n", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "taskId", 
+            "in": "path", 
+            "name": "taskId"
+          }, 
+          {
+            "required": false, 
+            "type": "string", 
+            "description": "If = 'cancel', task will be canceled", 
+            "in": "query", 
+            "name": "action"
+          }
+        ], 
+        "tags": [
+          "task"
+        ], 
+        "x-vmw-vapi-methodname": "update", 
+        "summary": "Modify an existing task"
+      }, 
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "404": {
+            "description": "Cannot find the task with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "tasks", 
+        "description": "Retrieve details of a task.\n", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "required": true, 
+            "type": "string", 
+            "description": "taskId", 
+            "in": "path", 
+            "name": "taskId"
+          }
+        ], 
+        "tags": [
+          "task"
+        ], 
+        "x-vmw-vapi-methodname": "get", 
+        "summary": "Get task details"
+      }
+    }, 
+    "/orgs/{org}/features": {
+      "get": {
+        "x-vmc-ui-servicename": "features", 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "additionalProperties": {
+                "$ref": "#/definitions/FeatureState"
+              }, 
+              "type": "object"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }
+        ], 
+        "tags": [
+          "features"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "summary": "Get all applicable features for a given org."
+      }
+    }, 
+    "/orgs/{org}/tasks": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Task"
+              }, 
+              "type": "array"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "tasks", 
+        "description": "List all tasks with optional filtering.\n", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/filterParam"
+          }
+        ], 
+        "tags": [
+          "task"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "summary": "List all tasks for organization"
+      }
+    }, 
+    "/orgs/{org}/providers": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/AwsCloudProvider"
+              }, 
+              "type": "array"
+            }
+          }, 
+          "404": {
+            "description": "Organization doesn't exist", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "providers", 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }
+        ], 
+        "tags": [
+          "orgs"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "summary": "Get enabled cloud providers for an organization"
+      }
+    }, 
+    "/orgs/{org}/subscriptions/{subscription}": {
+      "delete": {
+        "responses": {
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "500": {
+            "description": "Server error.\nCheck retryable flag to see if request should be retried.\n", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "400": {
+            "description": "Bad Request.\nCheck if the subscription id is still valid and if the Sddc is in a state that can be deleted.\nMore information will be available in the error_messages field.\n", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "x-vmc-ui-servicename": "subscription", 
+        "description": "Initiates subscription cancellation. Returns Task object.", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/subscriptionParam"
+          }
+        ], 
+        "tags": [
+          "subscription"
+        ], 
+        "x-vmw-vapi-methodname": "delete", 
+        "summary": "Cancel a Subscription"
+      }
+    }, 
+    "/orgs/{org}/features/{featureId}": {
+      "get": {
+        "x-vmc-ui-servicename": "features", 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/FeatureState"
+            }
+          }, 
+          "404": {
+            "description": "Not Found"
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/featureIdParam"
+          }
+        ], 
+        "tags": [
+          "features"
+        ], 
+        "x-vmw-vapi-methodname": "get", 
+        "summary": "Get feature status for a given org and feature"
+      }
+    }, 
+    "/orgs/{org}/sddcs": {
+      "post": {
+        "responses": {
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "sddcs", 
+        "description": "Provision an SDDC in target cloud", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "required": true, 
+            "in": "body", 
+            "description": "sddcConfig", 
+            "name": "sddcConfig", 
+            "schema": {
+              "$ref": "#/definitions/AwsSddcConfig"
+            }
+          }
+        ], 
+        "tags": [
+          "sddc"
+        ], 
+        "x-vmw-vapi-methodname": "create", 
+        "summary": "Provision SDDC"
+      }, 
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Sddc"
+              }, 
+              "type": "array"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "sddcs", 
+        "description": "List all the SDDCs of an organization", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }
+        ], 
+        "tags": [
+          "sddc"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "summary": "List all the SDDCs of an organization"
+      }
+    }, 
+    "/orgs": {
+      "get": {
+        "x-vmc-ui-servicename": "orgs", 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Organization"
+              }, 
+              "type": "array"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "tags": [
+          "orgs"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "description": "Return a list of all organizations the calling user (based on credential) is authorized on.\n", 
+        "summary": "Get organizations associated with calling user."
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/Sddc"
+            }
+          }, 
+          "404": {
+            "description": "Cannot find the SDDC with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "sddcs", 
+        "description": "Get SDDC", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }
+        ], 
+        "tags": [
+          "sddc"
+        ], 
+        "x-vmw-vapi-methodname": "get", 
+        "summary": "Get SDDC"
+      }, 
+      "delete": {
+        "x-vmc-ui-servicename": "sddcs", 
+        "responses": {
+          "404": {
+            "description": "Cannot find the SDDC with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Access not allowed to the operation for the current user", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for deletion", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }
+        ], 
+        "tags": [
+          "sddc"
+        ], 
+        "x-vmw-vapi-methodname": "delete", 
+        "summary": "Delete SDDC"
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}/dns/private": {
+      "put": {
+        "x-vmc-ui-servicename": "dns-private", 
+        "responses": {
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates or invalid body", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "dns"
+        ], 
+        "x-vmw-vapi-methodname": "update", 
+        "summary": "Update the DNS records of management VMs to use private IP addresses"
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}/publicips": {
+      "post": {
+        "x-vmc-ui-servicename": "publicips", 
+        "responses": {
+          "404": {
+            "description": "Cannot find the SDDC with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Access not allowed to the operation for the current user", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }, 
+          {
+            "required": true, 
+            "in": "body", 
+            "description": "allocation spec", 
+            "name": "spec", 
+            "schema": {
+              "$ref": "#/definitions/SddcAllocatePublicIpSpec"
+            }
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "publicip"
+        ], 
+        "x-vmw-vapi-methodname": "create", 
+        "summary": "Allocate public IPs for a SDDC"
+      }, 
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/SddcPublicIp"
+              }, 
+              "type": "array"
+            }
+          }, 
+          "404": {
+            "description": "Cannot find the SDDC with given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }
+        }, 
+        "x-vmc-ui-servicename": "publicips", 
+        "description": "list all public IPs for a SDDC", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "publicip"
+        ], 
+        "x-vmw-vapi-methodname": "list", 
+        "summary": "List all public IPs for a SDDC"
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}/esxs": {
+      "post": {
+        "x-vmc-ui-servicename": "esxs", 
+        "responses": {
+          "404": {
+            "description": "Cannot find the SDDC with the given identifier", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "403": {
+            "description": "Access not allowed to the operation for the current user", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }, 
+          {
+            "required": false, 
+            "type": "string", 
+            "description": "If = 'add', will add the esx.\nIf = 'remove', will delete the esx.\nIf = 'force-remove', will delete the esx even if it can lead to data loss (This is an privileged operation).\nDefault behaviour is 'add'\n", 
+            "in": "query", 
+            "name": "action"
+          }, 
+          {
+            "required": true, 
+            "in": "body", 
+            "description": "esxConfig", 
+            "name": "esxConfig", 
+            "schema": {
+              "$ref": "#/definitions/EsxConfig"
+            }
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "esx"
+        ], 
+        "x-vmw-vapi-methodname": "create", 
+        "summary": "Add/Remove an ESX host in the target cloud"
+      }
+    }, 
+    "/orgs/{org}/sddcs/{sddc}/dns/public": {
+      "put": {
+        "x-vmc-ui-servicename": "dns-public", 
+        "responses": {
+          "202": {
+            "description": "Accepted", 
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }, 
+          "403": {
+            "description": "Forbidden"
+          }, 
+          "401": {
+            "description": "Unauthorized"
+          }, 
+          "400": {
+            "description": "The sddc is not in a state that's valid for updates or invalid body", 
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }, 
+        "parameters": [
+          {
+            "$ref": "#/parameters/orgParam"
+          }, 
+          {
+            "$ref": "#/parameters/sddcParam"
+          }
+        ], 
+        "tags": [
+          "sddc", 
+          "dns"
+        ], 
+        "x-vmw-vapi-methodname": "update", 
+        "summary": "Update the DNS records of management VMs to use public IP addresses"
+      }
+    }
+  }, 
+  "schemes": [
+    "https"
+  ], 
+  "parameters": {
+    "subscriptionParam": {
+      "required": true, 
+      "type": "string", 
+      "description": "SubscriptionId for an sddc.", 
+      "in": "path", 
+      "name": "subscription"
+    }, 
+    "filterParam": {
+      "required": false, 
+      "type": "string", 
+      "description": "Filter expression\n\nBinary Operators: 'eq', 'ne', 'lt', 'gt', 'le', 'ge'\n\nNested attributes are composed using '.'\n\nDates must be formatted as YYYY-MM-DD\n\nStrings should enclosed in single quotes, escape single quote with two single quotes\n\nThe special literal 'created' will be mapped to the time the resource was first created.\n\nNOTE: currently only ANDs of ORs is implemented.\n\nNOTE2: currently only range operators are implemented for created date.\n\nExamples:\n\n  - $filter=(created gt '2016-08-09') and (org_id eq 278710ff4e-6b6d-4d4e-aefb-ca637f38609e)\n  - $filter=(created eq '2016-08-09')\n  - $filter=(created gt '2016-08-09') and (sddc.status eq 'READY')\n", 
+      "in": "query", 
+      "name": "$filter"
+    }, 
+    "ipParam": {
+      "required": true, 
+      "type": "string", 
+      "description": "ip allocation id", 
+      "in": "path", 
+      "name": "id"
+    }, 
+    "featureIdParam": {
+      "required": true, 
+      "type": "string", 
+      "description": "Feature identifier", 
+      "in": "path", 
+      "name": "featureId"
+    }, 
+    "sddcParam": {
+      "required": true, 
+      "type": "string", 
+      "description": "sddc", 
+      "in": "path", 
+      "name": "sddc"
+    }, 
+    "orgParam": {
+      "required": true, 
+      "type": "string", 
+      "description": "Organization identifier", 
+      "in": "path", 
+      "name": "org"
+    }
+  }, 
+  "tags": [
+    {
+      "name": "orgs", 
+      "description": "Operations on Organizations"
+    }, 
+    {
+      "name": "features", 
+      "description": "Operations on Features"
+    }, 
+    {
+      "name": "subscription", 
+      "description": "Subscription"
+    }, 
+    {
+      "name": "task", 
+      "description": "Operations on Tasks"
+    }, 
+    {
+      "name": "sddc", 
+      "description": "Operations on SDDCs"
+    }, 
+    {
+      "name": "publicip", 
+      "description": "Operations on SDDC public IP"
+    }, 
+    {
+      "name": "esx", 
+      "description": "Operations on ESX hosts"
+    }, 
+    {
+      "name": "dns", 
+      "description": "Operations on VM dns records"
+    }
+  ], 
+  "basePath": "/vmc/api", 
+  "produces": [
+    "application/json"
+  ], 
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey", 
+      "name": "csp-auth-token", 
+      "in": "header"
+    }
+  }, 
+  "host": "vmc.vmware.com", 
+  "definitions": {
+    "AbstractEntity": {
+      "required": [
+        "created", 
+        "user_id", 
+        "user_name", 
+        "updated", 
+        "updated_by_user_id", 
+        "updated_by_user_name"
+      ], 
+      "type": "object", 
+      "properties": {
+        "updated": {
+          "type": "string", 
+          "format": "date-time"
+        }, 
+        "user_id": {
+          "type": "string", 
+          "description": "User id that last updated this record"
+        }, 
+        "updated_by_user_name": {
+          "type": "string", 
+          "description": "User name that last updated this record"
+        }, 
+        "updated_by_user_id": {
+          "type": "string", 
+          "description": "User id that last updated this record"
+        }, 
+        "user_name": {
+          "type": "string", 
+          "description": "User name that last updated this record"
+        }, 
+        "created": {
+          "type": "string", 
+          "format": "date-time"
+        }
+      }
+    }, 
+    "AwsEsxHost": {
+      "type": "object", 
+      "x-vmw-vapi-discriminated-by": "AWS", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/EsxHost"
+        }, 
+        {
+          "properties": {
+            "internal_public_ip_pool": {
+              "items": {
+                "$ref": "#/definitions/SddcPublicIp"
+              }, 
+              "type": "array"
+            }
+          }
+        }
+      ]
+    }, 
+    "OrgProperties": {
+      "type": "object", 
+      "properties": {
+        "values": {
+          "additionalProperties": {
+            "type": "string"
+          }, 
+          "type": "object", 
+          "description": "A map of string properties to values."
+        }
+      }
+    }, 
+    "AwsCloudProvider": {
+      "type": "object", 
+      "x-vmw-vapi-discriminated-by": "AWS", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CloudProvider"
+        }, 
+        {
+          "properties": {
+            "regions": {
+              "items": {
+                "type": "string", 
+                "description": "Regions supported by the cloud provider for sddc deployment"
+              }, 
+              "type": "array"
+            }
+          }
+        }
+      ]
+    }, 
+    "SddcResourceConfig": {
+      "discriminator": "provider", 
+      "required": [
+        "provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "vc_ip": {
+          "type": "string", 
+          "description": "URL of the vCenter server"
+        }, 
+        "psc_ip": {
+          "type": "string"
+        }, 
+        "psc_management_ip": {
+          "type": "string", 
+          "description": "PSC internal management IP"
+        }, 
+        "cgws": {
+          "items": {
+            "type": "string", 
+            "description": "set of compute gateway ids configured in the sddc"
+          }, 
+          "type": "array"
+        }, 
+        "management_ds": {
+          "type": "string", 
+          "description": "The ManagedObjectReference of the management Datastore"
+        }, 
+        "custom_properties": {
+          "additionalProperties": {
+            "type": "string"
+          }, 
+          "type": "object"
+        }, 
+        "cloud_password": {
+          "type": "string", 
+          "description": "Password for vCenter SDDC administrator"
+        }, 
+        "provider": {
+          "enum": [
+            "AWS"
+          ], 
+          "type": "string", 
+          "description": "Discriminator for additional properties"
+        }, 
+        "vc_public_ip": {
+          "type": "string", 
+          "description": "vCenter public IP"
+        }, 
+        "vc_management_ip": {
+          "type": "string", 
+          "description": "vCenter internal management IP"
+        }, 
+        "sddc_networks": {
+          "items": {
+            "type": "string", 
+            "description": "set of network ids configured in the sddc"
+          }, 
+          "type": "array"
+        }, 
+        "cloud_username": {
+          "type": "string", 
+          "description": "Username for vCenter SDDC administrator"
+        }, 
+        "esx_hosts": {
+          "items": {
+            "$ref": "#/definitions/AwsEsxHost"
+          }, 
+          "type": "array"
+        }, 
+        "nsx_mgr_management_ip": {
+          "type": "string", 
+          "description": "NSX Manager internal management IP"
+        }, 
+        "vc_instance_id": {
+          "type": "string", 
+          "description": "unique id of the vCenter server"
+        }, 
+        "esx_cluster_id": {
+          "type": "string", 
+          "description": "Cluster Id to add ESX workflow"
+        }, 
+        "mgw_id": {
+          "type": "string", 
+          "description": "Management Gateway Id"
+        }, 
+        "vxlan_subnet": {
+          "type": "string", 
+          "description": "VXLAN IP subnet"
+        }, 
+        "nsx_mgr_ip": {
+          "type": "string", 
+          "description": "URL of the NSX Manager"
+        }, 
+        "cloud_user_group": {
+          "type": "string", 
+          "description": "Group name for vCenter SDDC administrator"
+        }, 
+        "management_rp": {
+          "type": "string"
+        }, 
+        "sso_domain": {
+          "type": "string", 
+          "description": "The SSO domain name to use for vSphere users"
+        }, 
+        "dns_with_management_vm_private_ip": {
+          "type": "boolean", 
+          "description": "if true, use the private IP addresses to register DNS records for the management VMs"
+        }
+      }
+    }, 
+    "Sddc": {
+      "required": [
+        "provider", 
+        "created", 
+        "id", 
+        "name", 
+        "sddc_state", 
+        "user_id", 
+        "user_name", 
+        "version"
+      ], 
+      "type": "object", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractEntity"
+        }, 
+        {
+          "properties": {
+            "version": {
+              "type": "integer", 
+              "format": "int32"
+            }, 
+            "name": {
+              "type": "string", 
+              "description": "name for SDDC"
+            }, 
+            "sddc_state": {
+              "enum": [
+                "DEPLOYING", 
+                "READY", 
+                "DELETING", 
+                "DELETION_FAILED", 
+                "DELETED", 
+                "FAILED"
+              ], 
+              "type": "string"
+            }, 
+            "provider": {
+              "enum": [
+                "AWS"
+              ], 
+              "type": "string"
+            }, 
+            "org_id": {
+              "type": "string"
+            }, 
+            "id": {
+              "type": "string"
+            }, 
+            "resource_config": {
+              "$ref": "#/definitions/AwsSddcResourceConfig"
+            }
+          }
+        }
+      ]
+    }, 
+    "Task": {
+      "required": [
+        "id", 
+        "start_time", 
+        "status", 
+        "sub_status", 
+        "task_type", 
+        "version"
+      ], 
+      "type": "object", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractEntity"
+        }, 
+        {
+          "properties": {
+            "status": {
+              "enum": [
+                "STARTED", 
+                "CANCELING", 
+                "FINISHED", 
+                "FAILED", 
+                "CANCELED"
+              ], 
+              "type": "string"
+            }, 
+            "resource_id": {
+              "type": "string", 
+              "description": "UUID of resources task is acting upon"
+            }, 
+            "task_version": {
+              "type": "string"
+            }, 
+            "id": {
+              "type": "string"
+            }, 
+            "retries": {
+              "type": "integer", 
+              "format": "int32"
+            }, 
+            "task_type": {
+              "type": "string"
+            }, 
+            "task_progress_phases": {
+              "items": {
+                "$ref": "#/definitions/TaskProgressPhase"
+              }, 
+              "type": "array", 
+              "description": "Task progress phases involved in current task execution"
+            }, 
+            "error_message": {
+              "type": "string"
+            }, 
+            "org_id": {
+              "type": "string"
+            }, 
+            "progress_percent": {
+              "type": "integer", 
+              "description": "Estimated progress percentage the task executed", 
+              "format": "int32"
+            }, 
+            "estimated_remaining_minutes": {
+              "type": "integer", 
+              "description": "Estimated remaining time in minute of the task execution, < 0 means no estimation for the task.", 
+              "format": "int32"
+            }, 
+            "version": {
+              "type": "integer", 
+              "format": "int32"
+            }, 
+            "params": {
+              "type": "object"
+            }, 
+            "end_time": {
+              "type": "string", 
+              "format": "date-time"
+            }, 
+            "phase_in_progress": {
+              "type": "string", 
+              "description": "The current in progress phase ID in the task execution, if none in progress, empty string returned."
+            }, 
+            "start_time": {
+              "type": "string"
+            }, 
+            "resource_type": {
+              "type": "string", 
+              "description": "Type of resource being acted upon"
+            }, 
+            "sub_status": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }, 
+    "VpcInfo": {
+      "type": "object", 
+      "properties": {
+        "vpc_cidr": {
+          "type": "string"
+        }, 
+        "vm_security_group_id": {
+          "type": "string"
+        }, 
+        "route_table_id": {
+          "type": "string"
+        }, 
+        "edge_subnet_id": {
+          "type": "string", 
+          "description": "Id of the NSX edge associated with this VPC"
+        }, 
+        "id": {
+          "type": "string"
+        }, 
+        "api_association_id": {
+          "type": "string", 
+          "description": "Id of the association between subnet and route-table"
+        }, 
+        "api_subnet_id": {
+          "type": "string", 
+          "description": "Id associated with this VPC"
+        }, 
+        "esx_security_group_id": {
+          "type": "string"
+        }, 
+        "subnet_id": {
+          "type": "string"
+        }, 
+        "private_subnet_id": {
+          "type": "string"
+        }, 
+        "security_group_id": {
+          "type": "string"
+        }, 
+        "association_id": {
+          "type": "string"
+        }, 
+        "internet_gateway_id": {
+          "type": "string"
+        }, 
+        "edge_association_id": {
+          "type": "string", 
+          "description": "Id of the association between edge subnet and route-table"
+        }, 
+        "peering_connection_id": {
+          "type": "string"
+        }
+      }
+    }, 
+    "Organization": {
+      "required": [
+        "display_name", 
+        "id", 
+        "name", 
+        "project_state", 
+        "version"
+      ], 
+      "type": "object", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/AbstractEntity"
+        }, 
+        {
+          "properties": {
+            "properties": {
+              "$ref": "#/definitions/OrgProperties"
+            }, 
+            "display_name": {
+              "type": "string"
+            }, 
+            "name": {
+              "type": "string"
+            }, 
+            "project_state": {
+              "enum": [
+                "CREATED", 
+                "DELETED"
+              ], 
+              "type": "string"
+            }, 
+            "sla": {
+              "enum": [
+                "CUSTOMER", 
+                "THIRD_PARTY_PARTNER", 
+                "SECOND_PARTY_PARTNER", 
+                "INTERNAL_CUSTOMER", 
+                "VMC_INTERNAL"
+              ], 
+              "type": "string", 
+              "description": "SLA to be associated with the org"
+            }, 
+            "version": {
+              "type": "integer", 
+              "format": "int32"
+            }, 
+            "cloud_configurations": {
+              "additionalProperties": {
+                "$ref": "#/definitions/AwsOrgConfiguration"
+              }, 
+              "type": "object", 
+              "description": "A Map of provider to OrgConfiguration Model."
+            }, 
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }, 
+    "EsxConfig": {
+      "required": [
+        "num_hosts"
+      ], 
+      "type": "object", 
+      "properties": {
+        "num_hosts": {
+          "type": "integer", 
+          "format": "int32"
+        }
+      }
+    }, 
+    "SddcConfig": {
+      "discriminator": "provider", 
+      "required": [
+        "provider", 
+        "name", 
+        "num_hosts"
+      ], 
+      "type": "object", 
+      "properties": {
+        "name": {
+          "type": "string"
+        }, 
+        "vpc_cidr": {
+          "default": "10.0.0.0/16", 
+          "type": "string", 
+          "description": "AWS VPC IP range. Only prefix of 16 or 20 is currently supported."
+        }, 
+        "provider": {
+          "enum": [
+            "AWS"
+          ], 
+          "type": "string", 
+          "description": "Determines what additional properties are available based on cloud provider."
+        }, 
+        "sso_domain": {
+          "default": "vmc.local", 
+          "type": "string", 
+          "description": "The SSO domain name to use for vSphere users. If not specified, vmc.local will be used."
+        }, 
+        "num_hosts": {
+          "type": "integer", 
+          "format": "int32"
+        }, 
+        "vxlan_subnet": {
+          "type": "string", 
+          "description": "VXLAN IP subnet"
+        }
+      }
+    }, 
+    "SddcPublicIp": {
+      "required": [
+        "public_ip"
+      ], 
+      "type": "object", 
+      "properties": {
+        "public_ip": {
+          "type": "string"
+        }, 
+        "name": {
+          "type": "string"
+        }, 
+        "allocation_id": {
+          "type": "string"
+        }, 
+        "dnat_rule_id": {
+          "type": "string"
+        }, 
+        "associated_private_ip": {
+          "type": "string"
+        }, 
+        "snat_rule_id": {
+          "type": "string"
+        }
+      }
+    }, 
+    "SubscriptionRequest": {
+      "required": [
+        "sddc_name", 
+        "cloud_provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "invitation_code": {
+          "type": "string"
+        }, 
+        "sddc_name": {
+          "type": "string"
+        }, 
+        "cloud_provider": {
+          "type": "string"
+        }, 
+        "business_plan": {
+          "type": "string"
+        }
+      }
+    }, 
+    "Agent": {
+      "discriminator": "provider", 
+      "required": [
+        "provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "addresses": {
+          "items": {
+            "type": "string", 
+            "description": "Public IP and DNS names"
+          }, 
+          "type": "array"
+        }, 
+        "healthy": {
+          "type": "boolean"
+        }, 
+        "custom_properties": {
+          "additionalProperties": {
+            "type": "string"
+          }, 
+          "type": "object"
+        }, 
+        "last_health_status_change": {
+          "type": "integer"
+        }, 
+        "internal_ip": {
+          "type": "string"
+        }, 
+        "reserved_ip": {
+          "type": "string"
+        }, 
+        "network_netmask": {
+          "type": "string"
+        }, 
+        "network_gateway": {
+          "type": "string"
+        }, 
+        "provider": {
+          "type": "string"
+        }, 
+        "agent_url": {
+          "type": "string"
+        }, 
+        "network_cidr": {
+          "type": "string"
+        }, 
+        "id": {
+          "type": "string"
+        }
+      }
+    }, 
+    "AwsKeyPair": {
+      "type": "object", 
+      "properties": {
+        "key_name": {
+          "type": "string"
+        }, 
+        "key_fingerprint": {
+          "type": "string"
+        }, 
+        "key_material": {
+          "type": "string"
+        }
+      }
+    }, 
+    "AwsAgent": {
+      "type": "object", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/Agent"
+        }, 
+        {
+          "properties": {
+            "instance_id": {
+              "type": "string"
+            }, 
+            "key_pair": {
+              "$ref": "#/definitions/AwsKeyPair"
+            }
+          }
+        }
+      ]
+    }, 
+    "AwsSddcResourceConfig": {
+      "type": "object", 
+      "x-vmw-vapi-discriminated-by": "AWS", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/SddcResourceConfig"
+        }, 
+        {
+          "properties": {
+            "public_ip_pool": {
+              "items": {
+                "$ref": "#/definitions/SddcPublicIp"
+              }, 
+              "type": "array"
+            }, 
+            "region": {
+              "type": "string"
+            }, 
+            "vpc_info": {
+              "$ref": "#/definitions/VpcInfo"
+            }, 
+            "max_num_public_ip": {
+              "type": "integer", 
+              "description": "maximum number of public IP that user can allocate."
+            }, 
+            "vpc_info_peered_agent": {
+              "$ref": "#/definitions/VpcInfo"
+            }
+          }
+        }
+      ]
+    }, 
+    "FeatureState": {
+      "type": "object", 
+      "properties": {
+        "applicable_status": {
+          "readOnly": true, 
+          "type": "boolean"
+        }
+      }
+    }, 
+    "ErrorResponse": {
+      "required": [
+        "error_code", 
+        "error_messages", 
+        "status", 
+        "path", 
+        "retryable"
+      ], 
+      "type": "object", 
+      "properties": {
+        "status": {
+          "type": "integer", 
+          "description": "HTTP status code"
+        }, 
+        "path": {
+          "type": "string", 
+          "description": "Originating request URI"
+        }, 
+        "retryable": {
+          "default": false, 
+          "type": "boolean", 
+          "description": "If true, client should retry operation"
+        }, 
+        "error_code": {
+          "type": "string", 
+          "description": "unique error code"
+        }, 
+        "error_messages": {
+          "items": {
+            "type": "string"
+          }, 
+          "type": "array", 
+          "description": "localized error messages"
+        }
+      }
+    }, 
+    "OrgConfiguration": {
+      "discriminator": "provider", 
+      "required": [
+        "provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "provider": {
+          "enum": [
+            "AWS"
+          ], 
+          "type": "string", 
+          "description": "Discriminator for provider specific properties"
+        }
+      }
+    }, 
+    "TaskProgressPhase": {
+      "required": [
+        "id", 
+        "name", 
+        "progress_percent"
+      ], 
+      "type": "object", 
+      "description": "A task progress can be (but does NOT have to be) divided to more meaningful progress phases.", 
+      "properties": {
+        "id": {
+          "type": "string", 
+          "description": "The identifier of the task progress phase"
+        }, 
+        "name": {
+          "type": "string", 
+          "description": "The display name of the task progress phase"
+        }, 
+        "progress_percent": {
+          "type": "integer", 
+          "description": "The percentage of the phase that has completed", 
+          "format": "int32"
+        }
+      }
+    }, 
+    "CloudProvider": {
+      "discriminator": "provider", 
+      "required": [
+        "provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "provider": {
+          "type": "string", 
+          "description": "Name of the Cloud Provider"
+        }
+      }
+    }, 
+    "AwsOrgConfiguration": {
+      "type": "object", 
+      "x-vmw-vapi-discriminated-by": "AWS", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/OrgConfiguration"
+        }
+      ]
+    }, 
+    "EsxHost": {
+      "discriminator": "provider", 
+      "required": [
+        "provider"
+      ], 
+      "type": "object", 
+      "properties": {
+        "name": {
+          "type": "string"
+        }, 
+        "esx_id": {
+          "type": "string"
+        }, 
+        "hostname": {
+          "type": "string"
+        }, 
+        "provider": {
+          "type": "string"
+        }, 
+        "mac_address": {
+          "type": "string"
+        }, 
+        "custom_properties": {
+          "additionalProperties": {
+            "type": "string"
+          }, 
+          "type": "object"
+        }, 
+        "esx_state": {
+          "enum": [
+            "DEPLOYING", 
+            "PROVISIONED", 
+            "READY", 
+            "DELETING", 
+            "DELETED", 
+            "FAILED"
+          ], 
+          "type": "string"
+        }
+      }
+    }, 
+    "SddcAllocatePublicIpSpec": {
+      "required": [
+        "count"
+      ], 
+      "type": "object", 
+      "properties": {
+        "count": {
+          "type": "integer", 
+          "format": "int32"
+        }, 
+        "private_ips": {
+          "items": {
+            "type": "string"
+          }, 
+          "type": "array", 
+          "description": "List of workload VM private IPs to be assigned the public IP just allocated."
+        }, 
+        "names": {
+          "items": {
+            "type": "string"
+          }, 
+          "type": "array", 
+          "description": "List of names for the workload VM public IP assignment."
+        }
+      }
+    }, 
+    "AwsSddcConfig": {
+      "type": "object", 
+      "allOf": [
+        {
+          "$ref": "#/definitions/SddcConfig"
+        }, 
+        {
+          "required": [
+            "region"
+          ], 
+          "properties": {
+            "region": {
+              "type": "string"
+            }, 
+            "vpc_name": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }
+  }, 
+  "security": [
+    {
+      "api_key": []
+    }
+  ], 
+  "swagger": "2.0", 
+  "consumes": [
+    "application/json"
+  ]
+}
