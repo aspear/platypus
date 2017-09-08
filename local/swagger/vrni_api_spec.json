@@ -3247,6 +3247,12 @@
         "operationId": "deleteApplication",
         "parameters": [
           {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "Authorization Header",
@@ -3625,7 +3631,7 @@
           "400": {
             "description": "Bad Request",
             "schema": {
-              "$ref": "#definitions/ApiError"
+              "$ref": "#/definitions/ApiError"
             }
           },
           "401": {
