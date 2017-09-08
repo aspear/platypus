@@ -21,12 +21,12 @@
 
     // you can customize the text that is displayed above the APIs, to scope
   // to a particular product for example.
-  window.config.apiListHeaderText = "VMware Cloud Services APIs";
+  window.config.apiListHeaderText = "vRealize Network Insight APIs";
 
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
       keywords : "",
-      products : ["VMware Cloud Services"],
+      products : ["vRealize Network Insight"],
       languages: [],
       types: [],
       sources: ["local"]

@@ -83,9 +83,9 @@ cp -f ${SCRIPT_DIR}/config.js .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="VMware Cloud Services;1.0" \
- --api_version="(VMC 1.0)" \
- --swagger_glob ${SCRIPT_DIR}/swagger/vmc.json \
+ --product_name="vRealize Network Insight;1.0" \
+ --api_version="(vRNI 1.0)" \
+ --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
  --output_file ${OUTPUT_DIR}/local.json
