@@ -230,7 +230,7 @@
                 "fqdn": "go.vc.org",
                 "proxy_id": "1000:104:12313412",
                 "username": "admin@vsphere.local",
-                "password": null,
+                "password": "thePassword",
                 "nickname": "vc1",
                 "enabled": true,
                 "notes": "VC 1"
@@ -3742,7 +3742,7 @@
         "fqdn": "go.vc.org",
         "proxy_id": "1000:104:12313412",
         "username": "admin@vsphere.local",
-        "password": null,
+        "password": "thePassword",
         "nickname": "vc1",
         "enabled": true,
         "notes": "VC 1"
@@ -3762,7 +3762,7 @@
         },
         "fqdn": {
           "type": "string",
-          "example": null
+          "example": "your.domain.com"
         },
         "proxy_id": {
           "type": "string",
