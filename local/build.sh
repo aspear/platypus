@@ -94,4 +94,8 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
  --file_name_to_api_uid_properties_file_path=./api-uid-mappings.properties \
 
+
+# inline replace title on the API Explorer index.html file to reflect our product branding
+sed -i 's/API Explorer/VMware AirWatch API Explorer/' ${OUTPUT_DIR}/index.html
+
 popd
