@@ -92,7 +92,7 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --product_name="AirWatch;9.2" \
  --swagger_glob=${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
- --file_name_to_api_uid_properties_file_path=./api-uid-mappings.properties \
+ --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties \
 
 
 # inline replace title on the API Explorer index.html file to reflect our product branding
