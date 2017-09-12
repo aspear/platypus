@@ -21,7 +21,7 @@
 
   // you can customize the text that is displayed above the APIs, to scope
   // to a particular product for example.
-  window.config.apiListHeaderText = "AirWatch APIs";
+  window.config.apiListHeaderText = "VMware AirWatch APIs";
 
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
@@ -29,7 +29,7 @@
       products : ["AirWatch"],
       languages: [],
       types: [],
-      sources: []
+      sources: ["local"]
   };
 
   // Default control over display of filters.  This has nothing to do do with the actual values of the filters,
@@ -44,5 +44,9 @@
   // Remote APIs endpoint.  
   window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
   window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+
+  // for AirWatch we are enabling usage of basic auth for all APIs.
+  window.config.ssoId = "basic";
+  window.config.swaggerAuthName = "BasicAuth";
 
 }(this));
