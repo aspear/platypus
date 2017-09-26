@@ -1,0 +1,108 @@
+<h2>Getting started with the Log Insight REST API</h2>
+
+<p>The Log Insight REST API provides programmatic access to Log Insight and to
+the data it collects.  You can use the API to insert events into the Log
+Insight data store, to query for events and to change the Log Insight
+configuration.  You can also use the API to install or upgrade Log Insight.</p>
+
+<p>Use 9543 port for all REST API calls for the correct operation of the service.</p>
+
+<h3>About Authorization</h3>
+
+<p>Most Log Insight APIs require authentication.  Your application can use the
+<a href="##sessions">&lt;code&gt;/api/v1/sessions&lt;/code&gt;</a> API to sign into Log Insight and obtain a session ID.  The
+application can then pass that session ID in the <code>Authorization</code> header of
+subsequent API calls to have them authorized.</p>
+
+<h4>About Session ID's</h4>
+
+<p>A session ID can be obtained from the <a href="##sessions">&lt;code&gt;POST /api/v1/sessions&lt;/code&gt;</a> API by
+providing valid credentials.  The session ID can then be used to
+authenticate subsequent API requests.  Session ID's are sequences of
+letters, numbers and other characters.  They don't have any particular
+meaning.  Each session ID can be used to authenticate API requests until it
+expires.  The time-to-live (TTL) of a session ID is provided in the
+response to the <a href="##sessions">&lt;code&gt;POST /api/v1/sessions&lt;/code&gt;</a> API.</p>
+
+<h3>About the Query API</h3>
+
+<p>The Query API is a part of the Log Insight REST API that lets you to retrieve
+events and groups of events:</p>
+
+<ul>
+<li>Queries for events and groups of events are available as HTTP GET requests:
+<ol>
+<li>Events: <code>GET /api/v1/events/constraint1/constraint2/…?param1&amp;param2&amp;…</code></li>
+<li>Aggregated events: <code>GET /api/v1/aggregated-events/constraint1/constraint2/…?param1&amp;param2&amp;…</code></li>
+</ol></li>
+<li>Queries can include both static fields, and dynamic fields defined in content
+packs.</li>
+<li>Common aggregation functions (COUNT, UCOUNT, AVG, MIN, MAX, SUM, STDDEV,
+VARIANCE, SAMPLE) can be used on both static and dynamic fields.</li>
+<li>Events can be aggregated by time into fixed-width bins.</li>
+<li>Default values are set for simple &amp; fast queries:
+<ol>
+<li>Events: up to 100 events from the last 5 minutes, with a 30-second timeout.</li>
+<li>Aggregated events: 100 events from the last 5 minutes, a 30-second timeout,
+5-second time-bins, and the COUNT aggregation function.</li>
+</ol></li>
+</ul>
+
+<h4>Limits to what can be queried</h4>
+
+<ul>
+<li>By default, results are limited to 100 events or bins.  You can raise that
+limit up to 20,000 events or 2,000 bins using the <strong>limit</strong> query parameter.</li>
+<li>By default, queries have to complete execution within 30 seconds.  If the
+query cannot complete within that time, partial results are returned.  You can
+raise the timeout to a higher value using the <strong>timeout</strong> query parameter.</li>
+<li>Finally, by default, events with a timestamp of one minute ago or newer are
+retrieved.  You can specify a longer time range with a <strong>timestamp</strong>
+constraint.  See the constraints section below.</li>
+</ul>
+
+<h4>Querying for events</h4>
+
+<p>To query for events, issue the <a href="##events___path_">&lt;code&gt;GET /api/v1/events&lt;/code&gt;</a> API.</p>
+
+<h3>About the Ingestion API</h3>
+
+<p>The Ingetsion API is part of the Query API. This API lets you ingest and index new 
+log messages contained in the body. To send the log messages, issue the
+<a href="##events_ingest">&lt;code&gt;POST /api/v1events/ingest/{UUID}&lt;/code&gt;</a> API.</p>
+
+<h2>The API lifecycle</h2>
+
+<p>The lifecycle of a Log Insight API has several phases, usually starting with introduction in Tech Preview before becoming Supported.</p>
+
+<ul>
+<li><strong>Supported</strong> APIs are suitable for consumption by integration, automation or standalone tools. These are stable interfaces that don't change on upgrades.</li>
+<li><strong>Tech Preview</strong> APIs are publicly released and are suitable for experimentation. Their design or implementation may change without warning and should not be depended on. A <em>tech preview</em> API may become <em>supported</em>, have forwards-incompatible changes or be removed during an upgrade. Feedback is welcome.</li>
+<li><strong>Deprecated</strong> APIs were formally <em>supported</em> but will soon be removed completely. An API planned for removal will usually be marked <em>deprecated</em> for at least two releases (e.g. <em>supported</em>, <em>deprecated</em>, <em>deprecated</em>, removed) to give developers or users time to adjust.</li>
+</ul>
+
+<p>If a request is made to a Tech Preview or Deprecated API, the lifecycle status will be returned in two headers, <code>VMware-LI-API-Status</code> and <code>Warning</code>. Supported APIs do not carry these headers.</p>
+
+<p>The <code>VMware-LI-API-Status</code> header is machine readable, containing the exact string <code>Tech Preview</code> or <code>Deprecated</code>. This is suitable for verification in test cases or conditional client behavior.</p>
+
+<p>The <code>Warning</code> header is formatted as described in <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">RFC 2616</a>, consisting of warn-code <code>299</code>, a nil agent, a human-readable description of the corrosponding <code>VMware-LI-API-Status</code> and the date the request was made. This is suitable for logging or presenting to a user as-is, but should not be parsed.</p>
+
+<p>For example:</p>
+
+<p><code>httpspec
+VMware-LI-API-Status: Tech Preview
+Warning: 299 - "Tech Preview: This API is a tech-preview. It is subject to change or removal as the product evolves." Thu, 01 Jan 1979 00:00:00 GMT
+</code></p>
+
+<p><code>httpspec
+VMware-LI-API-Status: Deprecated
+Warning: 299 - "Deprecated: This API is deprecated, and will be removed in a future release." Thu, 01 Jan 1979 00:00:01 GMT
+</code></p>
+
+<h2>FAQ</h2>
+
+<h3>How do I collect a log bundle using the REST API?</h3>
+
+<p>The support bundle API lets you make a POST request to create a new support bundle and retrieve it as an attachment in the response.
+The <a href="##appliance_vm-support-bundles">&lt;code&gt;POST api/v1/appliance/vm-support-bundles&lt;/code&gt;</a> lets you create and download an entire support bundle 
+with all available manifests or only required manifests by specifying the manifest ID in the POST request data.</p>

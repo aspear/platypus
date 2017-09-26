@@ -1,0 +1,31 @@
+{
+    "apis": [
+        {
+            "api_uid": "api_log_insight", 
+            "description": "The Log Insight REST API provides programmatic access to Log Insight and to the data it collects.", 
+            "name": "Log Insight via RAML viewer", 
+            "products": [
+                "Log Insight;4.6"
+            ], 
+            "resources": { 
+            }, 
+            "type": "raml", 
+            "url": "local/raml/loginsight.raml", 
+            "version": "(Log Insight 4.6)"
+        },
+        {
+            "api_uid": "api_log_insight",
+            "description": "The Log Insight REST API provides programmatic access to Log Insight and to the data it collects.",
+            "name": "Log Insight via HTML",
+            "products": [
+                "Log Insight;4.6"
+            ],
+            "resources": { 
+            }, 
+            "type": "html",
+            "url": "local/raml/loginsight.html",
+            "version": "(Log Insight 4.6)"
+        }
+
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "apix_git_branch" : "master",
+    "apix_git_sha"    : "a33ea26261c7dd7d0ca2566ab5365c865a4f63db",
+    "apix_version"    : "0.0.37",
+    "apix_build_date" : "Mon Sep 18 2017 19:20:36 GMT-0600 (MDT)",
+    "package_version" : "PACKAGE_VERSION",
+    "package_date"    : "PACKAGE_DATE"    
+}

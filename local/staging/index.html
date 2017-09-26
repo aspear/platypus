@@ -1,0 +1,18 @@
+<!doctype html><!--
+  ~ Copyright (c) 2016 VMware, Inc. All Rights Reserved.
+  ~ This software is released under MIT license.
+  ~ The full license information can be found in LICENSE in the root directory of this project.
+  --> <html> <head> <meta charset="utf-8"> <title>API Explorer</title> <meta name="description" content=""> <meta name="viewport" content="width=device-width"> <!-- endbuild --> <link rel="stylesheet" href="styles/main.391952c5.css"> <script type="text/javascript">(function() {
+        // Load external theme... if applicable
+        var theme = window.location.search.match(/theme=([^&]+)/);
+        if (theme && theme.length > 1) {
+            var link = document.createElement("link");
+            link.href = theme[1];
+            link.type = "text/css";
+            link.rel = "stylesheet";
+            link.media = "screen,print";
+            document.getElementsByTagName("head")[0].appendChild(link);
+        }
+    })();</script> <script src="scripts/head.7b3f1b87.js"></script> <script src="config.js"></script> </head> <body ng-app="apiExplorerApp"> <!--[if lte IE 8]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]--> <div class="main-container"> <header class="header"> <div class="branding"> <a href="#!/apis" target="_self"> <span class="clr-icon clr-vmw-logo"></span> <span class="title">API Explorer</span> </a> </div> <div class="settings" ng-if="settings.ssoId === 'vra_sso'"> <ul class="" ng-controller="VraUserSessionCtrl"> <li class="dropdown" ng-if="loggedIn"> <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span> Welcome {{username}} </span> <span class="caret"></span> </a> <a href="#" class="nav-link" ng-click="vralogout()">Log Out</a> </li> <li ng-if="!loggedIn"> <a href="javascript:void(0);" ng-click="vralogin()"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="nav-link"> Log In </span> </a> </li> </ul> </div> <div class="settings" ng-if="settings.ssoId === 'vsphere_sso'"> <ul class="" ng-controller="VsphereUserSessionCtrl"> <li class="dropdown" ng-if="loggedIn"> <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span> Welcome {{username}} </span> <span class="caret"></span> </a> <a href="#" class="nav-link" ng-click="vspherelogout()">Log Out</a> </li> <li ng-if="!loggedIn"> <a href="javascript:void(0);" ng-click="vspherelogin()"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="nav-link"> Log In </span> </a> </li> </ul> </div> <div class="settings" ng-if="settings.ssoId === 'basic'"> <ul class="" ng-controller="BasicUserSessionCtrl"> <li class="dropdown" ng-if="loggedIn"> <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span> Welcome {{username}} </span> <span class="caret"></span> </a> <a href="#" class="nav-link" ng-click="basiclogout()">Log Out</a> </li> <li ng-if="!loggedIn"> <a href="javascript:void(0);" ng-click="basiclogin()"> <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <span class="nav-link"> Log In </span> </a> </li> </ul> </div> </header> <div class="content-container"> <div ng-view class="content-area ng-cloak"></div> </div> </div> <script src="scripts/vendor.9064df77.js"></script> <script src="scripts/scripts.f63883f2.js"></script> </body> </html>
