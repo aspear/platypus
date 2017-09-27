@@ -25,6 +25,19 @@
             "type": "html",
             "url": "local/raml/loginsight.html",
             "version": "(Log Insight 4.6)"
+        },
+        {
+            "api_uid": "api_log_insight",
+            "description": "The Log Insight REST API provides programmatic access to Log Insight and to the data it collects.",
+            "name": "Log Insight converted from RAML to Swagger",
+            "products": [
+                "Log Insight;4.6"
+            ],
+            "resources": { 
+            }, 
+            "type": "swagger",
+            "url": "local/raml/loginsight-swagger.json",
+            "version": "(Log Insight 4.6)"
         }
 
     ]
