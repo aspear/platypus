@@ -1,8 +1,8 @@
 {
    "swagger": "2.0",
    "info": {
-      "title": "VMware Fusion API 1.0",
-      "version": "1.0.0",
+      "title": "VMware Fusion API",
+      "version": "1.0",
       "description": "REST API Explorer",
       "termsOfService": "http://swagger.io/terms/"
    },
