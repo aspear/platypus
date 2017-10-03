@@ -41,16 +41,16 @@
   window.config.hideLanguageFilter = false;      // if true, the language filter is hidden
   window.config.hideSourcesFilter = false;       // if true, the sources filter is hidden
 
-  // Remote APIs endpoint.  
-  //window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
-  //window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+  // Remote APIs endpoint, the production servers for https://code.vmware.com  
+  window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
+  window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
 
-  window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
-  window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest";
+  // these values target the internal vmware staging server at https://code-stg.vmware.com
+  //window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
+  //window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest/apix";
 
-
-  // for AirWatch we are enabling usage of basic auth for all APIs.
-  //  window.config.ssoId = "basic";
-  //  window.config.swaggerAuthName = "BasicAuth";
+  // Note that no auth is enabled here as Fusion doesn't currently support it from what I understand
+  window.config.ssoId = "none";
+  window.config.swaggerAuthName = "BasicAuth";
 
 }(this));
