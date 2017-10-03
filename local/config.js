@@ -21,12 +21,12 @@
 
   // you can customize the text that is displayed above the APIs, to scope
   // to a particular product for example.
-  window.config.apiListHeaderText = "VMware AirWatch APIs";
+  window.config.apiListHeaderText = "VMware Fusion APIs";
 
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
       keywords : "",
-      products : ["AirWatch"],
+      products : ["VMware Fusion"],
       languages: [],
       types: [],
       sources: ["local"]
@@ -42,11 +42,15 @@
   window.config.hideSourcesFilter = false;       // if true, the sources filter is hidden
 
   // Remote APIs endpoint.  
-  window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
-  window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+  //window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
+  //window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+
+  window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
+  window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest";
+
 
   // for AirWatch we are enabling usage of basic auth for all APIs.
-  window.config.ssoId = "basic";
-  window.config.swaggerAuthName = "BasicAuth";
+  //  window.config.ssoId = "basic";
+  //  window.config.swaggerAuthName = "BasicAuth";
 
 }(this));

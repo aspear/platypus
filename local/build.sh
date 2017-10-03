@@ -74,6 +74,7 @@ unzip ${SCRIPT_DIR}/api-explorer-dist-${VER}.zip
 
 echo "Overwriting stock config with local config"
 cp -f ${SCRIPT_DIR}/config.js .
+cp -f ${SCRIPT_DIR}/favicon.ico .
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
@@ -90,13 +91,13 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviate_description \
  --generate_overview_html \
- --product_name="AirWatch;9.2" \
+ --product_name="VMware Fusion;10.0" \
  --swagger_glob=${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
  --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties \
 
 
 # inline replace title on the API Explorer index.html file to reflect our product branding
-sed -i 's/API Explorer/VMware AirWatch API Explorer/' ${OUTPUT_DIR}/index.html
+sed -i 's/API Explorer/VMware Fusion API Explorer/' ${OUTPUT_DIR}/index.html
 
 popd
