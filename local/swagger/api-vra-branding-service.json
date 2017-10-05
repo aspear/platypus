@@ -263,6 +263,10 @@
         },
         "customMessage" : {
           "type" : "string"
+        },
+        "passUserId" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },

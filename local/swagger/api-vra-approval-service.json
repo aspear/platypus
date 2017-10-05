@@ -646,8 +646,8 @@
     "/api/info/approvalrequests/{requestId}" : {
       "get" : {
         "tags" : [ "approval-info" ],
-        "summary" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer.",
-        "description" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
+        "summary" : "Retrieve information about a specific approval request by its unique identifier.",
+        "description" : "Retrieve information about a specific approval request by its unique identifier. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
         "parameters" : [ {
           "name" : "requestId",
           "in" : "path",
@@ -2123,11 +2123,11 @@
           "type" : "boolean",
           "default" : false
         },
-        "totalLeaseCost" : {
-          "$ref" : "#/definitions/literal"
-        },
         "leaseForDisplay" : {
           "$ref" : "#/definitions/timeSpan"
+        },
+        "totalLeaseCost" : {
+          "$ref" : "#/definitions/literal"
         }
       }
     },
@@ -3546,6 +3546,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -3560,17 +3568,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -3588,6 +3588,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -3602,17 +3610,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },

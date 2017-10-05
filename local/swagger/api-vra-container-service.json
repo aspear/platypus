@@ -35,7 +35,11 @@
   }, {
     "name" : "events"
   }, {
+    "name" : "image-profiles"
+  }, {
     "name" : "images"
+  }, {
+    "name" : "instanceTypeState"
   }, {
     "name" : "log"
   }, {
@@ -872,6 +876,244 @@
             "schema" : {
               "$ref" : "#/definitions/PageEventTopicState"
             }
+          }
+        }
+      }
+    },
+    "/api/config/image-profiles" : {
+      "get" : {
+        "tags" : [ "image-profiles" ],
+        "summary" : "Retrieves all ImageProfiles.",
+        "description" : "Only Solution users, Container admins, and System admins can list ImageProfiles.",
+        "operationId" : "listImageProfile",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageImageProfile"
+            }
+          }
+        }
+      }
+    },
+    "/api/config/instance-types" : {
+      "get" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Retrieves all InstanceTypeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can list InstanceTypeStates.",
+        "operationId" : "listInstanceTypeState",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageInstanceTypeState"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Creates a InstanceTypeState.",
+        "description" : "Only Solution users, Container admins, and System admins can create InstanceTypeState.",
+        "operationId" : "createInstanceTypeState",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/InstanceTypeState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/InstanceTypeState"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/config/instance-types/{id}" : {
+      "get" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Retrieves a InstanceTypeState.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve InstanceTypeStates.",
+        "operationId" : "getInstanceTypeState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the InstanceTypeState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the InstanceTypeState",
+            "schema" : {
+              "$ref" : "#/definitions/InstanceTypeState"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no InstanceTypeState with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Updates a InstanceTypeState.",
+        "description" : "Only Solution users, Container admins, and System admins can update InstanceTypeState.",
+        "operationId" : "updateInstanceTypeState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the InstanceTypeState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The InstanceTypeState to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/InstanceTypeState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the InstanceTypeState is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Deletes a InstanceTypeState.",
+        "description" : "Only Solution users, Container admins, and System admins can delete InstanceTypeState.",
+        "operationId" : "deleteInstanceTypeState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a InstanceTypeState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "instanceTypeState" ],
+        "summary" : "Patches a InstanceTypeState.",
+        "description" : "Only Solution users, Container admins, and System admins can patch InstanceTypeState.",
+        "operationId" : "patchInstanceTypeState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the InstanceTypeState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the InstanceTypeState",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/InstanceTypeState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
           }
         }
       }
@@ -4568,372 +4810,6 @@
           "required" : true,
           "schema" : {
             "$ref" : "#/definitions/ComputeDescription"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : ""
-          }
-        }
-      }
-    },
-    "/api/resources/compute-network-descriptions" : {
-      "get" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Retrieves all ComputeNetworkDescriptions.",
-        "description" : "Only Solution users, Compute admins, and System admins can list ComputeNetworkDescriptions.",
-        "operationId" : "listComputeNetworkDescriptions",
-        "parameters" : [ {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page Number",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "description" : "Number of entries per page",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20
-        }, {
-          "name" : "$orderby",
-          "in" : "query",
-          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "$top",
-          "in" : "query",
-          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$skip",
-          "in" : "query",
-          "description" : "Sets how many entries you would like to skip",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$filter",
-          "in" : "query",
-          "description" : "Boolean expression for whether a particular entry should be included in the response",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PageComputeNetworkDescription"
-            }
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Creates a ComputeNetworkDescription.",
-        "description" : "Only Solution users, Compute admins, and System admins can create ComputeNetworkDescriptions.",
-        "operationId" : "createComputeNetworkDescription",
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetworkDescription"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/ComputeNetworkDescription"
-            }
-          },
-          "201" : {
-            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
-          }
-        }
-      }
-    },
-    "/api/resources/compute-network-descriptions/{id}" : {
-      "get" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Retrieves a ComputeNetworkDescription.",
-        "description" : "Only Solution users, Compute admins, and System admins can retrieve ComputeNetworkDescriptions.",
-        "operationId" : "getComputeNetworkDescription",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeNetworkDescription",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK with the ComputeNetworkDescription",
-            "schema" : {
-              "$ref" : "#/definitions/ComputeNetworkDescription"
-            }
-          },
-          "404" : {
-            "description" : "'Not Found' if no ComputeNetworkDescription with provided <code>id</code>"
-          }
-        }
-      },
-      "put" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Updates a ComputeNetworkDescription.",
-        "description" : "Only Solution users, Compute admins, and System admins can update ComputeNetworkDescriptions.",
-        "operationId" : "updateComputeNetworkDescription",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeDescription",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The ComputeNetworkDescription to be updated.",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetworkDescription"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'OK' is returned when the ComputeNetworkDescription is updated.",
-            "schema" : {
-              "type" : "object"
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Deletes a ComputeNetworkDescription.",
-        "description" : "Only Solution users, Compute admins, and System admins can delete ComputeNetworkDescriptions.",
-        "operationId" : "deleteComputeNetworkDescription",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of a ComputeNetworkDescription",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : ""
-          }
-        }
-      },
-      "patch" : {
-        "tags" : [ "compute-management" ],
-        "summary" : "Patches a ComputeNetworkDescription.",
-        "description" : "Only Solution users, Compute admins, and System admins can patch ComputeNetworkDescriptions.",
-        "operationId" : "patchComputeNetworkDescription",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeDescription",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The patch of the ComputeDescription",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetworkDescription"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : ""
-          }
-        }
-      }
-    },
-    "/api/resources/compute-networks" : {
-      "get" : {
-        "tags" : [ "compute" ],
-        "summary" : "Retrieves all ComputeNetworks.",
-        "description" : "Only Solution users, Compute admins, and System admins can list ComputeNetworks.",
-        "operationId" : "listComputeNetworks",
-        "parameters" : [ {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page Number",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "description" : "Number of entries per page",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20
-        }, {
-          "name" : "$orderby",
-          "in" : "query",
-          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "$top",
-          "in" : "query",
-          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$skip",
-          "in" : "query",
-          "description" : "Sets how many entries you would like to skip",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$filter",
-          "in" : "query",
-          "description" : "Boolean expression for whether a particular entry should be included in the response",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PageComputeNetwork"
-            }
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "compute" ],
-        "summary" : "Creates a ComputeNetwork.",
-        "description" : "Only Solution users, Compute admins, and System admins can create ComputeNetworks.",
-        "operationId" : "createComputeNetwork",
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetwork"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/ComputeNetwork"
-            }
-          },
-          "201" : {
-            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
-          }
-        }
-      }
-    },
-    "/api/resources/compute-networks/{id}" : {
-      "get" : {
-        "tags" : [ "compute" ],
-        "summary" : "Retrieves a ComputeNetwork.",
-        "description" : "Solution users, System admins, Compute admins, and Compute architects can retrieve ComputeNetworks.",
-        "operationId" : "getComputeNetwork",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeNetwork",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK with the ComputeNetwork",
-            "schema" : {
-              "$ref" : "#/definitions/ComputeNetwork"
-            }
-          },
-          "404" : {
-            "description" : "'Not Found' if no ComputeNetwork with provided <code>id</code>"
-          }
-        }
-      },
-      "put" : {
-        "tags" : [ "compute" ],
-        "summary" : "Updates a ComputeNetwork.",
-        "description" : "Only Solution users, Compute admins, and System admins can update ComputeNetworks.",
-        "operationId" : "updateComputeNetwork",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeNetwork",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The ComputeNetwork to be updated.",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetwork"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'OK' is returned when the ComputeNetwork is updated.",
-            "schema" : {
-              "type" : "object"
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "compute" ],
-        "summary" : "Deletes a ComputeNetwork.",
-        "description" : "Only Solution users, Compute admins, and System admins can delete ComputeNetwork.",
-        "operationId" : "deleteComputeNetwork",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of a ComputeNetwork",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : ""
-          }
-        }
-      },
-      "patch" : {
-        "tags" : [ "compute" ],
-        "summary" : "Patches a ComputeNetwork.",
-        "description" : "Only Solution users, Compute admins, and System admins can patch ComputeNetwork.",
-        "operationId" : "patchComputeNetwork",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The id of the ComputeNetwork",
-          "required" : true,
-          "type" : "string",
-          "pattern" : ".+$"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The patch of the ComputeNetwork",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/ComputeNetwork"
           }
         } ],
         "responses" : {
@@ -8773,6 +8649,31 @@
             }
           }
         }
+      },
+      "post" : {
+        "tags" : [ "storage" ],
+        "summary" : "Creates a StorageDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can create StorageDescription.",
+        "operationId" : "createStorageDescription",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/StorageDescription"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/StorageDescription"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
       }
     },
     "/api/resources/storage-descriptions/{id}" : {
@@ -9903,7 +9804,7 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "storage" : {
+        "storageCapacity" : {
           "type" : "integer",
           "format" : "int64"
         },
@@ -10099,164 +10000,6 @@
         "osFamily" : {
           "type" : "string",
           "enum" : [ "WINDOWS", "LINUX", "MACOS", "OTHER" ]
-        }
-      }
-    },
-    "ComputeNetwork" : {
-      "type" : "object",
-      "properties" : {
-        "documentSelfLink" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "documentUpdateTimeMicros" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "documentExpirationTimeMicros" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "tenantLinks" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "id" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "desc" : {
-          "type" : "string"
-        },
-        "groupLinks" : {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "tagLinks" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "regionId" : {
-          "type" : "string"
-        },
-        "customProperties" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        },
-        "descriptionLink" : {
-          "type" : "string"
-        },
-        "parentLink" : {
-          "type" : "string"
-        },
-        "assignment" : {
-          "type" : "string"
-        },
-        "networkType" : {
-          "type" : "string",
-          "enum" : [ "PUBLIC", "ISOLATED" ]
-        },
-        "external" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "networkProfileLink" : {
-          "type" : "string"
-        },
-        "subnetLink" : {
-          "type" : "string"
-        },
-        "securityGroupLinks" : {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "ComputeNetworkDescription" : {
-      "type" : "object",
-      "properties" : {
-        "documentSelfLink" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "documentUpdateTimeMicros" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "documentExpirationTimeMicros" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "tenantLinks" : {
-          "type" : "array",
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "id" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "assignment" : {
-          "type" : "string"
-        },
-        "networkType" : {
-          "type" : "string",
-          "enum" : [ "PUBLIC", "ISOLATED" ]
-        },
-        "external" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "networkProfileLink" : {
-          "type" : "string"
-        },
-        "securityGroupLinks" : {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "constraints" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "$ref" : "#/definitions/Constraint"
-          }
-        },
-        "customProperties" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
         }
       }
     },
@@ -12525,6 +12268,78 @@
         }
       }
     },
+    "ImageProfile" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "endpointLink" : {
+          "type" : "string"
+        },
+        "endpointType" : {
+          "type" : "string"
+        },
+        "imageMapping" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComputeImageDescription"
+          }
+        }
+      }
+    },
     "ImageState" : {
       "type" : "object",
       "properties" : {
@@ -12607,6 +12422,12 @@
     "InstanceTypeDescription" : {
       "type" : "object",
       "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
         "instanceType" : {
           "type" : "string"
         },
@@ -12621,6 +12442,78 @@
         "diskSizeMb" : {
           "type" : "integer",
           "format" : "int64"
+        }
+      }
+    },
+    "InstanceTypeState" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "endpointType" : {
+          "type" : "string"
+        },
+        "endpointLink" : {
+          "type" : "string"
+        },
+        "instanceTypeMapping" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/InstanceTypeDescription"
+          }
         }
       }
     },
@@ -13577,13 +13470,13 @@
     "PageAuthCredentialsServiceState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13619,13 +13512,13 @@
     "PageClosureDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13661,13 +13554,13 @@
     "PageClosureState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13703,13 +13596,13 @@
     "PageCompositeComponent" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13745,13 +13638,13 @@
     "PageCompositeDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13787,13 +13680,13 @@
     "PageComputeDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13826,100 +13719,16 @@
         }
       }
     },
-    "PageComputeNetwork" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "size" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "content" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ComputeNetwork"
-          }
-        },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        }
-      }
-    },
-    "PageComputeNetworkDescription" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "size" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "content" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/ComputeNetworkDescription"
-          }
-        },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        }
-      }
-    },
     "PageComputeProfile" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13955,13 +13764,13 @@
     "PageComputeState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -13997,13 +13806,13 @@
     "PageConfigurationState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14039,13 +13848,13 @@
     "PageContainerDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14081,13 +13890,13 @@
     "PageContainerNetworkDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14123,13 +13932,13 @@
     "PageContainerNetworkState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14165,13 +13974,13 @@
     "PageContainerRequestStatus" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14207,13 +14016,13 @@
     "PageContainerState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14249,13 +14058,13 @@
     "PageContainerType" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14291,13 +14100,13 @@
     "PageContainerVolumeDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14333,13 +14142,13 @@
     "PageContainerVolumeState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14375,13 +14184,13 @@
     "PageDeploymentPolicy" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14417,13 +14226,13 @@
     "PageElasticPlacementZoneConfigurationState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14459,13 +14268,13 @@
     "PageElasticPlacementZoneState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14501,13 +14310,13 @@
     "PageEndpointState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14543,13 +14352,13 @@
     "PageEventLogState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14585,13 +14394,13 @@
     "PageEventTopicState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14627,13 +14436,13 @@
     "PageGroupResourcePlacementState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14669,13 +14478,13 @@
     "PageImageEnumerationTaskState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14708,16 +14517,58 @@
         }
       }
     },
-    "PageImageState" : {
+    "PageImageProfile" : {
       "type" : "object",
       "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ImageProfile"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageImageState" : {
+      "type" : "object",
+      "properties" : {
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14750,16 +14601,58 @@
         }
       }
     },
-    "PageNetworkInterfaceDescription" : {
+    "PageInstanceTypeState" : {
       "type" : "object",
       "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/InstanceTypeState"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageNetworkInterfaceDescription" : {
+      "type" : "object",
+      "properties" : {
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14795,13 +14688,13 @@
     "PageNetworkInterfaceState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14837,13 +14730,13 @@
     "PageNetworkProfile" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14879,13 +14772,13 @@
     "PageNetworkState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14921,13 +14814,13 @@
     "PagePhotonModelAdapterConfig" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -14963,13 +14856,13 @@
     "PageProfileMappingState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15005,13 +14898,13 @@
     "PageProfileState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15047,13 +14940,13 @@
     "PageRegistryState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15089,13 +14982,13 @@
     "PageRequestBrokerState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15131,13 +15024,13 @@
     "PageResourceGroupState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15173,13 +15066,13 @@
     "PageResourcePoolState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15215,13 +15108,13 @@
     "PageSecurityGroup" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15257,13 +15150,13 @@
     "PageServiceDocumentDeleteTaskState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15299,13 +15192,13 @@
     "PageSslTrustCertificateState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15341,13 +15234,13 @@
     "PageSslTrustedCertificateState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15383,13 +15276,13 @@
     "PageStorageDescription" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15425,13 +15318,13 @@
     "PageStorageProfile" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15467,13 +15360,13 @@
     "PageSubnetState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -15509,13 +15402,13 @@
     "PageTagState" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"

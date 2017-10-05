@@ -2569,6 +2569,10 @@
           "minLength" : 0,
           "maxLength" : 255
         },
+        "certificate" : {
+          "type" : "string",
+          "description" : "certificate used to connect to vRO"
+        },
         "embedded" : {
           "type" : "boolean",
           "default" : false
@@ -2592,6 +2596,9 @@
         },
         "certificateInfo" : {
           "$ref" : "#/definitions/CertificateInfo"
+        },
+        "certificate" : {
+          "type" : "string"
         }
       },
       "xml" : {

@@ -2052,6 +2052,35 @@
             }
           }
         }
+      },
+      "put" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Update the security policy identified by its ID",
+        "description" : "",
+        "operationId" : "updateSecurityPolicy",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security policy",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security policy to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
       }
     },
     "/api/security-tags" : {
@@ -2405,6 +2434,35 @@
             "description" : "Security tag returned successfully",
             "schema" : {
               "$ref" : "#/definitions/SecurityTag"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Update the security tag identified by its ID",
+        "description" : "",
+        "operationId" : "updateSecurityTag",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security tag",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security tag to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityTag"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
             }
           }
         }
@@ -3382,6 +3440,11 @@
           "minLength" : 0,
           "maxLength" : 255
         },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -3535,6 +3598,11 @@
           "type" : "string",
           "minLength" : 0,
           "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
@@ -3722,6 +3790,11 @@
           "type" : "string",
           "minLength" : 0,
           "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
@@ -3985,6 +4058,11 @@
           "minLength" : 0,
           "maxLength" : 255
         },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -4083,6 +4161,11 @@
           "type" : "string",
           "minLength" : 0,
           "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
@@ -4363,11 +4446,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -4387,6 +4470,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4401,17 +4492,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4429,6 +4512,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4443,17 +4534,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4471,6 +4554,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4485,17 +4576,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4513,6 +4596,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4527,17 +4618,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4555,6 +4638,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4569,17 +4660,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4597,6 +4680,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4611,17 +4702,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4639,6 +4722,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4653,17 +4744,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4681,6 +4764,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4695,17 +4786,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4723,6 +4806,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4737,17 +4828,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4765,6 +4848,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -4779,17 +4870,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -4972,6 +5055,11 @@
           "minLength" : 0,
           "maxLength" : 255
         },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -5105,6 +5193,11 @@
           "minLength" : 0,
           "maxLength" : 255
         },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -5225,6 +5318,11 @@
           "type" : "string",
           "minLength" : 0,
           "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"

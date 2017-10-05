@@ -542,6 +542,52 @@
         }
       }
     },
+    "/api/blueprints/{blueprintId}/forms/{formType}/validate" : {
+      "post" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Validate custom form for blueprint",
+        "description" : "Validate custom form for blueprint.",
+        "operationId" : "validateForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The form definition.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form is validated successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
     "/api/blueprints/{blueprintId}/forms/{formType}/validate/{validationType}" : {
       "get" : {
         "tags" : [ "blueprints", "author-api" ],
@@ -584,7 +630,8 @@
           "404" : {
             "description" : "Blueprint not found."
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/api/blueprints/{id}" : {
@@ -3939,6 +3986,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -3953,17 +4008,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -3981,6 +4028,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -3995,17 +4050,9 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "first" : {
           "type" : "boolean",
           "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },

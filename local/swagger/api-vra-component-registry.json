@@ -916,6 +916,21 @@
         }
       }
     },
+    "/services/config.js" : {
+      "get" : {
+        "tags" : [ "component-registry" ],
+        "summary" : "Get the config.js needed for API Explorer",
+        "description" : "",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ModelAndView"
+            }
+          }
+        }
+      }
+    },
     "/services/docs" : {
       "get" : {
         "tags" : [ "component-registry" ],
@@ -3302,14 +3317,6 @@
           "type" : "string",
           "enum" : [ "CONTINUE", "SWITCHING_PROTOCOLS", "PROCESSING", "CHECKPOINT", "OK", "CREATED", "ACCEPTED", "NON_AUTHORITATIVE_INFORMATION", "NO_CONTENT", "RESET_CONTENT", "PARTIAL_CONTENT", "MULTI_STATUS", "ALREADY_REPORTED", "IM_USED", "MULTIPLE_CHOICES", "MOVED_PERMANENTLY", "FOUND", "MOVED_TEMPORARILY", "SEE_OTHER", "NOT_MODIFIED", "USE_PROXY", "TEMPORARY_REDIRECT", "PERMANENT_REDIRECT", "BAD_REQUEST", "UNAUTHORIZED", "PAYMENT_REQUIRED", "FORBIDDEN", "NOT_FOUND", "METHOD_NOT_ALLOWED", "NOT_ACCEPTABLE", "PROXY_AUTHENTICATION_REQUIRED", "REQUEST_TIMEOUT", "CONFLICT", "GONE", "LENGTH_REQUIRED", "PRECONDITION_FAILED", "PAYLOAD_TOO_LARGE", "REQUEST_ENTITY_TOO_LARGE", "URI_TOO_LONG", "REQUEST_URI_TOO_LONG", "UNSUPPORTED_MEDIA_TYPE", "REQUESTED_RANGE_NOT_SATISFIABLE", "EXPECTATION_FAILED", "I_AM_A_TEAPOT", "INSUFFICIENT_SPACE_ON_RESOURCE", "METHOD_FAILURE", "DESTINATION_LOCKED", "UNPROCESSABLE_ENTITY", "LOCKED", "FAILED_DEPENDENCY", "UPGRADE_REQUIRED", "PRECONDITION_REQUIRED", "TOO_MANY_REQUESTS", "REQUEST_HEADER_FIELDS_TOO_LARGE", "INTERNAL_SERVER_ERROR", "NOT_IMPLEMENTED", "BAD_GATEWAY", "SERVICE_UNAVAILABLE", "GATEWAY_TIMEOUT", "HTTP_VERSION_NOT_SUPPORTED", "VARIANT_ALSO_NEGOTIATES", "INSUFFICIENT_STORAGE", "LOOP_DETECTED", "BANDWIDTH_LIMIT_EXCEEDED", "NOT_EXTENDED", "NETWORK_AUTHENTICATION_REQUIRED" ]
         },
-        "reference" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "empty" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "viewName" : {
           "type" : "string"
         },
@@ -3318,6 +3325,14 @@
           "additionalProperties" : {
             "type" : "object"
           }
+        },
+        "reference" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "empty" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -3506,12 +3521,12 @@
     "OrderByExpression" : {
       "type" : "object",
       "properties" : {
-        "expression" : {
-          "$ref" : "#/definitions/CommonExpression"
-        },
         "direction" : {
           "type" : "string",
           "enum" : [ "ASCENDING", "DESCENDING" ]
+        },
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
         }
       }
     },
@@ -3549,8 +3564,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3566,17 +3590,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -3591,8 +3606,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3608,17 +3632,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -3633,8 +3648,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3650,17 +3674,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -3675,8 +3690,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3692,17 +3716,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -3717,8 +3732,17 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3734,17 +3758,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -3987,14 +4002,14 @@
           }
         }
       },
-      "description" : "A service is a logical feature unit. One service may have multiple instances. A service may have sub ?features. These sub features are called service end points. A service end point lets a service consumer know where to access the end point. However the end point does not provide automatic service binding. The service consumer needs to know how to use the API provided by service provider end point without any assistance from the component registry. ServiceType: A service is identified by it service type. Services of the same service type should have identical features. Instance identity: A service may register multiple instances. Each instance is identified by a service instance UUID. Service registration, update, and deregistration are on the basis of service instance. If a service has multiple instances registered, unregistering one instance does not affect other instances of the service. Attributes: Services may provide key/value pairs as service attributes.These attributes should not be used for storing significant amount of data. Endpoints: A service may provide a list of endpoints. An endpoint is an interface point and is typically associated with an IP address and a port number. An end point only shows where the service location is, but it does not provide any binding. A client that uses an end point should know how to use the end point independent of the service registration data. The ServiceInfo class provide information about a given registered Service with the ComponentRegistry and its properties."
+      "description" : "A service is a logical feature unit. One service may have multiple instances. A service may have sub ƒfeatures. These sub features are called service end points. A service end point lets a service consumer know where to access the end point. However the end point does not provide automatic service binding. The service consumer needs to know how to use the API provided by service provider end point without any assistance from the component registry. ServiceType: A service is identified by it service type. Services of the same service type should have identical features. Instance identity: A service may register multiple instances. Each instance is identified by a service instance UUID. Service registration, update, and deregistration are on the basis of service instance. If a service has multiple instances registered, unregistering one instance does not affect other instances of the service. Attributes: Services may provide key/value pairs as service attributes.These attributes should not be used for storing significant amount of data. Endpoints: A service may provide a list of endpoints. An endpoint is an interface point and is typically associated with an IP address and a port number. An end point only shows where the service location is, but it does not provide any binding. A client that uses an end point should know how to use the end point independent of the service registration data. The ServiceInfo class provide information about a given registered Service with the ComponentRegistry and its properties."
     },
     "ServiceRegistration" : {
       "type" : "object",
       "required" : [ "serviceInfo", "solutionInfo" ],
       "properties" : {
         "serviceInfo" : {
-          "description" : "The service to register, using the solution user created from ?solutionInfo.",
+          "description" : "The service to register, using the solution user created from ßsolutionInfo.",
           "$ref" : "#/definitions/ServiceInfo"
         },
         "solutionInfo" : {
