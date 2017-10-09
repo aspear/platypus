@@ -29,6 +29,7 @@ set -x  # fail the script if any command fails
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 OUTPUT_DIR=${SCRIPT_DIR}/staging
+OUTPUT_DIR_VA=${SCRIPT_DIR}/staging-va
 TOOLS_DIR=${SCRIPT_DIR}/tools
 
 APIX_SERVER=https://vdc-repo.vmware.com
@@ -42,11 +43,11 @@ APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
 
 # download zips of the distribution and tools if not cached locally
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document api-explorer-dist-${VER}.zip
 fi
 
 if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document api-explorer-tools-${VER}.zip
     rm -rf ${SCRIPT_DIR}/tools  # if we downloaded new tools, wipe the old ones
 fi
 
@@ -64,6 +65,9 @@ else
 fi
 
 # Clean the staging directory if it already exists
+rm -rf ${OUTPUT_DIR_VA}
+mkdir -p ${OUTPUT_DIR_VA}
+
 rm -rf ${OUTPUT_DIR}/*
 mkdir -p ${OUTPUT_DIR}/local/swagger
 
@@ -98,15 +102,19 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
 sed -i 's/API Explorer/VMware vRealize Automation API Explorer/' ${OUTPUT_DIR}/index.html
 
 # now create a war file that is simply a wrapper on the image 
-WAR_FILE_NAME=api-explorer-vra.war
-mkdir -p ${OUTPUT_DIR}/WEB-INF
-cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-<display-name>VMware vRealize Automation API Explorer</display-name>
-<welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
-</web-app>
-EOF
+#WAR_FILE_NAME=api-explorer-vra.war
+#mkdir -p ${OUTPUT_DIR}/WEB-INF
+#cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
+#<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+#<display-name>VMware vRealize Automation API Explorer</display-name>
+#<welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
+#</web-app>
+#EOF
+#
+#zip -r ${OUTPUT_DIR}/${WAR_FILE_NAME} *
 
-zip -r ${OUTPUT_DIR}/${WAR_FILE_NAME} *
+echo "Creating VA staging dir"
+cp -R ${OUTPUT_DIR}/* ${OUTPUT_DIR_VA}
+find ${OUTPUT_DIR_VA} -type f -exec  ${SCRIPT_DIR}/adjustApiPathsForVra.sh {} \;
 
 popd
