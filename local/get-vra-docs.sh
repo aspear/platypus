@@ -2,7 +2,13 @@
 
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
+if [ "$1" != "" ]; then
+VRA_HOST=$1
+else
 VRA_HOST=cava-pn-209-000.eng.vmware.com
+fi
+
+echo "Downloading vRA Swagger files from host $VRA_HOST"
 
 # 5/15/2017 NOTE: these are currently broken, so removed. 
 # https://${VRA_HOST}/healthbroker-proxy-server/api/docs/swagger.json;healthbroker-proxy-server
@@ -38,12 +44,6 @@ https://${VRA_HOST}:443/vco/api/docs/swagger.json;vco
 https://${VRA_HOST}/workitem-service/api/docs/swagger.json;workitem-service
 ";
 
-#for VALUE in $VALUES; do
-#SERVER_URL=${VALUE%%;*} # will drop part of string from first occur of `SubStr` to the end
-#NAME=${VALUE#*;}  # will drop begin of string upto first occur of `SubStr`
-#echo "SERVER=${SERVER_URL} NAME=${NAME}"
-#done
-
 OUTPUT_DIR=${SCRIPT_DIR}/swagger
 
 rm -rf ${OUTPUT_DIR}
@@ -58,6 +58,6 @@ NAME=${VALUE#*;}  # will drop begin of string upto first occur of `SubStr`
   wget --no-check-certificate -q -O api-vra-${NAME}.json ${SERVER_URL}
 done
 
-popd
+echo "Done downloading from host $VRA_HOST to dir $OUTPUT_DIR."
 
-#zip -r photon-controller-api-docs-swagger12.zip api-docs api-docsapis
+popd
