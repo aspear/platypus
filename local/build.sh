@@ -26,11 +26,14 @@
 ###############################################################################
 
 set -x  # fail the script if any command fails
-
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-OUTPUT_DIR=${SCRIPT_DIR}/staging
-OUTPUT_DIR_VA=${SCRIPT_DIR}/staging-va
-TOOLS_DIR=${SCRIPT_DIR}/tools
+
+# -----------------------------------------------------------------------------
+# VARIABLES YOU CAN SET
+
+# you can supply an overridden build directory if you wish.  In this case all
+# output is created there. Defaults to the same directory as the SCRIPT_DIR
+BUILD_DIR:=${SCRIPT_DIR}
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
@@ -39,33 +42,40 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # values
 export VER="1.0.0"
 export MILESTONE="rc3"
+
+# -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
 
+OUTPUT_DIR=${BUILD_DIR}/staging
+OUTPUT_DIR_VA=${BUILD_DIR}/staging-va
+TOOLS_DIR=${BUILD_DIR}/tools
+DOWNLOAD_DIR=${BUILD_DIR}/download
+
+mkdir -p ${DOWNLOAD_DIR}
+
 # download zips of the distribution and tools if not cached locally
-if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document api-explorer-dist-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 fi
 
-if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document api-explorer-tools-${VER}.zip
-    rm -rf ${SCRIPT_DIR}/tools  # if we downloaded new tools, wipe the old ones
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
+    rm -rf ${TOOLS_DIR}  # if we downloaded new tools, wipe the old ones
 fi
 
 # only stage the tools once
-if [ -d "${SCRIPT_DIR}/tools" ]; then
+if [ -d "${TOOLS_DIR}" ]; then
     echo "Already staged tools"
 else
     echo "Staging tools"
-    mkdir -p ${SCRIPT_DIR}/tools
-    pushd ${SCRIPT_DIR}/tools
-	
-    unzip ${SCRIPT_DIR}/api-explorer-tools-${VER}.zip
-
+    mkdir -p ${TOOLS_DIR}
+    pushd ${TOOLS_DIR}
+    unzip ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
     popd
 fi
 
 # Clean the staging directory if it already exists
-rm -rf ${OUTPUT_DIR_VA}
+rm -rf ${OUTPUT_DIR_VA}/*
 mkdir -p ${OUTPUT_DIR_VA}
 
 rm -rf ${OUTPUT_DIR}/*
@@ -74,7 +84,7 @@ mkdir -p ${OUTPUT_DIR}/local/swagger
 pushd ${OUTPUT_DIR}
 
 echo "Extracting APIX distribution"
-unzip ${SCRIPT_DIR}/api-explorer-dist-${VER}.zip
+unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
 echo "Overwriting stock config with local config"
 cp -f ${SCRIPT_DIR}/config.js .
