@@ -21,6 +21,7 @@ adjustPathsInFile() {
     sed -i s@\"images/@\"../api/docs/images/@g $1
     sed -i s@\"favicon.ico@\"../api/docs/favicon.ico@g $1
     sed -i s@\'swagger-console.html@\'../api/docs/swagger-console.html@g $1
+    sed -i s@\"about.html\"@\"../api/docs/about.html\"@g $1
 }
 echo "adjustApiPathsForVra in $FILE"
 adjustPathsInFile $FILE

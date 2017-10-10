@@ -31,9 +31,9 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 # -----------------------------------------------------------------------------
 # VARIABLES YOU CAN SET
 
-# you can supply an overridden build directory if you wish.  In this case all
-# output is created there. Defaults to the same directory as the SCRIPT_DIR
-BUILD_DIR:=${SCRIPT_DIR}
+# you can supply an overridden build directory via BUILD_DIR variable if you 
+# wish.  If not provided, all output is created in this (the script) directory.
+BUILD_DIR=${BUILD_DIR:-${SCRIPT_DIR}}
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
