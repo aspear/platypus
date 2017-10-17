@@ -26,10 +26,14 @@
 ###############################################################################
 
 set -x  # fail the script if any command fails
-
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-OUTPUT_DIR=${SCRIPT_DIR}/staging
-TOOLS_DIR=${SCRIPT_DIR}/tools
+
+# -----------------------------------------------------------------------------
+# VARIABLES YOU CAN SET
+
+# you can supply an overridden build directory via BUILD_DIR variable if you 
+# wish.  If not provided, all output is created in this (the script) directory.
+BUILD_DIR=${BUILD_DIR:-${SCRIPT_DIR}}
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
@@ -37,29 +41,36 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
 export VER="1.0.0"
-export MILESTONE=rc3
+export MILESTONE="rc3"
+
+# -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
 
+OUTPUT_DIR=${BUILD_DIR}/staging
+TOOLS_DIR=${BUILD_DIR}/tools
+DOWNLOAD_DIR=${BUILD_DIR}/download
+WAR_DIR=${BUILD_DIR}/war
+
+mkdir -p ${DOWNLOAD_DIR}
+
 # download zips of the distribution and tools if not cached locally
-if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 fi
 
-if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
-    rm -rf ${SCRIPT_DIR}/tools  # if we downloaded new tools, wipe the old ones
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
+    rm -rf ${TOOLS_DIR}  # if we downloaded new tools, wipe the old ones
 fi
 
 # only stage the tools once
-if [ -d "${SCRIPT_DIR}/tools" ]; then
+if [ -d "${TOOLS_DIR}" ]; then
     echo "Already staged tools"
 else
     echo "Staging tools"
-    mkdir -p ${SCRIPT_DIR}/tools
-    pushd ${SCRIPT_DIR}/tools
-	
-    unzip ${SCRIPT_DIR}/api-explorer-tools-${VER}.zip
-
+    mkdir -p ${TOOLS_DIR}
+    pushd ${TOOLS_DIR}
+    unzip ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
     popd
 fi
 
@@ -70,7 +81,7 @@ mkdir -p ${OUTPUT_DIR}/local/swagger
 pushd ${OUTPUT_DIR}
 
 echo "Extracting APIX distribution"
-unzip ${SCRIPT_DIR}/api-explorer-dist-${VER}.zip
+unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
 echo "Overwriting stock config with local config"
 cp -f ${SCRIPT_DIR}/config.js .
@@ -84,7 +95,7 @@ cp -f ${SCRIPT_DIR}/config.js .
 
 # These arguments result in abbreviating the swagger description field at the top
 # of the staged swagger file, and splitting the description markdown text into a 
-# separate HTML file respectively
+# separate HTML file respectively.
 # --abbreviate_description \
 # --generate_overview_html \
 
@@ -93,15 +104,25 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
  --product_name="vRealize Network Insight;1.0" \
  --api_version="1.0.0" \
- --abbreviate_description \
- --generate_overview_html \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
  --output_file ${OUTPUT_DIR}/local.json \
  --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties 
 
-# inline replace title on the API Explorer index.html file to reflect our product branding
-sed -i 's/API Explorer/VMware vRealize Network Insight API Explorer/' ${OUTPUT_DIR}/index.html
+# now create a war file that is simply a wrapper on the image 
+WAR_FILE_NAME=apix-vrni.war
+
+mkdir -p ${OUTPUT_DIR}/WEB-INF
+cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<display-name>VMware vRealize Networking Insight API Explorer</display-name>
+<welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
+</web-app>
+EOF
+
+mkdir -p ${WAR_DIR}
+rm -f ${WAR_DIR}/${WAR_FILE_NAME}
+zip -r ${WAR_DIR}/${WAR_FILE_NAME} *
 
 popd

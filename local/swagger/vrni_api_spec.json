@@ -1,9 +1,9 @@
 {
    "swagger": "2.0",
    "info": {
-      "description": "vRealize Network Insight REST APIs",
+      "description": "vRealize Network Insight REST API",
       "version": "1.0.0",
-      "title": "vRealize Networking Insight API"
+      "title": "vRealize Network Insight API"
    },
    "host": "localhost:8000",
    "basePath": "/rest",
