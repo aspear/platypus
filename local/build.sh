@@ -36,8 +36,9 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="0.0.35"
-APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
+export VER="1.0.0"
+export MILESTONE=rc3
+APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
 
 # download zips of the distribution and tools if not cached locally
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
@@ -89,38 +90,5 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
  --output_file ${OUTPUT_DIR}/local.json
-
-
-# the code below actually mirrors API content from code.vmware.com.
-#echo "Mirroring API content from ${APIX_SERVER}"
-#python ${TOOLS_DIR}/apixlocal/apixlocal.py \
-# stage \
-# --server=${APIX_SERVER} \
-# --html_root_dir=${OUTPUT_DIR} \
-# --output_file=${OUTPUT_DIR}/local.json  \
-# --mirror_output_dir=${OUTPUT_DIR}/local/mirror \
-# --mirror_api=api_vsphere \
-# --mirror_api=api_vcenter_infrastructure \
-# --mirror_api=api_content \
-# --mirror_api=api_vcenter_server_appliance_infrastructure \
-# --mirror_api=api_vapi_infrastructure \
-# --mirror_api=api_cis_management \
-# --mirror_api=api_vcenter_server_appliance_management \
-# --mirror_api=api_cis_infrastructure \
-# --mirror_api=api_vcenter_management \
-# --mirror_api=api_vapi_management \
-# --mirror_api=api_vsphere_automation_java \
-# --mirror_api=api_vsphere_automation_dotnet \
-# --mirror_api=api_vsphere_automation_python \
-# --mirror_api=api_vsphere_automation_ruby \
-# --mirror_api=api_vsphere_automation_perl \
-# --mirror_api=api_vsphere_automation_lookup_service \
-# --mirror_api=api_vsphere_esx_agent_manager \
-# --mirror_api=api_vcenter_sso \
-# --mirror_api=api_storage_monitoring_service \
-# --mirror_api=api_vsphere_guest \
-# --mirror_api=api_vsphere_ha_application_monitor \
-# --mirror_api=api_cim \
-# --mirror_api=api_virtual_disk
 
 popd
