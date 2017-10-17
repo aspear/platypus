@@ -81,11 +81,20 @@ cp -f ${SCRIPT_DIR}/config.js .
 # markdown description from the swagger and generating overview HTML
 # next to the json files.  When it does this it generates an "overview"
 # resource in the local.json file that has all of the configuration in it
+
+# These arguments result in abbreviating the swagger description field at the top
+# of the staged swagger file, and splitting the description markdown text into a 
+# separate HTML file respectively
+# --abbreviate_description \
+# --generate_overview_html \
+
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
  --product_name="vRealize Network Insight;1.0" \
- --api_version="(vRNI 1.0)" \
+ --api_version="1.0.0" \
+ --abbreviate_description \
+ --generate_overview_html \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
