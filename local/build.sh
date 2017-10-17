@@ -98,6 +98,10 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
- --output_file ${OUTPUT_DIR}/local.json
+ --output_file ${OUTPUT_DIR}/local.json \
+ --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties 
+
+# inline replace title on the API Explorer index.html file to reflect our product branding
+sed -i 's/API Explorer/VMware vRealize Network Insight API Explorer/' ${OUTPUT_DIR}/index.html
 
 popd

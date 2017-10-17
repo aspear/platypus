@@ -1,9 +1,9 @@
 {
    "swagger": "2.0",
    "info": {
-      "description": "A list of the vRNI public APIs",
+      "description": "vRealize Network Insight REST APIs",
       "version": "1.0.0",
-      "title": "vRNI API Documentation Center"
+      "title": "vRealize Networking Insight API"
    },
    "host": "localhost:8000",
    "basePath": "/rest",
