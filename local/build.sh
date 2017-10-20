@@ -88,8 +88,6 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/local.json  \
- --abbreviate_description \
- --generate_overview_html \
  --product_name="Aptelligent;1.0" \
  --swagger_glob=${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger \

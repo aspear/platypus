@@ -3,7 +3,7 @@
   "swagger": "2.0",
   "info": {
     "version": "2",
-    "title": "Swagger API",
+    "title": "Aptelligent API",
     "license": {
       "name": "MIT",
       "url": "http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT"
