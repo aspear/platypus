@@ -43,5 +43,21 @@
 
   // We are not currently using SSO support.
   window.config.ssoEnabled = false;
+  //window.config.ssoId = "none";
+  //window.config.authApiEndPoint = "https://localhost/api/auth";
+
+  // Remote APIs endpoint.
+  
+  // https://code.vmware.com, the VMware production server
+  window.config.remoteSampleExchangeApiEndPoint = "https://vdc-repo.vmware.com/sampleExchange/v1";
+  window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+
+  // https://dptest-vchs.eng.vmware.com:8443/apis, VMware code team test server
+  //window.config.remoteSampleExchangeApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/sampleExchange/v1";
+  //window.config.remoteApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/dcr/rest/apix";
+ 
+  // https://code-stg.vmware.com, VMware internal staging server for code.vmware.com
+  //window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
+  //window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest/apix";
  
 }(this));
