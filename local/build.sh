@@ -102,7 +102,7 @@ cp -f ${SCRIPT_DIR}/config.js .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="vRealize Network Insight;1.0" \
+ --product_name="vRealize Network Insight;3.6.0" \
  --api_version="1.0.0" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
