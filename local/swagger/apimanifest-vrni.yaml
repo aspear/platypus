@@ -1,0 +1,13 @@
+apis:
+  - api_uid: 'api_vrni'
+    name: 'vRealize Network Insight API'
+    description: 'VMware vRealize Network Insight REST API'
+    version: '(vRNI 3.6.0)'
+    api_ref_doc_type: 'SWAGGER'
+    api_ref_doc_url: 'vrni_api_spec.json' 
+
+products:
+  - product_name: vRealize Network Insight
+    product_version: 3.6.0
+    provided_api_uids:
+    - api_vrni
