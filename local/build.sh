@@ -40,8 +40,8 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.0.0"
-export MILESTONE="rc3"
+export VER="2.0.0"
+export MILESTONE="a1"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
