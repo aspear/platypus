@@ -36,8 +36,9 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="0.0.35"
-APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}
+export VER="1.0.0"
+export MILESTONE=rc3
+APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
 
 # download zips of the distribution and tools if not cached locally
 if [ ! -f api-explorer-dist-${VER}.zip ]; then
