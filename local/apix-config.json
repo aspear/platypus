@@ -1,0 +1,27 @@
+{
+    "baseRoute" : "/",
+    "apiListHeaderText" : "vSphere REST APIs",
+    "remoteApiUrl" : "https://vdc-repo.vmware.com/apix",
+    "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
+    "localApiUrl" : "local.json",
+    "enableLocal" : true,
+    "enableRemote" : true,
+    "defaultFilters" : {
+        "keywords" : "",
+        "products" : ["vSphere"],
+        "languages": [],
+        "types" : [],
+        "sources" : ["local"]
+    },
+    "hideFilters" : true,
+    "hideProductsFilter" : false,
+    "hideLanguagesFilter" : false,
+    "hideSourcesFilter" : false,
+    "sso" : [
+    {   "id": "vcenter_sso",
+        "swaggerAuthName": "ApiKeyAuth",
+        "displayName": "vCenter SSO",
+        "authUrl": "/rest/com/vmware/cis/session"
+    }
+    ]
+}

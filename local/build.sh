@@ -83,8 +83,8 @@ pushd ${OUTPUT_DIR}
 echo "Extracting APIX distribution"
 unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
-echo "Overwriting stock config with local config"
-cp -f ${SCRIPT_DIR}/config.js .
+echo "Overwriting stock apix-config.json with custom config"
+cp -f ${SCRIPT_DIR}/apix-config.json .
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
@@ -95,8 +95,8 @@ cp -f ${SCRIPT_DIR}/config.js .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="vSphere;6.5.0" \
- --api_version="(vSphere 6.5.0)" \
+ --product_name="vSphere;6.7.0" \
+ --api_version="(vSphere 6.7.0)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
