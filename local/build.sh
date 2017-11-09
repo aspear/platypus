@@ -95,8 +95,8 @@ cp -f ${SCRIPT_DIR}/apix-config.json .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="vSphere;6.7.0" \
- --api_version="(vSphere 6.7.0)" \
+ --product_name="SDDC;1.0" \
+ --api_version="(SDDC 1.0)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \

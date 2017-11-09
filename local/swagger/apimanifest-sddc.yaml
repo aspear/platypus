@@ -1,0 +1,17 @@
+# this file contains an 'API Manifest' that maps API reference documents to released product versions.
+# the idea is using the file as a part of automated contribution of API reference documents.  For more
+# detail please see https://confluence.eng.vmware.com/display/code/API+Manifest+File+Format and/or
+# email Aaron Spear aspear@vmware.com
+apis:
+  - api_uid: 'api_sddc_iaas'
+    name: 'SDDC IaaS API'
+    description: 'A cloud consumption API for the VMWare SDDC. This API presents the VMWare SDDC as an Infrastructure-as-a-Service (IaaS) abstraction.'
+    api_ref_doc_type: 'SWAGGER'
+    api_ref_doc_url: 'swagger.json'
+
+products:
+  - product_name: 'SDDC'
+    product_version: 1.0
+    build_url: "0"
+    provided_api_uids:
+    - api_sddc_iaas

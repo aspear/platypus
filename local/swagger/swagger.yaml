@@ -1,0 +1,2495 @@
+---
+swagger: "2.0"
+info:
+  description: "VMWare IaaS API"
+  version: "0.6.1"
+  title: "IaaS API"
+basePath: "/"
+tags:
+- name: "block-devices"
+  description: "Endpoint for all 'block device' operations"
+- name: "consumer"
+- name: "disk"
+- name: "image"
+- name: "images"
+  description: "Endpoint for all image operations"
+- name: "loadBalancer"
+  description: "Endpoint for all 'loadBalancer' operations"
+- name: "machine"
+- name: "machines"
+  description: "Endpoint for all 'machine' operations"
+- name: "network"
+- name: "networkDomain"
+  description: "Endpoint for all network domain operations"
+- name: "networks"
+  description: "Endpoint for all 'network' operations"
+- name: "regions"
+  description: "Endpoint for all 'regions'"
+- name: "request"
+- name: "requests"
+  description: "Endpoint for request status operations"
+- name: "vSphere machine"
+- name: "vSphere machines"
+  description: "Endpoint for all 'vSphere machine' operations"
+- name: "zones"
+  description: "Service that handles CRUD operations for placement zones."
+schemes:
+- "http"
+- "https"
+paths:
+  /iaas/block-devices:
+    get:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Get BlockDevices"
+      description: "Get all BlockDevices"
+      operationId: "getBlockDevices"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+    post:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Create BlockDevice"
+      description: "Create a BlockDevice."
+      operationId: "createBlockDevice"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Disk Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/BlockDeviceSpecification"
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+  /iaas/block-devices/{id}:
+    get:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Get BlockDevice"
+      description: "Get a single BlockDevice"
+      operationId: "getBlockDevice"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the block device."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BlockDevice"
+        403:
+          description: "Forbidden"
+    delete:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Delete a BlockDevice"
+      description: "Delete a BlockDevice"
+      operationId: "deleteBlockDevice"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the block device."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Update BlockDevice"
+      description: "Update a BlockDevice."
+      operationId: "updateBlockDevice"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Disk Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/BlockDevice"
+      - name: "id"
+        in: "path"
+        description: "The ID of the block device."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BlockDevice"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/block-devices/{id}/specification:
+    get:
+      tags:
+      - "disk"
+      - "consumer"
+      summary: "Get a Block Device's specification"
+      description: "Get the specification corresponding to a Block device."
+      operationId: "getBlockDeviceSpecification"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the block device."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BlockDeviceSpecification"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/images:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get Images"
+      description: "Get all Images."
+      operationId: "getImages"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/images/{id}:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get Image"
+      description: "Get a single Image."
+      operationId: "getImage"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the image."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Image"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Delete Image"
+      description: "Delete an existing Image."
+      operationId: "deleteImage"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the image."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Image"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+    patch:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Update Image"
+      description: "Update an existing Image."
+      operationId: "updateImage"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Disk Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/Image"
+      - name: "id"
+        in: "path"
+        description: "The ID of the image."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Image"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/load-balancers:
+    get:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Get LoadBalancers"
+      description: "Get a page of Load Balancers."
+      operationId: "getLoadBalancers"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+    post:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Create LoadBalancer"
+      description: "Create a new Load Balancer."
+      operationId: "createLoadBalancer"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "LoadBalancer Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/LoadBalancerSpecification"
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+  /iaas/load-balancers/{id}:
+    get:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Describe a LoadBalancer"
+      description: "Describe a Load Balancer."
+      operationId: "describeLoadBalancer"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the load balancer."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/LoadBalancer"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Delete a LoadBalancer"
+      description: "Delete a Load Balancer."
+      operationId: "deleteLoadBalancer"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the load balancer."
+        required: true
+        type: "string"
+      responses:
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Update LoadBalancer"
+      description: "Update an existing Load Balancer."
+      operationId: "updateLoadBalancer"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The id of the LoadBalancer."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "LoadBalancer instance"
+        required: true
+        schema:
+          $ref: "#/definitions/LoadBalancer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/LoadBalancer"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/load-balancers/{id}/specification:
+    get:
+      tags:
+      - "loadBalancer"
+      - "consumer"
+      summary: "Get a LoadBalancer's specification"
+      description: "Get the specification corresponding to a Load Balancer."
+      operationId: "getLoadBalancerSpecification"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the load balancer."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/LoadBalancerSpecification"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines:
+    get:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Get Machines"
+      description: "Get all Machines."
+      operationId: "getMachines"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+    post:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Create Machine"
+      description: "Create a new Machine."
+      operationId: "createMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Machine Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/MachineSpecification"
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+  /iaas/machines/{id}:
+    get:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Describe a Machine"
+      description: "Describe a Machine."
+      operationId: "describeMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Machine"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Delete a Machine"
+      description: "Delete a Machine."
+      operationId: "deleteMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Update Machine"
+      description: "Update an existing Machine."
+      operationId: "updateMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Machine Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/MachineSpecification"
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Machine"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/disks:
+    get:
+      tags:
+      - "disk"
+      - "machine"
+      - "consumer"
+      summary: "Get Machine Disks"
+      description: "Get all disks of a given machine."
+      operationId: "getMachineDisks"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    post:
+      tags:
+      - "disk"
+      - "machine"
+      - "consumer"
+      summary: "Add Machine Disk"
+      description: "Attach a disk to a machine."
+      operationId: "addMachineDisk"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Disk Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/DiskAttachmentSpecification"
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineDisk"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/disks/{id1}:
+    get:
+      tags:
+      - "disk"
+      - "machine"
+      - "consumer"
+      summary: "Get a Machine Disk"
+      description: "Get a single disk of a given machine."
+      operationId: "getMachineDisk"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the disk."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineDisk"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "disk"
+      - "machine"
+      - "consumer"
+      summary: "Delete Machine Disk"
+      description: "Remove a disk from a given machine."
+      operationId: "deleteMachineDisk"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the disk."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineDisk"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "disk"
+      - "machine"
+      - "consumer"
+      summary: "Update Machine Disk"
+      description: "Update a disk of a given machine."
+      operationId: "updateMachineDisk"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Disk Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/DiskAttachmentSpecification"
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the disk."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineDisk"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/network-interfaces:
+    get:
+      tags:
+      - "network"
+      - "machine"
+      - "consumer"
+      summary: "Get Machine NetworkInterfaces"
+      description: "Get all NetworkInterfaces of a given machine."
+      operationId: "getMachineNetworkInterfaces"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    post:
+      tags:
+      - "network"
+      - "machine"
+      - "consumer"
+      summary: "Add Machine NetworkInterface"
+      description: "Add a NetworkInterface to a given machine."
+      operationId: "addMachineNetworkInterface"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Network Interface Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/NetworkInterface"
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkInterface"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/network-interfaces/{id1}:
+    get:
+      tags:
+      - "network"
+      - "machine"
+      - "consumer"
+      summary: "Get Machine NetworkInterface"
+      description: "Get a single NetworkInterface of a given machine."
+      operationId: "getMachineNetworkInterface"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the network interface."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkInterface"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "network"
+      - "machine"
+      - "consumer"
+      summary: "Delete Machine NetworkInterface"
+      description: "Remove a NetworkInterface object from a given machine."
+      operationId: "deleteMachineNetworkInterface"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the network interface."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkInterface"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "network"
+      - "machine"
+      - "consumer"
+      summary: "Update Machine NetworkInterface"
+      description: "Update a NetworkInterfaces of a given machine."
+      operationId: "updateMachineNetworkInterface"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Network Interface Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/NetworkInterface"
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "id1"
+        in: "path"
+        description: "The ID of the network interface."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkInterface"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/operations:
+    get:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Get all Machine Operations."
+      description: "Get all Machine Operations."
+      operationId: "getMachineOperations"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/machines/{id}/operations/{operationName}:
+    post:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Make a second day operation for Machine."
+      description: "Make a second day operation for Machine."
+      operationId: "machineSecondDayOperation"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      - name: "operationName"
+        in: "path"
+        description: "The name of operation."
+        required: true
+        type: "string"
+      responses:
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/machines/{id}/specification:
+    get:
+      tags:
+      - "machine"
+      - "consumer"
+      summary: "Get a Machine's specification"
+      description: "Get the specification corresponding to a Machine."
+      operationId: "getMachineSpecification"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineSpecification"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/network-domains:
+    get:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Get Network Domains"
+      description: "Get a page of Network Domains."
+      operationId: "getNetworkDomains"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/network-domains/{id}:
+    get:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Describe a Network Domain"
+      description: "Describe a Network Domain."
+      operationId: "describeNetworkDomain"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the network domain."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkDomain"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/networks:
+    get:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Get Networks"
+      description: "Get a page of network objects."
+      operationId: "getNetworks"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+    post:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Create Network"
+      description: "Provision a new network based on the passed in constraints.  The\
+        \ network should be destroyed after the machine is destroyed to free up resources."
+      operationId: "createNetwork"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Network Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/NetworkSpecification"
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+  /iaas/networks/{id}:
+    get:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Describe a Network"
+      description: "Describe a network."
+      operationId: "describeNetwork"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the network."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Network"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Delete a Network"
+      description: "Delete a network."
+      operationId: "deleteNetwork"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the network."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Update Network"
+      description: "Update an existing network."
+      operationId: "updateNetwork"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The id of the Network."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Network instance"
+        required: true
+        schema:
+          $ref: "#/definitions/Network"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Network"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/networks/{id}/specification:
+    get:
+      tags:
+      - "network"
+      - "consumer"
+      summary: "Get a Network's specification"
+      description: "Get the specification corresponding to a given network."
+      operationId: "getNetworkSpecification"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the network."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NetworkSpecification"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/regions:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get Region"
+      description: "Get all regions."
+      operationId: "getRegion"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/regions/{id}:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get a Single Region"
+      description: "Get a single Region."
+      operationId: "getSingleRegion"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the region."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Region"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/request-tracker:
+    get:
+      tags:
+      - "request"
+      - "consumer"
+      summary: "Get Request"
+      description: "Get all Requests."
+      operationId: "getRequest"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/request-tracker/{id}:
+    get:
+      tags:
+      - "request"
+      - "consumer"
+      summary: "Describe a Request"
+      description: "Describe a Request."
+      operationId: "describeRequest"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the request."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/vsphere/machines:
+    post:
+      tags:
+      - "machine"
+      - "vSphere machine"
+      - "consumer"
+      summary: "Create vSphere Machine"
+      description: "Create a new vSphere Machine."
+      operationId: "createVsphereMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Machine Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/VMSpecification"
+      responses:
+        201:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/RequestTracker"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+  /iaas/vsphere/machines/{id}:
+    get:
+      tags:
+      - "machine"
+      - "vSphere machine"
+      - "consumer"
+      summary: "Describe a vSphere Machine"
+      description: "Describe a vSphere Machine."
+      operationId: "describeVsphereMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the vSphere machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/VM"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    delete:
+      tags:
+      - "machine"
+      - "vSphere machine"
+      - "consumer"
+      summary: "Delete a vSphere Machine"
+      description: "Delete a vSphere Machine."
+      operationId: "deleteVsphereMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the vSphere machine."
+        required: true
+        type: "string"
+      responses:
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+    patch:
+      tags:
+      - "machine"
+      - "vSphere machine"
+      - "consumer"
+      summary: "Update vSPhere Machine"
+      description: "Update an existing vSphere Machine."
+      operationId: "updateVsphereMachine"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "vSphere Machine Specification instance"
+        required: true
+        schema:
+          $ref: "#/definitions/VMSpecification"
+      - name: "id"
+        in: "path"
+        description: "The ID of the vSphere machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/VM"
+        400:
+          description: "Invalid Request - bad data"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/vsphere/machines/{id}/specification:
+    get:
+      tags:
+      - "machine"
+      - "vSphere machine"
+      - "consumer"
+      summary: "Get a vSphere machine's specification"
+      description: "Get the specification corresponding to a vSphere Machine."
+      operationId: "getVsphereMachineSpecification"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the vSphere machine."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MachineSpecification"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+  /iaas/zones:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get Zone"
+      description: "Get all zones."
+      operationId: "getZone"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              type: "object"
+        403:
+          description: "Forbidden"
+  /iaas/zones/{id}:
+    get:
+      tags:
+      - "image"
+      - "consumer"
+      summary: "Get a Single Zone."
+      description: "Get a single Zone."
+      operationId: "getSingleZone"
+      produces:
+      - "application/json"
+      - "app/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The ID of the zone."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Zone"
+        403:
+          description: "Forbidden"
+        404:
+          description: "Not Found"
+definitions:
+  BlockDevice:
+    type: "object"
+    required:
+    - "capacityInMB"
+    - "id"
+    - "selfLink"
+    - "specificationLink"
+    - "status"
+    - "zone"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      zone:
+        type: "string"
+        description: "A link to the target zone of the location."
+      capacityInMB:
+        type: "integer"
+        format: "int32"
+        description: "Capacity of the block device in MiB."
+      status:
+        type: "string"
+        example: "ATTACHED"
+        description: "Status of the block device"
+        enum:
+        - "DETACHED"
+        - "ATTACHED"
+        - "AVAILABLE"
+  BlockDeviceSpecification:
+    type: "object"
+    required:
+    - "capacityInGB"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      capacityInGB:
+        type: "integer"
+        format: "int32"
+        description: "Capacity of the block device in GiB."
+      encrypted:
+        type: "boolean"
+        description: "Indicates whether the block device should be encrypted or not."
+      sourceReference:
+        type: "string"
+        description: "Reference to URI using which the block device has to be created."
+      diskContentBase64:
+        type: "string"
+        description: "Content of a disk, base64 encoded."
+      type:
+        type: "string"
+        description: "Possible values are HDD, CDROM, FLOPPY. Default is HDD."
+        enum:
+        - "HDD"
+        - "CDROM"
+        - "FLOPPY"
+  BootConfig:
+    type: "object"
+    properties:
+      label:
+        type: "string"
+      data:
+        type: "object"
+        additionalProperties:
+          type: "string"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/FileEntry"
+    description: "Configuration for first boot"
+  CPU:
+    type: "object"
+    required:
+    - "count"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      count:
+        type: "integer"
+        format: "int64"
+        example: "2, 4, 8"
+        description: "Number of CPUs to be allocated to the provisioned machine."
+    description: "CPU configuration options for vSphere machines."
+  CloneSource:
+    type: "object"
+    required:
+    - "image"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      image:
+        type: "string"
+        example: "1. ova:https://cloud-images.ubuntu.com/releases/16.04/release-20170307/ubuntu-16.04-server-cloudimg-amd64.ova\
+          \ <br>\n2. ubuntu-1604 <br>\n3. snapshot:/resources/snapshots/4ef3c46d37d9667555c5caa974422"
+        description: "Image specification in the below formats. <br>\nTo provision\
+          \ an ova, ova:&lt;ova link&gt; <br>\nTo clone from a template, name of the\
+          \ template <br>\nTo provision a linked clone from a snapshot, snapshot:&lt;snapshot\
+          \ link&gt;"
+    description: "Provide the source image from which the VM is to be provisioned."
+  Constraint:
+    type: "object"
+    required:
+    - "expression"
+    - "mandatory"
+    properties:
+      mandatory:
+        type: "boolean"
+        description: "Indicates whether this constraint should be strictly enforced\
+          \ or not."
+      expression:
+        type: "string"
+        example: "Examples of tag-matching expressions:<br>\n 1. \"ha\" - Matched\
+          \ by the presence of a tag with the key 'ha', irrespective of the value.<br>\n\
+          \ 2. \"!ha\" - Matched by the absence of a tag with the key 'ha'.<br>\n\
+          \ 3. \"ha:weak\" Matched by the presence of a tag with the key 'ha' and\
+          \ value 'weak'.<br>\n 4. \"!ha:weak\" Matched by the absence of a tag with\
+          \ the key 'ha' and value 'weak'.<br>\n 5. \"ha:\" Matched by the presence\
+          \ of a tag with the key 'ha' and a non-existent value.<br>\n 6. \"!ha:\"\
+          \ Matched by the absence of a tag with the key 'ha' and a non-existent value.<br>"
+        description: "An expression of the form \"[!]tag-key[:[tag-value]]\", used\
+          \ to indicate a constraint match on keys and values of tags.\n"
+    description: "A constraint that is conveyed to the policy engine."
+  DiskAttachmentSpecification:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      devicePath:
+        type: "string"
+        description: "The device path of this machine-disk."
+      mountPath:
+        type: "string"
+        description: "The path to mount this machine-disk at."
+      blockDeviceSpecification:
+        description: "A specification that represents the block device that this machine-disk\
+          \ maps to."
+        $ref: "#/definitions/BlockDeviceSpecification"
+      blockDeviceLink:
+        type: "string"
+        description: "Resource link to the existing block device"
+  FileEntry:
+    type: "object"
+    properties:
+      path:
+        type: "string"
+      contents:
+        type: "string"
+    description: "A file on the guest disk"
+  Image:
+    type: "object"
+    required:
+    - "id"
+    - "osFamily"
+    - "selfLink"
+    - "specificationLink"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      osFamily:
+        type: "string"
+        example: "linux, win"
+        description: "Operating System family of the image."
+  LoadBalancer:
+    type: "object"
+    required:
+    - "id"
+    - "memberLinks"
+    - "memberPort"
+    - "memberProtocol"
+    - "port"
+    - "protocol"
+    - "selfLink"
+    - "specificationLink"
+    - "zone"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      zone:
+        type: "string"
+        description: "A link to the target zone of the location."
+      protocol:
+        type: "string"
+        example: "HTTP, HTTPS"
+        description: "The protocol to load balance."
+      port:
+        type: "integer"
+        format: "int32"
+        example: 80
+        description: "The load balancer port."
+      memberProtocol:
+        type: "string"
+        example: "HTTP, HTTPS"
+        description: "The protocol to use to load balance to the member machines."
+      memberPort:
+        type: "integer"
+        format: "int32"
+        example: 80
+        description: "The port to load balance to for all member machines."
+      memberLinks:
+        type: "array"
+        description: "Resource links to members (load balance targets)."
+        items:
+          type: "string"
+  LoadBalancerSpecification:
+    type: "object"
+    required:
+    - "machineSpecificationLink"
+    - "networkName"
+    - "routes"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      routes:
+        type: "array"
+        description: "The load balancer route configuration regarding ports and protocols."
+        items:
+          $ref: "#/definitions/RouteConfiguration"
+      networkInterfaces:
+        type: "array"
+        description: "A set of network interface specifications for this load balancer."
+        items:
+          $ref: "#/definitions/NetworkInterface"
+      machineSpecificationLink:
+        type: "string"
+        description: "Deprecated."
+      networkName:
+        type: "string"
+        description: "Name of the uplink network, where this load balancer will take\
+          \ incoming requests."
+    description: "Load balancer configuration."
+  Machine:
+    type: "object"
+    required:
+    - "flavor"
+    - "id"
+    - "imageLink"
+    - "powerState"
+    - "selfLink"
+    - "specificationLink"
+    - "zone"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      zone:
+        type: "string"
+        description: "A link to the target zone of the location."
+      flavor:
+        type: "string"
+        example: "small, medium, large"
+        description: "Flavor of machine instance."
+      imageLink:
+        type: "string"
+        description: "A link to the actual image used to provision this machine."
+      networkInterfaceLinks:
+        type: "array"
+        description: "Resource links to the network interfaces of this machine."
+        items:
+          type: "string"
+      diskLinks:
+        type: "array"
+        description: "Resource links to the machine-disks of this machine."
+        items:
+          type: "string"
+      powerState:
+        type: "string"
+        description: "Power state of machine."
+        enum:
+        - "ON"
+        - "OFF"
+        - "UNKNOWN"
+        - "SUSPEND"
+  MachineDisk:
+    type: "object"
+    required:
+    - "blockDeviceLink"
+    - "id"
+    - "machineLink"
+    - "selfLink"
+    - "specificationLink"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      machineLink:
+        type: "string"
+        description: "Resource link to the machine instance for this machine-disk."
+      blockDeviceLink:
+        type: "string"
+        description: "Resource link to the block device that this machine-disk maps\
+          \ to."
+      devicePath:
+        type: "string"
+        description: "The device path of this machine-disk."
+      mountPath:
+        type: "string"
+        description: "The path to mount this machine-disk."
+      capacityInMiB:
+        type: "integer"
+        format: "int64"
+        description: "Capacity of the block device in MiB."
+  MachineSpecification:
+    type: "object"
+    required:
+    - "flavor"
+    - "image"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      flavor:
+        type: "string"
+        example: "small, medium, large"
+        description: "Flavor of machine instance."
+      image:
+        type: "string"
+        example: "vmware-gold-master, ubuntu-latest, rhel-compliant, windows"
+        description: "Type of image used for this machine."
+      networkInterfaces:
+        type: "array"
+        description: "A set of network interfaces for this machine. If not specified,\
+          \ then a default network connection will be created."
+        items:
+          $ref: "#/definitions/NetworkInterface"
+      machineDiskSpecifications:
+        type: "array"
+        description: "A set of disk specifications for this machine."
+        items:
+          $ref: "#/definitions/DiskAttachmentSpecification"
+      regionLink:
+        type: "string"
+        description: "A link to the region where machine will be placed."
+      zoneLink:
+        type: "string"
+        description: "A link to the zone where machine will be placed."
+      bootConfig:
+        $ref: "#/definitions/BootConfig"
+  Memory:
+    type: "object"
+    required:
+    - "MiB"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      MiB:
+        type: "integer"
+        format: "int64"
+        example: "5, 10, 20"
+        description: "Amount of RAM to be allocated to the provisioned machine in\
+          \ MiB."
+    description: "Memory configuration options for vSphere machines."
+  Network:
+    type: "object"
+    required:
+    - "id"
+    - "selfLink"
+    - "specificationLink"
+    - "subnetCIDR"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      subnetCIDR:
+        type: "string"
+        example: "10.10.0.0/16"
+        description: "IPv4 address range of the subnet in CIDR format"
+      externalId:
+        type: "string"
+        description: "An external reference to the underlying infrastructure network\
+          \ resource."
+      networkDomainLink:
+        type: "string"
+        description: "A link to the network domain object containing this network."
+    description: "The network object is an opaque reference to a logical network that\
+      \ network interfaces are attached to.<br>\nBased on settings specified by your\
+      \ cloud administrator, it may be a reference to an existing network, or be backed\
+      \ by an on-demand network created for isolation, or a security group that will\
+      \ be attached to machines as part of provisioning.<br>\nNetworks are a limited\
+      \ resource, when it is not needed it should be deleted."
+  NetworkDomain:
+    type: "object"
+    required:
+    - "id"
+    - "selfLink"
+    - "specificationLink"
+    - "subnetCIDR"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      subnetCIDR:
+        type: "string"
+        example: "10.0.0.0/8"
+        description: "IPv4 address range of the network domain in CIDR format"
+    description: "The network domain object is the parent of related subnets that\
+      \ are configured together. Subnets within a domain must have non-overlapping\
+      \ address spaces."
+  NetworkInterface:
+    type: "object"
+    required:
+    - "id"
+    - "networkLink"
+    - "selfLink"
+    - "specificationLink"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      deviceIndex:
+        type: "integer"
+        format: "int32"
+        description: "The device index of this network interface."
+      networkLink:
+        type: "string"
+        description: "Resource link to the network instance that this network interface\
+          \ plugs into."
+      ipAddresses:
+        type: "array"
+        description: "A list of IP addresses allocated or in use by this network interface."
+        items:
+          type: "string"
+  NetworkSpecification:
+    type: "object"
+    required:
+    - "cidr"
+    - "networkDomainLink"
+    - "prefixLength"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      networkDomainLink:
+        type: "string"
+        description: "A link to the NetworkDomain that this network belongs in."
+      prefixLength:
+        type: "integer"
+        format: "int32"
+        example: 24
+        description: "Network prefix length."
+      cidr:
+        type: "string"
+        example: "10.1.2.0/24"
+        description: "Network CIDR to be used if target NetworkDomain does not provide\
+          \ a CIDR."
+      outboundAccess:
+        type: "boolean"
+        example: true
+        description: "Indicate whether the network needs an outbound route."
+  Placement:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      region:
+        type: "string"
+        description: "A link to the region where machine will be placed."
+      zone:
+        type: "string"
+        description: "A link to the zone where machine will be placed."
+      constraint:
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        $ref: "#/definitions/Constraint"
+    description: "Specify information that can be used to decide where to provision\
+      \ the VM. Properties like region, zone, and constraints can be provided."
+  Region:
+    type: "object"
+    required:
+    - "id"
+    - "regionId"
+    - "selfLink"
+    - "specificationLink"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      regionId:
+        type: "string"
+        description: "Unique identifier of region on the provider side."
+  RequestTracker:
+    type: "object"
+    required:
+    - "id"
+    - "progress"
+    - "selfLink"
+    - "status"
+    properties:
+      progress:
+        type: "integer"
+        format: "int32"
+        example: 90
+        description: "Progress of the request as percentage."
+      message:
+        type: "string"
+        example: "Success"
+        description: "Status message of the request."
+      status:
+        type: "string"
+        example: "FINISHED"
+        description: "Status of the request."
+        enum:
+        - "FINISHED"
+        - "INPROGRESS"
+        - "FAILED"
+      resource:
+        type: "string"
+        example: "/machines/i-0be3655a12fd28e8e"
+        description: "Link to the resource."
+      name:
+        type: "string"
+        example: "Power-off"
+        description: "Name of the operation."
+      id:
+        type: "string"
+        example: "we655aew4e8e"
+        description: "ID of this request."
+      selfLink:
+        type: "string"
+        example: "/request-tracker/we655aew4e8e"
+        description: "Self link of this request."
+    description: "An object used to track long-running operations."
+  RouteConfiguration:
+    type: "object"
+    required:
+    - "memberPort"
+    - "memberProtocol"
+    - "port"
+    - "protocol"
+    properties:
+      protocol:
+        type: "string"
+        example: "TCP, UDP"
+        description: "The protocol of the incoming load balancer requests."
+      port:
+        type: "string"
+        example: "80"
+        description: "Port which the load balancer is listening to."
+      memberProtocol:
+        type: "string"
+        example: "TCP, UDP"
+        description: "The protocol of the member traffic."
+      memberPort:
+        type: "string"
+        example: "80"
+        description: "Member port where the traffic is routed to."
+    description: "Load balancer route configuration."
+  VM:
+    type: "object"
+    required:
+    - "MiB"
+    - "cpuCount"
+    - "id"
+    - "imageLink"
+    - "powerState"
+    - "selfLink"
+    - "specificationLink"
+    - "zone"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      id:
+        type: "string"
+        description: "A globally unique resource identifier."
+      selfLink:
+        type: "string"
+        description: "A link to this resource instance."
+      specificationLink:
+        type: "string"
+        description: "A link to the specification that was used to generate this instance."
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that were set on this\
+          \ resource instance."
+        additionalProperties:
+          type: "string"
+      zone:
+        type: "string"
+        description: "A link to the target zone of the location."
+      imageLink:
+        type: "string"
+        description: "A link to the actual image used to provision this machine."
+      networkInterfaceLinks:
+        type: "array"
+        description: "Resource links to the network interfaces of this machine."
+        items:
+          type: "string"
+      diskLinks:
+        type: "array"
+        description: "Resource links to the machine-disks of this machine."
+        items:
+          type: "string"
+      powerState:
+        type: "string"
+        description: "Power state of machine."
+        enum:
+        - "ON"
+        - "OFF"
+        - "UNKNOWN"
+        - "SUSPEND"
+      cpuCount:
+        type: "integer"
+        format: "int64"
+        description: "Number of vCPUs allocated for this machine."
+      MiB:
+        type: "integer"
+        format: "int64"
+        description: "Total memory in MB allocated to this machine."
+  VMSpecification:
+    type: "object"
+    required:
+    - "cloneSource"
+    - "cpu"
+    - "memory"
+    properties:
+      name:
+        type: "string"
+        description: "A human-friendly name used as an identifier in APIs that support\
+          \ this option."
+      description:
+        type: "string"
+        description: "A human-friendly description."
+      customProperties:
+        type: "object"
+        description: "Additional properties that may be used to extend the base type."
+        additionalProperties:
+          type: "string"
+      constraints:
+        type: "array"
+        description: "Constraints that are used to drive placement policies for any\
+          \ resources that are produced from this specification. Constraint expressions\
+          \ are matched against tags on existing placement targets."
+        items:
+          $ref: "#/definitions/Constraint"
+      tags:
+        type: "object"
+        description: "A set of tag keys and optional values that should be set on\
+          \ any resource that is produced from this specification."
+        additionalProperties:
+          type: "string"
+      cpu:
+        $ref: "#/definitions/CPU"
+      memory:
+        $ref: "#/definitions/Memory"
+      cloneSource:
+        $ref: "#/definitions/CloneSource"
+      placement:
+        $ref: "#/definitions/Placement"
+      nics:
+        type: "array"
+        description: "A set of network interface specifications for this machine.<br>\n\
+          If not specified, then a default network connection will be created."
+        items:
+          $ref: "#/definitions/NetworkInterface"
+      disks:
+        type: "array"
+        description: "A set of disk specifications for this machine."
+        items:
+          $ref: "#/definitions/DiskAttachmentSpecification"
+      bootConfig:
+        $ref: "#/definitions/BootConfig"
+    description: "A vSphere-specific machine description."
+  Zone:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    - "regionLink"
+    - "selfLink"
+    properties:
+      regionLink:
+        type: "string"
+        description: "Link of the region this zone is in."
+      selfLink:
+        type: "string"
+        description: "Unique link of this zone."
+      id:
+        type: "string"
+        description: "ID of this zone."
+      name:
+        type: "string"
+        description: "Name of the zone."
+    description: "Description of a compute placement zone.  This can be used to specify\
+      \ a subset of compute resources within a region where machines can be placed."
