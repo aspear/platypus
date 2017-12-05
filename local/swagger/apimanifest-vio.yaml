@@ -1,0 +1,12 @@
+apis:
+  - api_uid: 'api_vio'
+    name: 'VMware Integrated OpenStack'
+    version: '1'
+    api_ref_doc_type: 'SWAGGER'
+    api_ref_doc_url: 'api-vio.json'
+ 
+products:
+  - product_name: VMware Integrated OpenStack
+    product_version: 4.1
+    provided_api_uids:
+    - api_vio

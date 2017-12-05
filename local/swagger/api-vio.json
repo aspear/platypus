@@ -1,0 +1,1556 @@
+{
+  "swagger": "2.0",
+  "tags": [
+    {
+      "description": "Support Controller V 1",
+      "name": "support-controller-v-1"
+    },
+    {
+      "description": "Cluster Controller V 1",
+      "name": "cluster-controller-v-1"
+    },
+    {
+      "description": "Task Controller V 1",
+      "name": "task-controller-v-1"
+    }
+  ],
+  "host": "localhost:8443",
+  "info": {
+    "contact": {},
+    "description": "New for VIO 4.1, the VMware Integrated OpenStack API is a REST API allowing operations such as provisioning an OpenStack cluster, start/stop a cluster, gather log bundles, and more.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "title": "VMware Integrated OpenStack API",
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "definitions": {
+    "AdDomain": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "bind_password": {
+          "type": "string"
+        },
+        "bind_user": {
+          "type": "string"
+        },
+        "force_ldaps": {
+          "type": "boolean"
+        },
+        "ldap_admin_user": {
+          "type": "string"
+        },
+        "ldap_certificates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "ldap_group_desc_attribute": {
+          "type": "string"
+        },
+        "ldap_group_filter": {
+          "type": "string"
+        },
+        "ldap_group_id_attribute": {
+          "type": "string"
+        },
+        "ldap_group_member_attribute": {
+          "type": "string"
+        },
+        "ldap_group_name_attribute": {
+          "type": "string"
+        },
+        "ldap_group_objectclass": {
+          "type": "string"
+        },
+        "ldap_group_tree_dn": {
+          "type": "string"
+        },
+        "ldap_url": {
+          "type": "string"
+        },
+        "ldap_use_tls": {
+          "type": "boolean"
+        },
+        "ldap_user_enabled_attribute": {
+          "type": "string"
+        },
+        "ldap_user_filter": {
+          "type": "string"
+        },
+        "ldap_user_id_attribute": {
+          "type": "string"
+        },
+        "ldap_user_mail_attribute": {
+          "type": "string"
+        },
+        "ldap_user_name_attribute": {
+          "type": "string"
+        },
+        "ldap_user_objectclass": {
+          "type": "string"
+        },
+        "ldap_user_pass_attribute": {
+          "type": "string"
+        },
+        "ldap_user_tree_dn": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AvailabilityZoneInfo": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ClusterRead": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "buildNumber": {
+          "type": "string"
+        },
+        "instanceNum": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nodeGroups": {
+          "items": {
+            "$ref": "#/definitions/NodeGroupRead"
+          },
+          "type": "array"
+        },
+        "resourcePools": {
+          "items": {
+            "$ref": "#/definitions/ResourcePoolRead"
+          },
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "RUNNING",
+            "PROVISIONING",
+            "PROVISION_ERROR",
+            "POST_DEPLOYMENT_ERROR",
+            "UPGRADE_PREPARED",
+            "UPGRADE_PREPARE_ERROR",
+            "UPGRADE_MIGRATED",
+            "UPGRADE_MIGRATE_ERROR",
+            "UPGRADE_SWITCHED",
+            "UPGRADE_SWITCH_ERROR",
+            "UPGRADING",
+            "UPDATING",
+            "DELETING",
+            "STOPPED",
+            "ERROR",
+            "STOPPING",
+            "STARTING",
+            "CONFIGURING",
+            "CONFIGURE_ERROR",
+            "NA",
+            "VMRECONFIGURING",
+            "MAINTENANCE",
+            "UPGRADE_ERROR",
+            "PAUSE",
+            "PAUSE_ERROR",
+            "PATCHING",
+            "PATCH_ERROR",
+            "RECOVER_ERROR",
+            "RECOVERING",
+            "RESTORING",
+            "RESTORE_ERROR",
+            "UPGRADE_MAINTENANCE"
+          ],
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ClusterSpec": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "deployment_type": {
+          "enum": [
+            "TINY",
+            "SINGLEVM",
+            "MEDIUM",
+            "LARGE"
+          ],
+          "type": "string"
+        },
+        "management_cluster": {
+          "$ref": "#/definitions/VcCluster"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network_mapping": {
+          "$ref": "#/definitions/NetworkMapping"
+        },
+        "networkings": {
+          "items": {
+            "$ref": "#/definitions/NetworkInfo"
+          },
+          "type": "array"
+        },
+        "openstack_info": {
+          "$ref": "#/definitions/OpenstackInfo"
+        },
+        "public_access": {
+          "$ref": "#/definitions/PublicAccessInfo"
+        },
+        "root_ca_certificates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "vcenters": {
+          "items": {
+            "$ref": "#/definitions/Vcenter"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ComputeCluster": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "availability_zone_name": {
+          "type": "string"
+        },
+        "cluster_moid": {
+          "type": "string"
+        },
+        "cluster_name": {
+          "type": "string"
+        },
+        "datastore_regex": {
+          "type": "string"
+        },
+        "vcenter_ip": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "GlanceReplicationDatastore": {
+      "properties": {
+        "datastores": {
+          "type": "string"
+        },
+        "vcenter_ip": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IdentityInfo": {
+      "properties": {
+        "ad_domains": {
+          "items": {
+            "$ref": "#/definitions/AdDomain"
+          },
+          "type": "array"
+        },
+        "admin_project_name": {
+          "type": "string"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "sql_domain": {
+          "$ref": "#/definitions/SqlDomain"
+        },
+        "token_expiration_time": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ImageInfo": {
+      "properties": {
+        "glance_datastores": {
+          "type": "string"
+        },
+        "glance_folder": {
+          "type": "string"
+        },
+        "glance_replication_datastores": {
+          "items": {
+            "$ref": "#/definitions/GlanceReplicationDatastore"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "IpAllocEntryRead": {
+      "properties": {
+        "clusterId": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "clusterName": {
+          "type": "string"
+        },
+        "ipAddress": {
+          "type": "string"
+        },
+        "nodeGroupId": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "nodeGroupName": {
+          "type": "string"
+        },
+        "nodeId": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "nodeName": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IpBlock": {
+      "properties": {
+        "beginIp": {
+          "type": "string"
+        },
+        "endIp": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IpBlockInfo": {
+      "properties": {
+        "begin_ip": {
+          "type": "string"
+        },
+        "end_ip": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "IpConfigInfo": {
+      "properties": {
+        "ipAddress": {
+          "type": "string"
+        },
+        "networkName": {
+          "type": "string"
+        },
+        "portGroupName": {
+          "type": "string"
+        },
+        "trafficType": {
+          "enum": [
+            "MGT_NETWORK",
+            "DATA_NETWORK",
+            "EXTERNAL_NETWORK",
+            "REPL_NETWORK",
+            "METADATA_NETWORK"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NetworkInfo": {
+      "properties": {
+        "dns1": {
+          "type": "string"
+        },
+        "dns2": {
+          "type": "string"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "ip_blocks": {
+          "items": {
+            "$ref": "#/definitions/IpBlockInfo"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "netmask": {
+          "type": "string"
+        },
+        "portgroup_moref": {
+          "type": "string"
+        },
+        "portgroup_name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NetworkMapping": {
+      "properties": {
+        "data_network": {
+          "type": "string"
+        },
+        "external_network": {
+          "type": "string"
+        },
+        "management_network": {
+          "type": "string"
+        },
+        "metadata_network": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NetworkRead": {
+      "properties": {
+        "allIpBlocks": {
+          "items": {
+            "$ref": "#/definitions/IpBlock"
+          },
+          "type": "array"
+        },
+        "assignedIpBlocks": {
+          "items": {
+            "$ref": "#/definitions/IpBlock"
+          },
+          "type": "array"
+        },
+        "dhcp": {
+          "type": "boolean"
+        },
+        "dns1": {
+          "type": "string"
+        },
+        "dns2": {
+          "type": "string"
+        },
+        "freeIpBlocks": {
+          "items": {
+            "$ref": "#/definitions/IpBlock"
+          },
+          "type": "array"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "ipAllocEntries": {
+          "items": {
+            "$ref": "#/definitions/IpAllocEntryRead"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "netmask": {
+          "type": "string"
+        },
+        "portGroup": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NeutronDvsBackend": {
+      "type": "object"
+    },
+    "NeutronNsxv3Backend": {
+      "properties": {
+        "nsxv3_api_managers": {
+          "type": "string"
+        },
+        "nsxv3_api_password": {
+          "type": "string"
+        },
+        "nsxv3_api_username": {
+          "type": "string"
+        },
+        "nsxv3_default_overlay_tz": {
+          "type": "string"
+        },
+        "nsxv3_default_tier0_router": {
+          "type": "string"
+        },
+        "nsxv3_default_vlan_tz": {
+          "type": "string"
+        },
+        "nsxv3_md_shared_password": {
+          "type": "string"
+        },
+        "nsxv3_native_dhcp_profile": {
+          "type": "string"
+        },
+        "nsxv3_native_md_proxy": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NeutronNsxvBackend": {
+      "properties": {
+        "nsxv_dvs_moref": {
+          "type": "string"
+        },
+        "nsxv_dvs_name": {
+          "type": "string"
+        },
+        "nsxv_edge_cluster_moref": {
+          "type": "string"
+        },
+        "nsxv_edge_cluster_name": {
+          "type": "string"
+        },
+        "nsxv_edge_ha": {
+          "type": "string"
+        },
+        "nsxv_exclusive_router_appliance_size": {
+          "type": "string"
+        },
+        "nsxv_external_network_name": {
+          "type": "string"
+        },
+        "nsxv_manager": {
+          "type": "string"
+        },
+        "nsxv_password": {
+          "type": "string"
+        },
+        "nsxv_username": {
+          "type": "string"
+        },
+        "nsxv_vdn_scope_moref": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NodeGroupRead": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cpuNum": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "instanceNum": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "instances": {
+          "items": {
+            "$ref": "#/definitions/NodeRead"
+          },
+          "type": "array"
+        },
+        "memCapacityMB": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "networking": {
+          "$ref": "#/definitions/NetworkRead"
+        },
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "services": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "storage": {
+          "$ref": "#/definitions/StorageRead"
+        },
+        "swapRatio": {
+          "format": "float",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "NodeRead": {
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "actionFailed": {
+          "type": "boolean"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cpuNumber": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "errMessage": {
+          "type": "string"
+        },
+        "hostName": {
+          "type": "string"
+        },
+        "ipConfigs": {
+          "additionalProperties": {
+            "items": {
+              "$ref": "#/definitions/IpConfigInfo"
+            },
+            "type": "array"
+          },
+          "type": "object"
+        },
+        "memory": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "moId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rack": {
+          "type": "string"
+        },
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "status": {
+          "type": "string"
+        },
+        "targetSystemDs": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "volumes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "NodeStatus": {
+      "properties": {
+        "cpuNumber": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "errorMessage": {
+          "type": "string"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "memory": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "nodeName": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "succeed": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "NovaInfo": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "compute_clusters": {
+          "items": {
+            "$ref": "#/definitions/ComputeCluster"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "OpenstackInfo": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "availability_zones": {
+          "items": {
+            "$ref": "#/definitions/AvailabilityZoneInfo"
+          },
+          "type": "array"
+        },
+        "compute": {
+          "$ref": "#/definitions/NovaInfo"
+        },
+        "identity": {
+          "$ref": "#/definitions/IdentityInfo"
+        },
+        "image": {
+          "$ref": "#/definitions/ImageInfo"
+        },
+        "network": {
+          "$ref": "#/definitions/OpenstackNetworkInfo"
+        },
+        "region_name": {
+          "type": "string"
+        },
+        "syslog": {
+          "$ref": "#/definitions/SyslogInfo"
+        },
+        "vcenter_insecure": {
+          "type": "string"
+        },
+        "volumn": {
+          "$ref": "#/definitions/VolumnInfo"
+        }
+      },
+      "type": "object"
+    },
+    "OpenstackNetworkInfo": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "dvs": {
+          "$ref": "#/definitions/NeutronDvsBackend"
+        },
+        "neutron_backend": {
+          "enum": [
+            "DVS",
+            "NSXV",
+            "NSXV3"
+          ],
+          "type": "string"
+        },
+        "nsxv": {
+          "$ref": "#/definitions/NeutronNsxvBackend"
+        },
+        "nsxv3": {
+          "$ref": "#/definitions/NeutronNsxv3Backend"
+        }
+      },
+      "type": "object"
+    },
+    "PublicAccessInfo": {
+      "properties": {
+        "public_hostname": {
+          "type": "string"
+        },
+        "public_vip": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ResourcePoolRead": {
+      "properties": {
+        "nodes": {
+          "items": {
+            "$ref": "#/definitions/NodeRead"
+          },
+          "type": "array"
+        },
+        "rpName": {
+          "type": "string"
+        },
+        "rpVsphereName": {
+          "type": "string"
+        },
+        "totalCPUInMHz": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "totalRAMInMB": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "usedCPUInMHz": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "usedRAMInMB": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "vcCluster": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "SqlDomain": {
+      "properties": {
+        "admin_password": {
+          "type": "string"
+        },
+        "admin_user": {
+          "type": "string"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "StorageRead": {
+      "properties": {
+        "allocType": {
+          "type": "string"
+        },
+        "controllerType": {
+          "enum": [
+            "LSI_CONTROLLER",
+            "PARA_VIRTUAL_CONTROLLER"
+          ],
+          "type": "string"
+        },
+        "diskstoreNamePattern": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "dsNames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "dsNames4Data": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "dsNames4System": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "imagestoreNamePattern": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sizeGB": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "splitPolicy": {
+          "enum": [
+            "EVEN_SPLIT",
+            "AGGREGATE",
+            "BI_SECTOR"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "SupportBundleAdd": {
+      "properties": {
+        "clusterName": {
+          "type": "string"
+        },
+        "collectRecentLogsOnly": {
+          "type": "boolean"
+        },
+        "services": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "SyslogInfo": {
+      "properties": {
+        "port": {
+          "type": "string"
+        },
+        "protocol": {
+          "enum": [
+            "UDP",
+            "TCP"
+          ],
+          "type": "string"
+        },
+        "server": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "TaskRead": {
+      "properties": {
+        "errorMessage": {
+          "type": "string"
+        },
+        "failNodes": {
+          "items": {
+            "$ref": "#/definitions/NodeStatus"
+          },
+          "type": "array"
+        },
+        "id": {
+          "format": "int64",
+          "type": "integer"
+        },
+        "progress": {
+          "format": "double",
+          "type": "number"
+        },
+        "progressMessage": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ABANDONED",
+            "STARTING",
+            "STARTED",
+            "STOPPED",
+            "STOPPING",
+            "COMPLETED",
+            "FAILED",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "succeedNodes": {
+          "items": {
+            "$ref": "#/definitions/NodeStatus"
+          },
+          "type": "array"
+        },
+        "target": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "INNER",
+            "DELETE"
+          ],
+          "type": "string"
+        },
+        "workDir": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "VcCluster": {
+      "properties": {
+        "moid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Vcenter": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "hostname": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "VolumnInfo": {
+      "properties": {
+        "attributes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "cinder_folder": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "paths": {
+    "/v1/bundles": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "createSupportBundleUsingPOST_1",
+        "parameters": [
+          {
+            "description": "SupportBundleAdd object containing parameters for bundle creation.  Note that services is optional, if not provided all logs will be included.",
+            "in": "body",
+            "name": "bundle",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SupportBundleAdd"
+            }
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK.  The filename of the support bundle generated is returned as a string.",
+            "schema": {
+              "type": "string",
+              "example": "thefile.log"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Create a support bundle",
+        "description": "Generate a support bundle on OMS server.",
+        "tags": [
+          "support-controller-v-1"
+        ]
+      }
+    },
+    "/v1/bundles/{name}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getSupportBundleUsingGET_1",
+        "parameters": [
+          {
+            "description": "The name of the support bundle as returned by the POST method that created the bundle.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Download support bundle",
+        "description": "Download a support bundle from the OMS server.",
+        "tags": [
+          "support-controller-v-1"
+        ]
+      }
+    },
+    "/v1/clusters": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getClustersUsingGET_1",
+        "parameters": [
+          {
+            "description": "details",
+            "in": "query",
+            "name": "details",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/ClusterRead"
+              },
+              "type": "array"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "List all clusters",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "createClusterUsingPOST",
+        "parameters": [
+          {
+            "description": "createSpec",
+            "in": "body",
+            "name": "createSpec",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterSpec"
+            }
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "202": {
+            "description": "Accepted. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Provision an OpenStack cluster",
+        "description": "Create an OpenStack cluster.  Similar in functionality to the OMS UI, all parameters required to deploy the cluster are passed in the body as a ClusterSpec json object.",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      }
+    },
+    "/v1/clusters/{clusterName}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "deleteClusterUsingDELETE",
+        "parameters": [
+          {
+            "description": "clusterName",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "summary": "Delete OpenStack cluster.",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      },
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getClusterUsingGET_1",
+        "parameters": [
+          {
+            "description": "clusterName",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "details",
+            "in": "query",
+            "name": "details",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ClusterRead"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Read a cluster",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "updateClusterUsingPUT_1",
+        "parameters": [
+          {
+            "description": "The name of the cluster to perform the operation on",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Operation on the specified cluster.  Must be one of start, stop, pause, resume, or retry.",
+            "enum": [
+              "pause",
+              "resume",
+              "start",
+              "stop",
+              "retry"
+            ],
+            "in": "query",
+            "name": "action",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "202": {
+            "description": "Accepted. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Invoke operations on the specified cluster.",
+        "description": "Invoke operations on the specified cluster. possible actions: pause,resume,start,stop,retry.",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      }
+    },
+    "/v1/clusters/{clusterName}/edit": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "retryClusterUsingPUT",
+        "parameters": [
+          {
+            "description": "clusterName",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "createSpec",
+            "in": "body",
+            "name": "createSpec",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterSpec"
+            }
+          }
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "202": {
+            "description": "Accepted. Note that the task URL to track the progress of this task is in Header, “Location” field."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "Continue provisioning openstack cluster with updated spec.",
+        "description": "In the case that a small mistake is made in the cluster spec passed to the provision API, resulting in an provision_error state, the cluster must either be deleted and provisioned again, or this API can be used to correct the spec.",
+        "tags": [
+          "cluster-controller-v-1"
+        ]
+      }
+    },
+    "/v1/hello": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getHelloUsingGET",
+        "produces": [
+          "*/*"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "getHello",
+        "tags": [
+          "task-controller-v-1"
+        ]
+      }
+    },
+    "/v1/tasks": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getTasksUsingGET_1",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/TaskRead"
+              },
+              "type": "array"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "List all the tasks for configuring openstack clusters.",
+        "tags": [
+          "task-controller-v-1"
+        ]
+      }
+    },
+    "/v1/tasks/{taskId}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "getTaskByIdUsingGET_1",
+        "parameters": [
+          {
+            "description": "Integer task ID",
+            "format": "int64",
+            "in": "path",
+            "name": "taskId",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TaskRead"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "summary": "List the task by id for configuring openstack clusters.",
+        "tags": [
+          "task-controller-v-1"
+        ]
+      }
+    }
+  }
+}

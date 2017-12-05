@@ -21,12 +21,12 @@
 
   // you can customize the text that is displayed above the APIs, to scope
   // to a particular product for example.
-  window.config.apiListHeaderText = "VMware AirWatch APIs";
+  window.config.apiListHeaderText = "VMware Integrated OpenStack APIs";
 
   // default filtering to apply to the window after the initial load is done.
   window.config.defaultFilters = {
       keywords : "",
-      products : ["AirWatch"],
+      products : ["VMware Integrated OpenStack"],
       languages: [],
       types: [],
       sources: ["local"]
