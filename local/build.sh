@@ -41,7 +41,7 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
 export VER="2.0.0"
-export MILESTONE="a1"
+export MILESTONE="a2"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
