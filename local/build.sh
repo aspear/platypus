@@ -85,9 +85,12 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
  --product_name="VMware Cloud Services;1.0" \
  --api_version="(VMC 1.0)" \
- --swagger_glob ${SCRIPT_DIR}/swagger/vmc.json \
+ --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
- --output_file ${OUTPUT_DIR}/local.json
+ --output_file ${OUTPUT_DIR}/local.json \
+ --abbreviate_description \
+ --generate_overview_html \
+ --file_name_to_api_uid_properties_file_path=./api-uid-mappings.properties
 
 popd
