@@ -84,7 +84,7 @@ echo "Extracting APIX distribution"
 unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
 echo "Overwriting stock apix-config.json with custom config"
-cp -f ${SCRIPT_DIR}/apix-config.json .
+cp -f ${SCRIPT_DIR}/apix-config.json ./assets
 
 popd
 
@@ -97,7 +97,7 @@ popd
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="VMware Cloud Services;1.0" \
+ --product_name="VMware Cloud on AWS;1.0" \
  --api_version="(VMC 1.0)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \

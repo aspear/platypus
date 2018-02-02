@@ -8,7 +8,7 @@
     "enableRemote" : true,
     "defaultFilters" : {
         "keywords" : "",
-        "products" : [""],
+        "products" : ["VMware Cloud on AWS"],
         "languages": [],
         "types" : [],
         "sources" : ["local"]
