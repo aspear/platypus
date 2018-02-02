@@ -8,7 +8,7 @@
     "license": {
       "name": "Copyright (c) 2016-2017 VMware, Inc. All rights reserved."
     }, 
-    "title": "VMware Cloud APIs", 
+    "title": "VMware Cloud on AWS API", 
     "version": "1.0", 
     "x-vmw-vapi-codegenconfig": {
       "package-name": "com.vmware.vmc", 
