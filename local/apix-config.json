@@ -1,14 +1,14 @@
 {
     "baseRoute" : "/",
-    "apiListHeaderText" : "vSphere REST APIs",
-    "remoteApiUrl" : "https://vdc-repo.vmware.com/apix",
+    "apiListHeaderText" : "VMware Cloud on AWS APIs",
+    "remoteApiUrl" : "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix",
     "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
     "localApiUrl" : "local.json",
     "enableLocal" : true,
     "enableRemote" : true,
     "defaultFilters" : {
         "keywords" : "",
-        "products" : ["vSphere"],
+        "products" : [""],
         "languages": [],
         "types" : [],
         "sources" : ["local"]

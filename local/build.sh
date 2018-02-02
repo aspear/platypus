@@ -35,13 +35,13 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 # wish.  If not provided, all output is created in this (the script) directory.
 BUILD_DIR=${BUILD_DIR:-${SCRIPT_DIR}}
 
-APIX_SERVER=https://vdc-repo.vmware.com
+APIX_SERVER=https://apigw.vmware.com/v1/m4/api/dcr/rest/apix/apis
 
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
 export VER="2.0.0"
-export MILESTONE="a2"
+export MILESTONE="a3"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
@@ -86,6 +86,8 @@ unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 echo "Overwriting stock apix-config.json with custom config"
 cp -f ${SCRIPT_DIR}/apix-config.json .
 
+popd
+
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
 # directory, abbreviating the descriptions and then also taking the 
@@ -95,44 +97,14 @@ cp -f ${SCRIPT_DIR}/apix-config.json .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="vSphere;6.7.0" \
- --api_version="(vSphere 6.7.0)" \
+ --product_name="VMware Cloud Services;1.0" \
+ --api_version="(VMC 1.0)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
- --output_file ${OUTPUT_DIR}/local.json
+ --output_file ${OUTPUT_DIR}/local.json \
+ --abbreviate_description \
+ --generate_overview_html \
+ --file_name_to_api_uid_properties_file_path=./api-uid-mappings.properties
 
 
-# the code below actually mirrors API content from code.vmware.com.
-#echo "Mirroring API content from ${APIX_SERVER}"
-#python ${TOOLS_DIR}/apixlocal/apixlocal.py \
-# stage \
-# --server=${APIX_SERVER} \
-# --html_root_dir=${OUTPUT_DIR} \
-# --output_file=${OUTPUT_DIR}/local.json  \
-# --mirror_output_dir=${OUTPUT_DIR}/local/mirror \
-# --mirror_api=api_vsphere \
-# --mirror_api=api_vcenter_infrastructure \
-# --mirror_api=api_content \
-# --mirror_api=api_vcenter_server_appliance_infrastructure \
-# --mirror_api=api_vapi_infrastructure \
-# --mirror_api=api_cis_management \
-# --mirror_api=api_vcenter_server_appliance_management \
-# --mirror_api=api_cis_infrastructure \
-# --mirror_api=api_vcenter_management \
-# --mirror_api=api_vapi_management \
-# --mirror_api=api_vsphere_automation_java \
-# --mirror_api=api_vsphere_automation_dotnet \
-# --mirror_api=api_vsphere_automation_python \
-# --mirror_api=api_vsphere_automation_ruby \
-# --mirror_api=api_vsphere_automation_perl \
-# --mirror_api=api_vsphere_automation_lookup_service \
-# --mirror_api=api_vsphere_esx_agent_manager \
-# --mirror_api=api_vcenter_sso \
-# --mirror_api=api_storage_monitoring_service \
-# --mirror_api=api_vsphere_guest \
-# --mirror_api=api_vsphere_ha_application_monitor \
-# --mirror_api=api_cim \
-# --mirror_api=api_virtual_disk
-
-popd
