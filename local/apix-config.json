@@ -1,11 +1,16 @@
 {
-    "baseRoute" : "/",
+    "useHash": true,
+    "base" : "/",
+    "path" : "",
+    "title" : "VMware API Explorer",
     "apiListHeaderText" : "VMware Cloud on AWS APIs",
     "remoteApiUrl" : "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix",
     "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
     "localApiUrl" : "local.json",
     "enableLocal" : true,
     "enableRemote" : true,
+    "vmwareCodeClient" : "apix.unknown",
+    "vmwareCodeClientUUID" : null,
     "defaultFilters" : {
         "keywords" : "",
         "products" : ["VMware Cloud on AWS"],
@@ -17,11 +22,6 @@
     "hideProductsFilter" : false,
     "hideLanguagesFilter" : false,
     "hideSourcesFilter" : false,
-    "sso" : [
-    {   "id": "vcenter_sso",
-        "swaggerAuthName": "ApiKeyAuth",
-        "displayName": "vCenter SSO",
-        "authUrl": "/rest/com/vmware/cis/session"
-    }
-    ]
+    "hidePreference" : false,
+    "hideApiInfo" : false
 }
