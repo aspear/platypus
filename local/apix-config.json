@@ -1,0 +1,34 @@
+{
+    "useHash": true,
+    "base" : "/",
+    "path" : "",
+    "title" : "VMware AirWatch API Explorer",
+    "apiListHeaderText" : "VMware AirWatch APIs",
+    "remoteApiUrl" : "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix",
+    "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
+    "localApiUrl" : "local.json",
+    "enableLocal" : true,
+    "enableRemote" : true,
+    "vmwareCodeClient" : "apix,AirWatch",
+    "vmwareCodeClientUUID" : null,
+    "defaultFilters" : {
+        "keywords" : "",
+        "products" : ["AirWatch"],
+        "languages": [],
+        "types" : [],
+        "sources" : ["local"]
+    },
+    "hideFilters" : true,
+    "hideProductsFilter" : false,
+    "hideLanguagesFilter" : false,
+    "hideSourcesFilter" : false,
+    "hidePreference" : false,
+    "hideApiInfo" : false,
+    "sso" : [
+    {   "id": "basic",
+        "swaggerAuthName": "BasicAuth",
+        "displayName": "BasicAuth",
+        "authUrl": "/api/v1"
+    }
+    ]
+}
