@@ -1,0 +1,1439 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Reclamation Service API Specification\n\n## What Is the Reclamation Service?\n\nYou can use the reclamation service to query the VMs in an installation for non-usage and, if they are not in use, mark them as eligible for reclamation. \n\nUsage statistics data for the VMs is retrieved from IaaS. If vRealize Operations Manager (vROps)  is attached to the vRA instance, then usage data for the the VMs is extracted from the vROps, but only for vSphere machines.\n\nFor other platform types, IaaS is used for statistics metrics.\n\n## Typical Use Cases\n\nTenant administrators view metrics for the VMs in the installation, and can initiate a reclamation request for VMs whose lease they want to reclaim.\n\nAll VMs that  have been accepted for reclamation from their owners are put on a new lease, which expires immediately.  After that, after expiration of a specified time, the VMs are deleted from the underlying services. If the time period for owner response has elapsed, the machines are put on a new lease, which is defined in the reclamation request.\n\n## Key Concepts\n\n### Metrics\n\nTenant administrators can choose to use basic metrics or metrics from vROps.\n\nTenant administrators can use metrics such as low CPU use, low memory use, or low hard disk use to reclaim leases for VMs.  \n\nUsing the REST API calls for performance endpoints, you can request overall performance metrics or metrics for a specified VM.\n\n### Metrics Provider Management Endpoint\n\nThe management endpoint used by the vRA installation.  You can query the management endoint using the `GET /api/management/endpoint/{tenantId}` REST API.  If the default metrics provider is being used, the response body is empty.  If a vROps management endpoint is being used, the vROps management endpoint is returned.\n\nYou can also create a metrics provider management endpoint, update it,or delete it.\n\n### Endpoint Certificate\n\nThe certificate associated with a management endpoint.\n\n\n## Additional Information\n\nFor additional information, see the *vRA Programming Guide*.\n                                                       \n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Reclamation Service API"
+  },
+  "basePath" : "/management-service",
+  "tags" : [ {
+    "name" : "reclamation"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/management/endpoint/{tenantId}" : {
+      "get" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Retrieve Management Endpoint",
+        "description" : "Retrieval of Metrics provider Management Endpoint. If default metrics provider is used, then response body will be empty.",
+        "operationId" : "getManagementEndpoint",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns the ManagementEndpointDetails",
+            "schema" : {
+              "$ref" : "#/definitions/ManagementEndpointDetails"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Create Management Endpoint",
+        "description" : "Creation of Metrics provider Management Endpoint.",
+        "operationId" : "createManagementEndpoint",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "endpoint Details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ManagementEndpointDetails"
+          }
+        }, {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and Sorting Info",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uri"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success.",
+            "schema" : {
+              "$ref" : "#/definitions/ManagementEndpointDetails"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Update Management Endpoint",
+        "description" : "Updation of Metrics provider Management Endpoint.",
+        "operationId" : "updateManagementEndpoint",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "endpoint Details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ManagementEndpointDetails"
+          }
+        }, {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uri"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns the updated ManagementEndpointDetails instance.",
+            "schema" : {
+              "$ref" : "#/definitions/ManagementEndpointDetails"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Remove Management Endpoint",
+        "description" : "Removal of Metrics provider Management Endpoint. After removal, the default metric provider for vRA will be used.",
+        "operationId" : "removeManagementEndpoint",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uri"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success."
+          }
+        }
+      }
+    },
+    "/api/management/endpoint/{tenantId}/certificate" : {
+      "put" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Utility function to get the endpoint certificate",
+        "description" : "Utility function to get the endpoint certificate.",
+        "operationId" : "getCertificate",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ManagementEndpointDetails"
+          }
+        }, {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. ",
+            "schema" : {
+              "$ref" : "#/definitions/CertificateInfo"
+            }
+          },
+          "400" : {
+            "description" : "The connection was not established successfully. Check response body for details."
+          }
+        }
+      }
+    },
+    "/api/management/endpoint/{tenantId}/isvropsconfigured" : {
+      "get" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Utility method to check if vRops is configured",
+        "description" : "Utility method to check if vRops is configured",
+        "operationId" : "isVropsConfigured",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns a boolean",
+            "schema" : {
+              "$ref" : "#/definitions/booleanLiteral"
+            }
+          }
+        }
+      }
+    },
+    "/api/management/endpoint/{tenantId}/testconnection" : {
+      "put" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Test connection to the Management Endpoint",
+        "description" : "Test connection to the Management Endpoint",
+        "operationId" : "testConnection",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint details",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ManagementEndpointDetails"
+          }
+        }, {
+          "name" : "",
+          "in" : "path",
+          "description" : "tenant Id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success."
+          },
+          "400" : {
+            "description" : "The connection was not established successfully. Check response body for details."
+          }
+        }
+      }
+    },
+    "/api/management/metrics" : {
+      "put" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Get VM performance metrics",
+        "description" : "Get VM performance metrics, based on the passed query.",
+        "operationId" : "getVmPerformanceMetrics",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Performance Metrics Query",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/metricsQuery"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns a VmResource",
+            "schema" : {
+              "$ref" : "#/definitions/vmresource"
+            }
+          }
+        }
+      }
+    },
+    "/api/management/metrics/{vmIaasID}" : {
+      "get" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Get performance metrics for a vm",
+        "description" : "Get performance metrics for a specific VM.",
+        "operationId" : "getVmPerformanceMetricsForVm",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "description" : "VM Id.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns a VmResource",
+            "schema" : {
+              "$ref" : "#/definitions/vmresource"
+            }
+          }
+        }
+      }
+    },
+    "/api/management/requests" : {
+      "get" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Get Reclamation Requests",
+        "description" : "Get all the reclamation requests.",
+        "operationId" : "getReclamationRequests",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the paginated list of reclamation requests.",
+            "schema" : {
+              "$ref" : "#/definitions/ReclamationDetails"
+            }
+          }
+        }
+      }
+    },
+    "/api/management/requests/cancel" : {
+      "post" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Cancel Reclamation Requests",
+        "description" : "Cancel a list of reclamation requests.",
+        "operationId" : "cancelReclamationRequests",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "List of request Ids",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the paginated list of reclamation requests."
+          }
+        }
+      }
+    },
+    "/api/work-item/callbacks" : {
+      "post" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Callback for Work Item Service",
+        "description" : "Controller method, callbacks from the Work Item service to the Management service.",
+        "operationId" : "processCallback",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "instance of WorkItemCallbackAction",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/workItemCallbackAction"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success."
+          }
+        }
+      }
+    },
+    "/api/work-item/tasks" : {
+      "post" : {
+        "tags" : [ "reclamation" ],
+        "summary" : "Create reclamation work items",
+        "description" : "Creation of Reclamation request work items.",
+        "operationId" : "createWorkItems",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "List of VM ids",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }, {
+          "name" : "",
+          "in" : "query",
+          "description" : "lease days",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "description" : "delay days",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "description" : "mail group manager",
+          "required" : true,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success. Returns a list of workitem Ids.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "BoolCommonExpression" : {
+      "type" : "object"
+    },
+    "CertificateInfo" : {
+      "type" : "object",
+      "properties" : {
+        "identityCertificateExists" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "issuerName" : {
+          "type" : "string"
+        },
+        "principalName" : {
+          "type" : "string"
+        },
+        "notValidBefore" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "notValidAfter" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "thumbprint" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonExpression" : {
+      "type" : "object"
+    },
+    "EntitySimpleProperty" : {
+      "type" : "object",
+      "properties" : {
+        "propertyName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Health" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string"
+        },
+        "alertsDetails" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "ManagementEndpointDetails" : {
+      "type" : "object",
+      "required" : [ "endpointUrl", "tenant", "username" ],
+      "properties" : {
+        "password" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "endpointUrl" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2083
+        },
+        "tenant" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        }
+      }
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "OdataQueryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "inlineCount" : {
+          "type" : "string",
+          "enum" : [ "NONE", "ALLPAGES" ]
+        },
+        "top" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "skip" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "filter" : {
+          "$ref" : "#/definitions/BoolCommonExpression"
+        },
+        "orderBy" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderByExpression"
+          }
+        },
+        "skipToken" : {
+          "type" : "string"
+        },
+        "customOptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "expand" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "select" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "rawFilter" : {
+          "type" : "string"
+        },
+        "rawOrderBy" : {
+          "type" : "string"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        }
+      }
+    },
+    "OrderByExpression" : {
+      "type" : "object",
+      "properties" : {
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        },
+        "direction" : {
+          "type" : "string",
+          "enum" : [ "ASCENDING", "DESCENDING" ]
+        }
+      }
+    },
+    "PageAndSortRequest" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "queryInfo" : {
+          "$ref" : "#/definitions/OdataQueryInfo"
+        },
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "ReclamationDetails" : {
+      "type" : "object",
+      "required" : [ "assignedDate", "dailyCost", "machineName", "newLeasePeriod", "ownerName", "requestReason", "requestor", "requireAdditionalNotification", "state", "tenant", "waitBeforeForcingLeasePeriod" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "waitBeforeForcingLeasePeriod" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "newLeasePeriod" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "requireAdditionalNotification" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "requestReason" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "userComments" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "assignedDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "currentLeaseExpiryDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "machineName" : {
+          "type" : "string"
+        },
+        "iaasMachineId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "resourceId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "PENDING", "APPROVED", "REJECTED", "EXPIRED", "CANCELED" ]
+        },
+        "ownerName" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "tenant" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "requestor" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "workItemId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "dailyCost" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "currencyCode" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "StatMetric" : {
+      "type" : "object",
+      "properties" : {
+        "statName" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      }
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "booleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "boolean",
+            "description" : "The boolean value.",
+            "default" : false
+          }
+        },
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "metricfilter" : {
+      "type" : "object",
+      "properties" : {
+        "stat" : {
+          "type" : "string",
+          "enum" : [ "BADGE_HEALTH", "MEM", "DISK", "CPU", "NET", "VM_OVERSIZED", "VM_UNDERSIZED", "VM_IDLE" ]
+        },
+        "value" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "operation" : {
+          "type" : "string",
+          "enum" : [ "GREATER_THAN", "LESS_THAN", "LESS_THAN_OR_EQUALS", "GREATER_THAN_OR_EQUALS" ]
+        }
+      },
+      "xml" : {
+        "name" : "metricfilter"
+      }
+    },
+    "metricsQuery" : {
+      "type" : "object",
+      "properties" : {
+        "fromExpirationDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "toExpirationDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "statFilters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/metricfilter"
+          }
+        },
+        "stringFilters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/stringfilter"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "metricsQuery"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "stringProperty" : {
+      "type" : "object",
+      "properties" : {
+        "propertyName" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "stringProperty"
+      }
+    },
+    "stringfilter" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "enum" : [ "DEPLOYMENT_NAME", "VM_NAME", "OWNER", "STATUS", "GROUP", "INTERFACE_TYPE", "INTERFACE_DISPLAY_NAME", "MACHINE_TYPE", "IS_COMPONENT" ]
+        },
+        "value" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "stringfilter"
+      }
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "vmresource" : {
+      "type" : "object",
+      "properties" : {
+        "moref" : {
+          "type" : "string"
+        },
+        "vcopsUuid" : {
+          "type" : "string"
+        },
+        "iaasUuid" : {
+          "type" : "string"
+        },
+        "serverGuid" : {
+          "type" : "string"
+        },
+        "pendingRequest" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "dailyCost" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "expirationDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "health" : {
+          "$ref" : "#/definitions/Health"
+        },
+        "stats" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/StatMetric"
+          }
+        },
+        "strings" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/stringProperty"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "vmresource"
+      }
+    },
+    "workItemCallbackAction" : {
+      "type" : "object",
+      "properties" : {
+        "completeActionId" : {
+          "type" : "string"
+        },
+        "targetId" : {
+          "type" : "string"
+        },
+        "workItemId" : {
+          "type" : "string"
+        },
+        "workItemTypeId" : {
+          "type" : "string"
+        },
+        "assignee" : {
+          "type" : "string"
+        },
+        "completedDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "formData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "workItemCallbackAction"
+      }
+    }
+  }
+}

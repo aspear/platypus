@@ -1,0 +1,490 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Licensing Service API Specification\n\nThis document describes the Licensing Service REST API.\n\n## What is the Licensing Service REST API?\n\nThe Licensing Service REST API enables users to access the licenses layer of their vRealize Automation appliance. The API comprises three underlying API's - the License API, the Asset API and the DLF API.\n\n## Key Concepts\n\n### License API\n\nThe License API contains two endpoints, which you can use to add a valid serial key to activate a new license or retrieve all licenses currently enabled in the system. Licenses enable various features in a vRealize Automation instance.\n\n### Dormant License File (DLF)\n\nA dictionary that contains `key=value` pairs which describe licensing capabilities.\n\n### License\n\nA DLF that has been activated by a serial key. Licenses provide functionality of various features to vRealize Automation.\n\n### Serial Key\n\nA serial key is a hyphenated string of characters that maps to a DLF. By adding a valid serial key to a DLF in the system, you can create a valid license.\n\n## How the Licensing Service REST API Works\n\nThere are two primary usecases for the Licensing Service REST API, which are adding a serial key to activate a license, and retrieving all the licenses active in the system. For reference on how to invoke the API endpoints, see the reference below.\n\n**Adding a Serial Key**\n\nTo add a serial key, call the POST licensing endpoint (`/api/licenses`) and pass the serial key to activate a license in your system. \n\n**Retrieving all licenses**\n\nTo retrieve all the licenses in the system, call the GET licensing endpiont (`/api/licenses`).\n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Licensing Service API"
+  },
+  "basePath" : "/component-registry",
+  "tags" : [ {
+    "name" : "asset"
+  }, {
+    "name" : "dlf"
+  }, {
+    "name" : "licensing"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/assets" : {
+      "get" : {
+        "tags" : [ "asset" ],
+        "summary" : "Get all assets",
+        "description" : "Retrieves all assets present in the system.",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/AssetResources"
+            }
+          }
+        }
+      }
+    },
+    "/api/dlfs" : {
+      "get" : {
+        "tags" : [ "dlf" ],
+        "summary" : "Get DLFs",
+        "description" : "Retrieves all DLFs present in the system.",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/DlfResources"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "dlf" ],
+        "summary" : "Add DLF",
+        "description" : "Add a new DLF to the system.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The DLF to be added.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Dlf"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Dlf"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/dlfs/{id}" : {
+      "get" : {
+        "tags" : [ "dlf" ],
+        "summary" : "Get DLF",
+        "description" : "Retrieve a DLF.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The UUID of the DLF.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Dlf"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "dlf" ],
+        "summary" : "Delete DLF",
+        "description" : "Delete a DLF from the system that was added by a user.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The UUID of the DLF.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content."
+          }
+        }
+      }
+    },
+    "/api/licenses" : {
+      "get" : {
+        "tags" : [ "licensing" ],
+        "summary" : "Get all licenses",
+        "description" : "Retrieves all licenses present in the system.",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LicenseResources"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "licensing" ],
+        "summary" : "Add serial key",
+        "description" : "Adds a serial key to the system.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The serial key information to be added.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SerialKeyInfo"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Asset" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "assetInfo" : {
+          "$ref" : "#/definitions/AssetInfo"
+        }
+      }
+    },
+    "AssetInfo" : {
+      "type" : "object",
+      "properties" : {
+        "instanceId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "scopeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "product" : {
+          "$ref" : "#/definitions/Product"
+        }
+      }
+    },
+    "AssetResources" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "links",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Asset"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "AssetResources"
+      }
+    },
+    "CostUnit" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CostUnitLimit" : {
+      "type" : "object",
+      "properties" : {
+        "unit" : {
+          "$ref" : "#/definitions/CostUnit"
+        },
+        "value" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "enforcementType" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Dlf" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "dlfEncoded" : {
+          "type" : "string"
+        },
+        "dlfProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "DlfResources" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "links",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Dlf"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "DlfResources"
+      }
+    },
+    "Feature" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KeyAnyValue" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "License" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "assetId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "licenseInfo" : {
+          "$ref" : "#/definitions/LicenseInfo"
+        }
+      }
+    },
+    "LicenseInfo" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "expiration" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "restrictions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LicenseProductRestriction"
+          }
+        }
+      }
+    },
+    "LicenseProductCapability" : {
+      "type" : "object",
+      "properties" : {
+        "version" : {
+          "type" : "string"
+        },
+        "features" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Feature"
+          }
+        },
+        "keyValues" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyAnyValue"
+          }
+        }
+      }
+    },
+    "LicenseProductRestriction" : {
+      "type" : "object",
+      "properties" : {
+        "product" : {
+          "$ref" : "#/definitions/Product"
+        },
+        "costUnitLimits" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CostUnitLimit"
+          }
+        },
+        "licenseProductCapabilities" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LicenseProductCapability"
+          }
+        }
+      }
+    },
+    "LicenseResources" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "links",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/License"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "LicenseResources"
+      }
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "rel" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Product" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "editionKey" : {
+          "type" : "string"
+        },
+        "suiteName" : {
+          "type" : "string"
+        },
+        "family" : {
+          "$ref" : "#/definitions/ProductFamily"
+        }
+      }
+    },
+    "ProductFamily" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "SerialKeyInfo" : {
+      "type" : "object",
+      "properties" : {
+        "serialKeys" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "SerialKeyLicenseInfo" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LicenseInfo"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "serialKeys" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    }
+  }
+}

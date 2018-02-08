@@ -1,0 +1,4955 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Composition Service API Specification\n\n## What Is the Composition Service?\n\nThe composition service allows vRA services to register application components, which the\ncomposition service manages so that they can be used in composite blueprints.  The composition\nservice analyzes the blueprint and breaks it down into tasks for each component service to execute\nwhen provisioning the blueprint, or later when performing a day-2 operation on the resulting\ndeployment. The service that registers the component performs the actual tasks needed to provision\nand update the component.\n\n## Typical Use Cases\n* An infrastructure architect designs blueprints that provision virtual machines to various endpoints.\n\n* A software architect designs and registers application components that may be used in blueprints.\n\n* An application developer develops converged blueprints representing entire application stacks using\nmachine, network and software components.\n\n* A blueprint is made available for an end user to provision.\n\n* The deployment resulting from a blueprint being provisioned is able to be managed through various\nday-2 operations such as scale-in, scale-out, update, destroy.\n\n## Key Concepts\n\n### Composite Blueprint\n\nA composite blueprint is a complex artifact representing a deployable application.  This\napplication may be composed of virtual machines, software components, XaaS blueprints, nested\ncomposite blueprints and so on.  The blueprint captures the components themselves, the\ndependencies between components, associated property definitions - everything necessary to\ncreate a running instance.\n\n### Component Type\nThe composition service provides a component type registry, which allows other services to\ndefine component types which may be used as part of a composite blueprint.  Machines, software\ncomponents, XaaS blueprints and network components are some of the component types registered\nwith the composition service by other services (component type providers).\n\n### Component Type Provider\nThis is the service that is responsible for registering a component type with the composition\nservice.  The component type provider understands the details of the component - how to author,\nhow to deploy, how to destroy, and so on.  The composition service orchestrates blueprint operations -\nauthoring, provisioning, teardown - but relies on the provider to handle the details for the\ncomponent.  For example, IaaS is responsible for managing the lifecycle of machine components.\n\n### Execution Flow\nWhen a blueprint is requested from the catalog, the composition service analyzes the components and\ntheir inter-dependencies to create an ordered set of tasks.  It works with the component providers,\nwhich actually carry out these tasks.\n\nFor more detailed usage information on the API  refer to the  **vRA Programming Guide**.\n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Composition Service API"
+  },
+  "basePath" : "/composition-service",
+  "tags" : [ {
+    "name" : "author-api"
+  }, {
+    "name" : "blueprint-documents"
+  }, {
+    "name" : "blueprints"
+  }, {
+    "name" : "component-profiles"
+  }, {
+    "name" : "component-types"
+  }, {
+    "name" : "composition-contract"
+  }, {
+    "name" : "composition-server"
+  }, {
+    "name" : "consumer-api"
+  }, {
+    "name" : "internal-api"
+  }, {
+    "name" : "provider-contract"
+  }, {
+    "name" : "resources"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/blueprintdocuments" : {
+      "get" : {
+        "tags" : [ "blueprint-documents", "consumer-api" ],
+        "summary" : "Get Blueprint Documents",
+        "description" : "Get a list of composite blueprint documents visible to the caller.",
+        "operationId" : "getBlueprintDocuments",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return a page of BlueprintDocument objects.",
+            "schema" : {
+              "$ref" : "#/definitions/BlueprintDocument"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/blueprintdocuments/{id}" : {
+      "get" : {
+        "tags" : [ "blueprint-documents", "consumer-api" ],
+        "summary" : "Get Blueprint Document",
+        "description" : "Get an existing composite blueprint document by its objectId.",
+        "operationId" : "getBlueprintDocument",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the composite blueprint document.",
+            "schema" : {
+              "$ref" : "#/definitions/BlueprintDocument"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "blueprint-documents", "author-api" ],
+        "summary" : "Create or Update Blueprint Document",
+        "description" : "Create or update a composite blueprint document.",
+        "operationId" : "createOrUpdateBlueprintDocument",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new blueprint to create.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/BlueprintDocument"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the created or updated composite blueprint document.",
+            "schema" : {
+              "$ref" : "#/definitions/BlueprintDocument"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "blueprint-documents", "author-api" ],
+        "summary" : "Delete Blueprint Document",
+        "description" : "Delete an existing composite blueprint document by its objectId.",
+        "operationId" : "deleteBlueprintDocument",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Composite blueprint document successfully deleted."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints" : {
+      "get" : {
+        "tags" : [ "blueprints", "consumer-api" ],
+        "summary" : "Get Blueprints",
+        "description" : "Get a list of composite blueprints visible to the caller.",
+        "operationId" : "getBlueprints",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "query",
+          "description" : "If true, return full blueprint objects. If false, return summary objects.",
+          "required" : true,
+          "type" : "string",
+          "default" : "false"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return a page of CompositeBlueprint or CompositeBlueprintInfo objects.",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Create Blueprint",
+        "description" : "Create a new composite blueprint.",
+        "operationId" : "createBlueprint",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "query",
+          "description" : "If true, skip specification and recursion validations. Default is false.",
+          "required" : true,
+          "type" : "boolean",
+          "default" : false
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new blueprint to create.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CompositeBlueprint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/CompositeBlueprint"
+            }
+          },
+          "201" : {
+            "description" : "Success - return the created composite blueprint."
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/blueprints/memberComponentTypes/{componentId}" : {
+      "get" : {
+        "tags" : [ "blueprints", "consumer-api" ],
+        "summary" : "Get Blueprints",
+        "description" : "Get page of composite blueprint by component type.",
+        "operationId" : "getBlueprintsByComponentType",
+        "parameters" : [ {
+          "name" : "componentId",
+          "in" : "path",
+          "description" : "The id of the component type.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the list of composite blueprint.",
+            "schema" : {
+              "$ref" : "#/definitions/CompositeBlueprint"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{blueprintId}/forms/{formType}" : {
+      "get" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Get custom form for blueprint",
+        "description" : "Get custom form for blueprint.",
+        "operationId" : "getForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form is set.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Set blueprint to use custom form",
+        "description" : "Set blueprint to use custom form.",
+        "operationId" : "setCustomForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The json string containing the custom form.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form is set.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Set blueprint to use custom form",
+        "description" : "",
+        "operationId" : "deleteCustomForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form was deleted.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{blueprintId}/forms/{formType}/disable" : {
+      "get" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Set blueprint to use default form.",
+        "description" : "Set blueprint to use default form.",
+        "operationId" : "disableCustomForms",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the form is disabled.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{blueprintId}/forms/{formType}/enable" : {
+      "get" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Set blueprint to use custom form.",
+        "description" : "Set blueprint to use custom form.",
+        "operationId" : "enableCustomForms",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the form is enabled.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{blueprintId}/forms/{formType}/validate" : {
+      "post" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Validate custom form for blueprint",
+        "description" : "Validate custom form for blueprint.",
+        "operationId" : "validateForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The form definition.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form is validated successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{blueprintId}/forms/{formType}/validate/{validationType}" : {
+      "get" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Validate custom form for blueprint",
+        "description" : "Validate custom form for blueprint.",
+        "operationId" : "validateForm",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the form.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "validationType",
+          "in" : "path",
+          "description" : "The type of performed validation..",
+          "required" : true,
+          "type" : "generatedForm",
+          "x-example" : "generatedForm"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - the custom form is validated successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        },
+        "deprecated" : true
+      }
+    },
+    "/api/blueprints/{id}" : {
+      "get" : {
+        "tags" : [ "blueprints", "consumer-api" ],
+        "summary" : "Get Blueprint",
+        "description" : "Get an existing composite blueprint by its objectId.",
+        "operationId" : "getBlueprint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the composite blueprint.",
+            "schema" : {
+              "$ref" : "#/definitions/CompositeBlueprint"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Update Blueprint",
+        "description" : "Update an existing composite blueprint.",
+        "operationId" : "updateBlueprint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint to update.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "description" : "If true, skip specification and recursion validations. Default is false.",
+          "required" : true,
+          "type" : "boolean",
+          "default" : false
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The updated blueprint data.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CompositeBlueprint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the updated composite blueprint.",
+            "schema" : {
+              "$ref" : "#/definitions/CompositeBlueprint"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Delete Blueprint",
+        "description" : "Delete an existing composite blueprint by its objectId.",
+        "operationId" : "deleteBlueprint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Composite blueprint successfully deleted."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/blueprints/{id}/status" : {
+      "put" : {
+        "tags" : [ "blueprints", "author-api" ],
+        "summary" : "Update Blueprint Publish-Status",
+        "description" : "Update the publish-status of an existing composite blueprint.",
+        "operationId" : "updateBlueprintPublishStatus",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new PublishStatus value for the blueprint.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the updated composite blueprint as CompositeBlueprintInfo.",
+            "schema" : {
+              "$ref" : "#/definitions/CompositeBlueprintInfo"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Blueprint not found."
+          }
+        }
+      }
+    },
+    "/api/categories" : {
+      "get" : {
+        "tags" : [ "composition-server", "consumer-api" ],
+        "summary" : "API to query all CompositeCategory",
+        "description" : "",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ComponentTypeCategory"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/componentresources/allResources" : {
+      "get" : {
+        "tags" : [ "resources", "internal-api" ],
+        "summary" : "Get All resources with deployment and BP details that were created or updated within a specified time range.",
+        "description" : "Get all the Resources that were created or updated between a specified time range.",
+        "parameters" : [ {
+          "name" : "fromTime",
+          "in" : "query",
+          "description" : "From Time",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "toTime",
+          "in" : "query",
+          "description" : "To Time",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return a list of Resources.",
+            "schema" : {
+              "$ref" : "#/definitions/PageResourceDetails"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/componenttypes" : {
+      "get" : {
+        "tags" : [ "component-types", "consumer-api" ],
+        "summary" : "Get Component Types",
+        "description" : "Get a list of component types visible to the caller.",
+        "operationId" : "getComponentTypes",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "query",
+          "description" : "If true, return component types only for the specified blueprint. Filter and page information will be ignored.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "fetchSchema",
+          "in" : "query",
+          "description" : "If true, include component type schema data in returned list.",
+          "required" : false,
+          "type" : "string",
+          "default" : "true"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return a page of component types.",
+            "schema" : {
+              "$ref" : "#/definitions/ComponentType"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "component-types", "author-api", "provider-contract" ],
+        "summary" : "Create Component Type",
+        "description" : "Create a new component type.",
+        "operationId" : "createComponentType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The new component type to create.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ComponentType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ComponentType"
+            }
+          },
+          "201" : {
+            "description" : "Success - return the created component type."
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/componenttypes/{id}/forms/author" : {
+      "get" : {
+        "tags" : [ "component-types", "provider-contract" ],
+        "summary" : "Get Component Type Authoring Form",
+        "description" : "Get the authoring form for component type.",
+        "operationId" : "getComponentTypeAuthoringForm",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type.",
+            "schema" : {
+              "$ref" : "#/definitions/form"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type or not found or has no authoring form."
+          }
+        }
+      }
+    },
+    "/api/componenttypes/{id}/forms/author/update" : {
+      "post" : {
+        "tags" : [ "component-types", "provider-contract" ],
+        "summary" : "Get Component Type Element Authoring Form Metadata",
+        "description" : "Get the metadata of one or more elements within the authoring form of a specified component type.",
+        "operationId" : "getComponentTypeElementAuthoringFormMetadata",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Information required to complete the request.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type.",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type or not found or has no authoring form."
+          }
+        }
+      }
+    },
+    "/api/componenttypes/{id}/forms/author/{elementId}/values" : {
+      "post" : {
+        "tags" : [ "component-types", "provider-contract" ],
+        "summary" : "Get Component Type Element Authoring Form Values",
+        "description" : "Get the permissible values for an element within the authoring form of a specified component type.",
+        "operationId" : "getComponentTypeElementAuthoringFormValues",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "elementId",
+          "in" : "path",
+          "description" : "The id of an element within the component type.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Information required to complete the request.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type.",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type or not found or has no authoring form."
+          }
+        }
+      }
+    },
+    "/api/componenttypes/{objectId}" : {
+      "get" : {
+        "tags" : [ "component-types", "consumer-api" ],
+        "summary" : "Get Component Type",
+        "description" : "Get an existing component type by its objectId.",
+        "operationId" : "getComponentType",
+        "parameters" : [ {
+          "name" : "objectId",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type.",
+            "schema" : {
+              "$ref" : "#/definitions/ComponentType"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type not found."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "component-types", "author-api", "provider-contract" ],
+        "summary" : "Create or Update Component Type",
+        "description" : "Create or update a component type.",
+        "operationId" : "createOrUpdateComponentType",
+        "parameters" : [ {
+          "name" : "objectId",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The component type to create or update.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ComponentType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ComponentType"
+            }
+          },
+          "201" : {
+            "description" : "Success - return the created component type."
+          },
+          "204" : {
+            "description" : "Success - return the updated component type."
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "component-types", "author-api", "provider-contract" ],
+        "summary" : "Delete Component Type",
+        "description" : "Deletes an existing component type by its objectId.",
+        "operationId" : "deleteComponentType",
+        "parameters" : [ {
+          "name" : "objectId",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "name" : "",
+          "in" : "query",
+          "description" : "The tenant owning the component type.",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Component type successfully deleted."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type not found."
+          }
+        }
+      }
+    },
+    "/api/componenttypes/{objectId}/schema" : {
+      "get" : {
+        "tags" : [ "component-types", "consumer-api" ],
+        "summary" : "Get Component Type Schema",
+        "description" : "Get the schema for an existing component type by the component type's objectId.",
+        "operationId" : "getComponentTypeSchema",
+        "parameters" : [ {
+          "name" : "objectId",
+          "in" : "path",
+          "description" : "The objectId of the component type.",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type schema.",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type not found."
+          }
+        }
+      }
+    },
+    "/api/composition/requests" : {
+      "post" : {
+        "tags" : [ "composition-contract" ],
+        "summary" : "Submit Composition Service Request",
+        "description" : "Kick off the provisioning of a nested blueprint.",
+        "operationId" : "submitCompositionRequest",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Request data, including blueprint information.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CompositionProviderRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Success - return the location path of the submitted request."
+          }
+        }
+      }
+    },
+    "/api/data-service/data/{classId}/{id}" : {
+      "post" : {
+        "summary" : "Get a set of data for the specified object",
+        "description" : "Get a set of data for the specified object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The identifier of the type of object to get data for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique id of the object to get data for. This should be sufficient to identify the object given classId.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DynamicDataRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/DynamicDataResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/default" : {
+      "post" : {
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/types/{typeFilter}" : {
+      "post" : {
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object class",
+        "description" : "Get the schema for the specified object class.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object",
+        "description" : "This returns the schema of a particular type adjusted to the state of a specific instance..",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}" : {
+      "get" : {
+        "summary" : "Get the schema for the specified object type",
+        "description" : "This returns the schema of a particular type within a class of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/update" : {
+      "post" : {
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/{fieldId}/values" : {
+      "post" : {
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/requests/{bindingId}/complete" : {
+      "post" : {
+        "tags" : [ "provider-contract" ],
+        "summary" : "Mark Request Complete",
+        "description" : "Provider method to notify composition service that a request is complete.",
+        "operationId" : "completeRequest",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "The id of the provider.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "The provider's request id.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Request completion data sent by the provider.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/requestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Success - request completion processed or unknown request ignored."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/requests/{bindingId}/complete/allocation" : {
+      "post" : {
+        "tags" : [ "provider-contract" ],
+        "summary" : "Mark Allocation Request Complete",
+        "description" : "Provider method to notify composition service that an allocation request is complete.",
+        "operationId" : "completeAllocationRequest",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "The id of the provider.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "The provider's request id.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Request completion data sent by the provider.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AllocateRequestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Success - request completion processed or unknown request ignored."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/requests/{bindingId}/complete/deallocation" : {
+      "post" : {
+        "tags" : [ "provider-contract" ],
+        "summary" : "Mark Deallocation Request Complete",
+        "description" : "Provider method to notify composition service that a de-allocation request is complete.",
+        "operationId" : "completeDeallocationRequest",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "The id of the provider.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "The provider's request id.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Request completion data sent by the provider.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DeallocateRequestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Success - request completion processed or unknown request ignored."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/requests/catalog/{cafeRequestId}/hierarchy/{fieldPath}/form/{formType}/update" : {
+      "post" : {
+        "tags" : [ "internal-api" ],
+        "summary" : "Get Updates to the Request Form of a Component in a Requested Blueprint",
+        "description" : "Get updates to the request form of a component in a requested blueprint, given a catalog request id and based on provided inputs. Example uses of this API include returning dynamic property value choices.",
+        "parameters" : [ {
+          "name" : "cafeRequestId",
+          "in" : "path",
+          "description" : "The id of the catalog request.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldPath",
+          "in" : "path",
+          "description" : "The path of the component whose form to update.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the request form.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "composition.request.submission", "composition.request.details" ]
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "An ElementMetadataRequest instance containing the affected elements.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return an ElementMetadataResponse containing changes to elements.",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/requests/catalog/{cafeRequestId}/hierarchy/{fieldPath}/form/{formType}/{formElementId}/values" : {
+      "post" : {
+        "tags" : [ "internal-api" ],
+        "summary" : "Get the Possible Values for a Form Field of a Component in a Requested Blueprint",
+        "description" : "Get the possible values for a specific field in the request form of a component in a blueprint, given a catalog request id.",
+        "parameters" : [ {
+          "name" : "cafeRequestId",
+          "in" : "path",
+          "description" : "The id of the catalog request.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldPath",
+          "in" : "path",
+          "description" : "The path of the component whose form the field belongs to.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the request form.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "composition.request.submission", "composition.request.details" ]
+        }, {
+          "name" : "formElementId",
+          "in" : "path",
+          "description" : "The ID of the form field whose values are requested.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "An ElementValuesRequest specifying the dependency values from the current form state  and any search text provided by the user to filter the possible values.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return an ElementValuesResponse containing a list of possible values.",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/requests/hierarchy/{blueprintId}/{fieldPath}/form/{formType}/update" : {
+      "post" : {
+        "tags" : [ "internal-api" ],
+        "summary" : "Get Updates to the Request Form of a Blueprint Component",
+        "description" : "Get updates to the request form of a component within a blueprint based on provided inputs. Example uses of this API include returning dynamic property value choices.",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldPath",
+          "in" : "path",
+          "description" : "The path of the component whose form to update.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the request form.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "composition.request.submission", "composition.request.details" ]
+        }, {
+          "name" : "subtenantId",
+          "in" : "query",
+          "description" : "The id of the business group in which the request will be made.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "An ElementMetadataRequest instance containing the affected elements.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return an ElementMetadataResponse containing changes to elements.",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/requests/hierarchy/{blueprintId}/{fieldPath}/form/{formType}/{formElementId}/values" : {
+      "post" : {
+        "tags" : [ "internal-api" ],
+        "summary" : "Get the Possible Values for a Form Field of a Component in a Blueprint",
+        "description" : "Get the possible values for a specific field in the request form of a component in a blueprint.",
+        "parameters" : [ {
+          "name" : "blueprintId",
+          "in" : "path",
+          "description" : "The objectId of the blueprint.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldPath",
+          "in" : "path",
+          "description" : "The path of the component whose form the field belongs to.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "formType",
+          "in" : "path",
+          "description" : "The type of the request form.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "composition.request.submission", "composition.request.details" ]
+        }, {
+          "name" : "formElementId",
+          "in" : "path",
+          "description" : "The ID of the form field whose values are requested.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "subtenantId",
+          "in" : "query",
+          "description" : "The id of the business group in which the request will be made.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "An ElementValuesRequest specifying the dependency values from the current form state  and any search text provided by the user to filter the possible values.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return an ElementValuesResponse containing a list of possible values.",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/typeextensions" : {
+      "get" : {
+        "tags" : [ "component-profiles", "consumer-api" ],
+        "summary" : "Get Component Type Extension",
+        "description" : "Retrieve Component Type Extension that the current user may access. This API returns list of Component Type Extensions in the current tenant scope and global scope.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the list of component type extensions.",
+            "schema" : {
+              "$ref" : "#/definitions/PageComponentTypeExtension"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/typeextensions/{id}" : {
+      "get" : {
+        "tags" : [ "component-profiles", "consumer-api" ],
+        "summary" : "Get Component Type Extension",
+        "description" : "Retrieve details of component type extension that the current user may access. This API checks for component type extension in the current tenant and if not found then checks global component type extensions.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type extension.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type extension.",
+            "schema" : {
+              "$ref" : "#/definitions/ComponentTypeExtension"
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type extension not found."
+          }
+        }
+      }
+    },
+    "/api/typeextensions/{id}/values" : {
+      "get" : {
+        "tags" : [ "component-profiles", "consumer-api" ],
+        "summary" : "Get Component Type Extension Values",
+        "description" : "Retrieve component type extension value list of a component type extension in the tenant and global scope.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type extension.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type extension values.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ComponentTypeExtensionValue"
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type extension not found."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "component-profiles", "author-api" ],
+        "summary" : "Update Component Type Extension Value List",
+        "description" : "Update component type extension value list of a component type extension. The list of component type extension values in the given tenant scope are updated.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The objectId of the component type extension.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/ComponentTypeExtensionValue"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the component type extension.",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ComponentTypeExtensionValue"
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Component type extension value not found."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AllocateComponentRequest" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CompositionProviderRequest"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "allocationConstraint" : {
+            "$ref" : "#/definitions/AllocationConstraint"
+          }
+        }
+      } ]
+    },
+    "AllocateRequestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "success" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "completionDetails" : {
+          "type" : "string"
+        },
+        "result" : {
+          "$ref" : "#/definitions/ComponentAllocationInfo"
+        }
+      }
+    },
+    "AllocationConstraint" : {
+      "type" : "object",
+      "properties" : {
+        "filter" : {
+          "type" : "string"
+        }
+      }
+    },
+    "AndClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "BlueprintDocument" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
+        "layout" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "propertyGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "properties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "components" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComponentInfo"
+          }
+        }
+      }
+    },
+    "BooleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "CallbackEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Clause" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CoalesceEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ComplexDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        }
+      } ]
+    },
+    "ComplexEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "values" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ComponentAllocationInfo" : {
+      "type" : "object",
+      "properties" : {
+        "data" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "ComponentDeclaration" : {
+      "type" : "object",
+      "properties" : {
+        "data" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComponentFieldValue"
+          }
+        },
+        "componentProfiles" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CompositeBlueprintComponentProfile"
+          }
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "propertyGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "dependson" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ComponentFieldValue" : {
+      "type" : "object",
+      "properties" : {
+        "facets" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        },
+        "permittedValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "data" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComponentFieldValue"
+          }
+        }
+      }
+    },
+    "ComponentInfo" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string"
+        },
+        "propertyGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "dependsOn" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "data" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "componentProfiles" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ComponentProfileInfo"
+          }
+        }
+      }
+    },
+    "ComponentProfileInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "defaultValueName" : {
+          "type" : "string"
+        },
+        "permissibleValueNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ComponentRequestInfo" : {
+      "type" : "object",
+      "properties" : {
+        "componentId" : {
+          "type" : "string"
+        },
+        "componentTypeId" : {
+          "type" : "string"
+        },
+        "componentSchema" : {
+          "$ref" : "#/definitions/Schema"
+        },
+        "componentData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "requestInputData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "resourceId" : {
+          "type" : "string"
+        },
+        "previousComponentData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "ComponentType" : {
+      "type" : "object",
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "classId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "requiredPermissionIds" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "catalogItemTypeId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "outputResourceTypeId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "forms" : {
+          "$ref" : "#/definitions/ComponentTypeForms"
+        },
+        "iconId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "schema" : {
+          "$ref" : "#/definitions/Schema"
+        },
+        "containerFieldId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "callbacks" : {
+          "$ref" : "#/definitions/ComponentTypeCallbackSupport"
+        },
+        "idForEntitlements" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 1023
+        },
+        "allocationRelatedResourceTypeIds" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "categoryId" : {
+          "type" : "string"
+        },
+        "supportLenientDestroy" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "tenantId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ComponentTypeCallbackSupport" : {
+      "type" : "object",
+      "required" : [ "clusterBehavior" ],
+      "properties" : {
+        "requestDetails" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "validate" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "rollback" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "allocate" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "destroy" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "clusterBehavior" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNSUPPORTED", "SUPPORTED" ]
+        },
+        "listOffers" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "ComponentTypeCategory" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the composition category"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Localization key of the name of the category"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Localization key of the description of the category"
+        },
+        "iconId" : {
+          "type" : "string",
+          "description" : "ID of the icon of the category"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "Type of the category"
+        },
+        "order" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The order of the category in which it should appear on the UI"
+        },
+        "properties" : {
+          "type" : "string",
+          "description" : "JSON serialized string of extra properties of the categories such as permissions or if it should be hidden etc."
+        }
+      },
+      "description" : "An instance of the available categories on the CBP Editor"
+    },
+    "ComponentTypeExtension" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "fieldIds" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "componentType" : {
+          "$ref" : "#/definitions/ComponentType"
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "ComponentTypeExtensionValue" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "label" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "valuesMap" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "componentTypeExtension" : {
+          "$ref" : "#/definitions/ComponentTypeExtension"
+        },
+        "isEnabled" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "ComponentTypeForms" : {
+      "type" : "object",
+      "properties" : {
+        "formsByScenario" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/FormReference"
+          }
+        }
+      }
+    },
+    "CompositeBlueprint" : {
+      "type" : "object",
+      "required" : [ "customFormStatus", "name", "publishStatus" ],
+      "properties" : {
+        "tenantId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "publishStatus" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
+        "publishStatusName" : {
+          "type" : "string"
+        },
+        "components" : {
+          "type" : "object",
+          "xml" : {
+            "wrapped" : true
+          },
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComponentDeclaration"
+          }
+        },
+        "properties" : {
+          "type" : "object",
+          "xml" : {
+            "wrapped" : true
+          },
+          "additionalProperties" : {
+            "$ref" : "#/definitions/ComponentFieldValue"
+          }
+        },
+        "propertyGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "catalogItemTypeId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "layout" : {
+          "type" : "object",
+          "xml" : {
+            "wrapped" : true
+          },
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "snapshotVersion" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "customFormStatus" : {
+          "type" : "string",
+          "enum" : [ "NA", "OFF", "ON", "INVALID" ]
+        },
+        "customFormStatusName" : {
+          "type" : "string"
+        },
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CompositeBlueprintComponentProfile" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "defaultValueName" : {
+          "type" : "string"
+        },
+        "permissibleValueNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "CompositeBlueprintInfo" : {
+      "type" : "object",
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "publishStatus" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
+        "publishStatusName" : {
+          "type" : "string"
+        },
+        "customFormStatus" : {
+          "type" : "string",
+          "enum" : [ "NA", "OFF", "ON", "INVALID" ]
+        },
+        "customFormStatusName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CompositionProviderRequest" : {
+      "type" : "object",
+      "properties" : {
+        "userContext" : {
+          "$ref" : "#/definitions/RequestUserContext"
+        },
+        "componentInfo" : {
+          "$ref" : "#/definitions/ComponentRequestInfo"
+        },
+        "blueprintId" : {
+          "type" : "string"
+        },
+        "blueprintName" : {
+          "type" : "string"
+        },
+        "rootCafeRequestId" : {
+          "type" : "string"
+        },
+        "blueprintRequestId" : {
+          "type" : "string"
+        },
+        "requestId" : {
+          "type" : "string"
+        },
+        "rootCafeDeploymentId" : {
+          "type" : "string"
+        },
+        "callbackServiceId" : {
+          "type" : "string"
+        },
+        "callbackAdditionalUrlPath" : {
+          "type" : "string"
+        },
+        "targetResourceId" : {
+          "type" : "string"
+        },
+        "cafeResourceId" : {
+          "type" : "string"
+        },
+        "targetResourceProviderId" : {
+          "type" : "string"
+        },
+        "targetResourceTypeId" : {
+          "type" : "string"
+        },
+        "requestType" : {
+          "type" : "string",
+          "enum" : [ "PROVISION", "UPDATE", "ALLOCATE", "DEALLOCATE", "ARCHIVE", "CHANGE_LEASE", "CHANGE_OWNER", "DESTROY", "SCALE_IN", "SCALE_OUT", "RESUME", "ALTER_DEPLOYMENT" ]
+        }
+      }
+    },
+    "ConditionalEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cases" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "case"
+            },
+            "items" : {
+              "$ref" : "#/definitions/ConditionalEvaluatorCase"
+            }
+          },
+          "defaulValue" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluatorCase" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ConstantClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/booleanLiteral"
+          }
+        }
+      } ]
+    },
+    "ConstantValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/literal"
+          }
+        }
+      } ]
+    },
+    "Constraint" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ContainsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ContextPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CriteriaOperator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CustomPropertyDefinitionMetadata" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "required" : [ "field" ],
+        "properties" : {
+          "field" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "CustomValidationConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DataType" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "typeId" : {
+          "type" : "string",
+          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+        }
+      }
+    },
+    "DeallocateRequestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "success" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "completionDetails" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DefaultValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DynamicDataRequest" : {
+      "type" : "object",
+      "properties" : {
+        "tenantId" : {
+          "type" : "string"
+        },
+        "ignoreUnknownFields" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "ids" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "id"
+          },
+          "readOnly" : true,
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "DynamicDataResponse" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "DynamicLayoutReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "context" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          },
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicValueContext" : {
+      "type" : "object",
+      "required" : [ "parameterMappings" ],
+      "properties" : {
+        "providerEntityId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "EditableBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ElementState" : {
+      "type" : "object",
+      "properties" : {
+        "dependencies" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "dependency",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Constraint"
+          }
+        }
+      }
+    },
+    "ElementValuesPagingInfo" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "EncryptedBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EndsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntityReferenceDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Evaluator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "Expression" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "operator" : {
+            "$ref" : "#/definitions/CriteriaOperator"
+          },
+          "leftOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          },
+          "rightOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ExtensionForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExtensionRendererContext" : {
+      "type" : "object",
+      "properties" : {
+        "extensionId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "ExternalFormReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "formId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExternalValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "dynamicValueProviderInfo" ],
+        "properties" : {
+          "dynamicValueProviderInfo" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          }
+        }
+      } ]
+    },
+    "FacetValueMap" : {
+      "type" : "object",
+      "properties" : {
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/FacetValueMapEntry"
+          }
+        }
+      }
+    },
+    "FacetValueMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "Field" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "displayAdvice" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+        },
+        "orderIndex" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "permissibleValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "isMultiValued" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "columns" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "column",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "FieldReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FixedValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "FormReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "GreaterThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IaasPropertyNameBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IncrementBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InternalConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IsDefinedOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutCell" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LayoutExtension" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "fieldPrefix" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LayoutField" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "orderIndex" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "dataType" : {
+            "$ref" : "#/definitions/DataType"
+          },
+          "displayAdvice" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+          },
+          "permissibleValues" : {
+            "$ref" : "#/definitions/PermissibleValueList"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "labelSize" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "detailLayout" : {
+            "$ref" : "#/definitions/LayoutReference"
+          },
+          "extensionRendererContext" : {
+            "$ref" : "#/definitions/ExtensionRendererContext"
+          },
+          "isMultiValued" : {
+            "type" : "boolean",
+            "xml" : {
+              "attribute" : true
+            },
+            "default" : false
+          },
+          "columns" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "column",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutField"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlow" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "parts" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "part",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutFlowElement"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlowElement" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutPage" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "sections" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "section",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutSection"
+          }
+        }
+      }
+    },
+    "LayoutPlaceholderCell" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "LayoutRow" : {
+      "type" : "object",
+      "properties" : {
+        "items" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "item",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutCell"
+          }
+        }
+      }
+    },
+    "LayoutSection" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "rows" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "row",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutRow"
+          }
+        }
+      }
+    },
+    "LayoutText" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LessThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "MandatoryConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaximumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MinCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinimumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "MultipleEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "NotClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClause" : {
+            "$ref" : "#/definitions/Clause"
+          }
+        }
+      } ]
+    },
+    "NotEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "NullDisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ObjectDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "OrClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "PageComponentTypeExtension" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ComponentTypeExtension"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageResourceDetails" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ResourceDetails"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ParameterMapping" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ParameterMappingCollection" : {
+      "type" : "object",
+      "properties" : {
+        "params" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "param",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/ParameterMapping"
+          }
+        }
+      }
+    },
+    "PermissibleValueList" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "customAllowed" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "PrimitiveDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "typeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          }
+        }
+      } ]
+    },
+    "ReadOnlyConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RefreshOnChangeBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RegexpConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "errorMessage" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "RequestUserContext" : {
+      "type" : "object",
+      "properties" : {
+        "requestedBy" : {
+          "type" : "string"
+        },
+        "requestedFor" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "subtenantId" : {
+          "type" : "string"
+        },
+        "reasons" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ResetValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ResourceDetails" : {
+      "type" : "object",
+      "properties" : {
+        "resourceId" : {
+          "type" : "string"
+        },
+        "resourceName" : {
+          "type" : "string"
+        },
+        "deploymentId" : {
+          "type" : "string"
+        },
+        "deploymentName" : {
+          "type" : "string"
+        },
+        "cafeResourceId" : {
+          "type" : "string"
+        },
+        "providerId" : {
+          "type" : "string"
+        },
+        "providerBindingId" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "subTenantId" : {
+          "type" : "string"
+        },
+        "blueprintName" : {
+          "type" : "string"
+        },
+        "blueprintId" : {
+          "type" : "string"
+        },
+        "blueprintSnapshotId" : {
+          "type" : "string"
+        },
+        "blueprintComponentId" : {
+          "type" : "string"
+        },
+        "componentTypeId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "RestEntity" : {
+      "type" : "object",
+      "properties" : {
+        "body" : {
+          "type" : "object"
+        },
+        "httpStatus" : {
+          "type" : "string",
+          "enum" : [ "CONTINUE", "SWITCHING_PROTOCOLS", "PROCESSING", "CHECKPOINT", "OK", "CREATED", "ACCEPTED", "NON_AUTHORITATIVE_INFORMATION", "NO_CONTENT", "RESET_CONTENT", "PARTIAL_CONTENT", "MULTI_STATUS", "ALREADY_REPORTED", "IM_USED", "MULTIPLE_CHOICES", "MOVED_PERMANENTLY", "FOUND", "MOVED_TEMPORARILY", "SEE_OTHER", "NOT_MODIFIED", "USE_PROXY", "TEMPORARY_REDIRECT", "PERMANENT_REDIRECT", "BAD_REQUEST", "UNAUTHORIZED", "PAYMENT_REQUIRED", "FORBIDDEN", "NOT_FOUND", "METHOD_NOT_ALLOWED", "NOT_ACCEPTABLE", "PROXY_AUTHENTICATION_REQUIRED", "REQUEST_TIMEOUT", "CONFLICT", "GONE", "LENGTH_REQUIRED", "PRECONDITION_FAILED", "PAYLOAD_TOO_LARGE", "REQUEST_ENTITY_TOO_LARGE", "URI_TOO_LONG", "REQUEST_URI_TOO_LONG", "UNSUPPORTED_MEDIA_TYPE", "REQUESTED_RANGE_NOT_SATISFIABLE", "EXPECTATION_FAILED", "I_AM_A_TEAPOT", "INSUFFICIENT_SPACE_ON_RESOURCE", "METHOD_FAILURE", "DESTINATION_LOCKED", "UNPROCESSABLE_ENTITY", "LOCKED", "FAILED_DEPENDENCY", "UPGRADE_REQUIRED", "PRECONDITION_REQUIRED", "TOO_MANY_REQUESTS", "REQUEST_HEADER_FIELDS_TOO_LARGE", "INTERNAL_SERVER_ERROR", "NOT_IMPLEMENTED", "BAD_GATEWAY", "SERVICE_UNAVAILABLE", "GATEWAY_TIMEOUT", "HTTP_VERSION_NOT_SUPPORTED", "VARIANT_ALSO_NEGOTIATES", "INSUFFICIENT_STORAGE", "LOOP_DETECTED", "BANDWIDTH_LIMIT_EXCEEDED", "NOT_EXTENDED", "NETWORK_AUTHENTICATION_REQUIRED" ]
+        },
+        "httpHeaders" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "setLocation" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "Schema" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "field"
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "SkipExportBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "StartsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StaticForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticLayout" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "value"
+            },
+            "items" : {
+              "$ref" : "#/definitions/value"
+            }
+          }
+        }
+      } ]
+    },
+    "SubsetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "SupersetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "UniqueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UnspecifiedEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "VisibilityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WithinOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WrapperClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "batchElementUpdateRequest" : {
+      "type" : "object",
+      "required" : [ "formValues" ],
+      "properties" : {
+        "formValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "trigger" : {
+          "type" : "string"
+        },
+        "triggeredDetailsLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "affectedElements" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "batchElementUpdateRequest"
+      }
+    },
+    "booleanLiteral" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "type" : "boolean",
+          "description" : "The boolean value.",
+          "default" : false
+        }
+      },
+      "description" : "Wraps a boolean value.",
+      "xml" : {
+        "name" : "booleanLiteral"
+      }
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "elementValues" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "elementValues"
+      }
+    },
+    "elementValuesRequest" : {
+      "type" : "object",
+      "properties" : {
+        "text" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "dependencyValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "pagingInfo" : {
+          "$ref" : "#/definitions/ElementValuesPagingInfo"
+        },
+        "associateValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "elementValuesRequest"
+      }
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "form" : {
+      "type" : "object",
+      "properties" : {
+        "layout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "values" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "fieldPrefixes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "form"
+      }
+    },
+    "formUpdateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "elementUpdates" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "elementUpdate",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/updateElementEntry"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "formUpdateResponse"
+      }
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "layout" : {
+      "type" : "object",
+      "properties" : {
+        "pages" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "page",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutPage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "layout"
+      }
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "requestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "completionDetails" : {
+          "type" : "string"
+        },
+        "requestCompletionState" : {
+          "type" : "string",
+          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLED", "REJECTED" ]
+        },
+        "resourceBindingIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "requestCompletion"
+      }
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "updateElementEntry" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "detailLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "facetValues" : {
+          "$ref" : "#/definitions/FacetValueMap"
+        },
+        "extensionRendererContext" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "permissibleValues" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        },
+        "errors" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "error",
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "updateElementEntry"
+      }
+    },
+    "value" : {
+      "type" : "object",
+      "properties" : {
+        "underlyingValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "label" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "value"
+      }
+    }
+  }
+}

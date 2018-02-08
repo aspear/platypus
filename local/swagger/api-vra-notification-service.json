@@ -1,0 +1,3375 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Notification Service API Specification\n\n## What Is the Notification Service REST API?\n\nThe notification service supports configuring and sending notifications for several types of events, such as the successful completion of a catalog request or issuance of a catalog request that requires approval.\n\n## Typical Use Cases\n\nBy using the notification service:\n\n* System administrators can configure global email servers that process email notifications using the NotificationProvider resource.\n\n* Tenant administrators can override the system default servers, or add their own servers if no global servers are specified.\n\nTenant administrators select which events will cause notifications to be sent to users in their tenants using the NotificationScenarioConfiguration resource. Each component, such as the service catalog or IaaS, can define events that can trigger notifications. Notifications for all event are enabled by default.\n\nEach user can choose whether to receive notifications using the UserNotificationPreference resource. Users either receive all notifications configured by the tenant administrator or no notifications, they do not have fine-grained control over which notifications to receive.\n\nSome emails have links that users can use to respond to the notification. For example, a notification about a request that requires approval can have one link for approving the request and one for rejecting it. When a user clicks one of the links, a new email opens an automatically generated subject line. The user can send the email to complete the approval.\n\nSee the documentation for each REST resource for more details.\n\n## Key Concepts\n\n### Tenant Id\n\nBecause vRA supports multitenancy, some notification URIs must reference the `tenantId` that you are interested in. Exceptions include the system admin APIs,` which can be shared across tenants.\n\nUse the URL attribute of your tenant for all URIs requiring a `tenantId`. For example, if your \"Development\" tenant accesses vRA via the URL https://vcac.server/vcac/org/dev, then `dev` is what you should use when the API calls for a `tenantId`.\n\n### Notification Preferences\n\nEach user can choose whether to receive notifications using the UserNotificationPreference resource. Users either receive all notifications configured by the tenant administrator or no notifications, they do not have fine-grained control over which notifications to receive.\n\nIn addition to specifying a preference whether to receive email or not, users can specify the locale in which email should be sent to the user.\n\n## API Usage Examples\n\nThis section gives usage examples for requesting data for all tenant notification providers and for  creating a notification provider.\n\n### Requesting Data for All Notification Providers\n\n#### Example Request\n\n Be sure to replace ${tenantId} appropriately:\n\n    GET /api/notifications/tenants/{tenantId}/providers?offset=0&limit=10\n    Accept: application/json\n\n#### Example Response\n\n    HTTP/1.1 200 OK\n    Content-Type: application/json;charset=UTF-8\n\n    {\n      \"links\": [],\n      \"content\": [{\n        \"@type\": \"EmailNotificationProvider\",\n        \"id\": \"4bd085ca-09b1-47d5-8fce-695163e6cc08\",\n        \"version\": 0,\n        \"name\": \"vRA global, outbound email notification provider\",\n        \"description\": null,\n        \"type\": \"EMAIL_PROVIDER\",\n        \"providerDirection\": \"OUTBOUND\",\n        \"providerMode\": {\n          \"role\": \"GLOBAL\",\n          \"overriddenGlobalProviderId\": null\n        },\n        \"serverName\": \"smtp.example.com\",\n        \"protocol\": \"SMTP\",\n        \"port\": 25,\n        \"sslEnabled\": false,\n        \"username\": \"vcac\",\n        \"password\": null,\n        \"authenticationRequired\": true,\n        \"emailAddress\": \"vcac@example.com\",\n        \"deleteMessagesAfterRead\": false,\n        \"folder\": \"INBOX\",\n        \"selfSignedCertificateAccepted\": true\n      }],\n      \"metadata\": {\n        \"size\": 10,\n        \"totalElements\": 1,\n        \"totalPages\": 1,\n        \"number\": 1,\n        \"offset\": 0\n      }\n    }\n    \n### Creating a Notification Provider\n\n#### Example Request\n\nBe sure to replace ${tenantId} appropriately:\n\n    POST /api/notifications/tenants/{tenantId}/providers\n    Accept: application/json\n    Content-Type: application/json;charset=UTF-8\n\n    {\n      \"@type\": \"EmailNotificationProvider\",\n      \"name\": \"vRA global, outbound email notification provider\",\n      \"type\": \"EMAIL_PROVIDER\",\n      \"providerDirection\": \"OUTBOUND\",\n      \"providerMode\": {\n        \"role\": \"GLOBAL\"\n      },\n      \"serverName\": \"smtp.example.com\",\n      \"protocol\": \"SMTP\",\n      \"port\": 25,\n      \"sslEnabled\": false,\n      \"emailAddress\": \"vcac@example.com\",\n      \"selfSignedCertificateAccepted\": true,\n      \"username\": \"vcac\",\n      \"password\": \"password\"\n    }\n    \n#### Example Response\n\n    Response Headers\n    {\n    HTTP/1.1 201 Created\n               Date = Fri, 04 Apr 2014 17:04:10 GMT\n               ETag = \"0\"\n           Location = https://vcac.server.com/notification-service/api/notifications/global/providers/df29347f-6795-41c0-aab7-a1ca9f317ad9\n       Content-Type = application/json;charset=UTF-8\n     Content-Length = 0\n               Vary = Accept-Encoding,User-Agent\n         Keep-Alive = timeout=15, max=100\n         Connection = Keep-Alive\n    }\n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Notification Service API"
+  },
+  "basePath" : "/notification-service",
+  "tags" : [ {
+    "name" : "notification"
+  }, {
+    "name" : "notification-preference"
+  }, {
+    "name" : "notification-provider"
+  }, {
+    "name" : "notification-scenario"
+  }, {
+    "name" : "notification-scenario-configuration"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/notifications/global/providers" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Retrieves a page of global notification providers.",
+        "description" : "Retrieves a page of global notification providers.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Creates a global notification provider.",
+        "description" : "Creats a global notification provider.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/NotificationProvider"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/global/providers/creationinfo" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Returns a page of global Notification Provider Creation Info.",
+        "description" : "Returns a page of global Notification Provider Creation Info.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/global/providers/{id}" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Retrieves a global notification provider given its unique identifier.",
+        "description" : "Retrieves a global notification provider given its unique identifier.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Updates a global notification provider.",
+        "description" : "Updates a global notification provider.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/NotificationProvider"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Deletes a global notification provider given its unique identifier.",
+        "description" : "Deletes a global notification provider given its unique identifier.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/providers/connectivity" : {
+      "post" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Tests the connection of a notification provider.",
+        "description" : "Tests the connection of a notification provider.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/scenarios/{id}" : {
+      "get" : {
+        "tags" : [ "notification-scenario" ],
+        "summary" : "Retrieves the notification scenario with given id.",
+        "description" : "Retrieves the notification scenario with given id.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The scenario id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "notification-scenario" ],
+        "summary" : "Creates or updates notification scenario.",
+        "description" : "Creates or updates notification scenario.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationScenario"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The scenario id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "notification-scenario" ],
+        "summary" : "Deletes notification scenario.",
+        "description" : "Deletes a notification scenario.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The scenario id",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantId}/providers" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Retrieves a page of notification providers of a given tenant.",
+        "description" : "Retrieves a page of notification providers of a given tenant.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Creats a tenant notification provider.",
+        "description" : "Retrieves a tenant notification provider.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/NotificationProvider"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantId}/providers/creationinfo" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Returns a page of tenant Notification Provider Creation Info.",
+        "description" : "Returns a page of tenant Notification Provider Creation Info.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantId}/providers/{id}" : {
+      "get" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Retrieves a tenant notification provider given its unique identifier.",
+        "description" : "Retrieves a tenant notification provider given its unique identifier.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Updates a tenant notification provider.",
+        "description" : "Updates a tenant notification provider.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "notification-provider" ],
+        "summary" : "Deletes a tenant notification provider given its unique identifier.",
+        "description" : "Deletes a tenant notification provider given its unique identifier.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The provider id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantId}/scenarioConfiguration" : {
+      "get" : {
+        "tags" : [ "notification-scenario-configuration" ],
+        "summary" : "Retrieves the notification scenario configuration for the specified tenant.",
+        "description" : "Retrieves the notification scenario configuration for the specified tenant.  A notification scenario configuration refers to whether messages should be sent in response to given notification scenarios. It consists of multiple notification scenario settings.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "notification-scenario-configuration" ],
+        "summary" : "Updates a notification scenario configuration for the specified tenant.",
+        "description" : "Updatesa notification scenario configuration for the specified tenant.  A notification configuration consists of multiple notification scenario settings. Settings in the existing notification scenario configuration will remain untouched if not specified in the update notification configuration.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NotificationScenarioConfiguration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/NotificationScenarioConfiguration"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantId}/scenarioConfiguration/settings" : {
+      "get" : {
+        "tags" : [ "notification-scenario-configuration" ],
+        "summary" : "Retrieves a page of notification scenario settings.",
+        "description" : "Retrieves a page of global notification providers. A notification scenario setting consists of a notification scenario and a flagwhether that scenario is enabled or not.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantName}/notifications" : {
+      "post" : {
+        "tags" : [ "notification" ],
+        "summary" : "Create notification",
+        "description" : "Creates a notification and sends it.",
+        "parameters" : [ {
+          "name" : "tenantName",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Notification"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Notification"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/tenants/{tenantName}/notifications/{id}" : {
+      "get" : {
+        "tags" : [ "notification" ],
+        "summary" : "Returns the notification",
+        "description" : "Returns the notification.",
+        "parameters" : [ {
+          "name" : "tenantName",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The notification id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/userPreference" : {
+      "get" : {
+        "tags" : [ "notification-preference" ],
+        "summary" : "Returns notification preference for the logged-in user.",
+        "description" : "Returns notification preference for the logged-in user.If no preference has been saved for the user, the method returns default preferences.",
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "notification-preference" ],
+        "summary" : "Updates notification preference for the logged-in user.",
+        "description" : "Updates notification preference for the logged-in user.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/UserNotificationPreference"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/userPreference/locales" : {
+      "get" : {
+        "tags" : [ "notification-preference" ],
+        "summary" : "Retrieves the supported notification locales.",
+        "description" : "Retrieves the supported notification locales.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/userPreference/mechanisms" : {
+      "get" : {
+        "tags" : [ "notification-preference" ],
+        "summary" : "Returns a page of notification delivery mechanisms for the logged-in user.",
+        "description" : "Returns a page of notification delivery mechanisms for the logged-in user.If no preference has been saved for the user, the method returns default preferences.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/userPreference/mechanisms/defaults" : {
+      "get" : {
+        "tags" : [ "notification-preference" ],
+        "summary" : "Returns a page of default notification delivery mechanisms for the current tenant.",
+        "description" : "Returns a page of default notification delivery mechanisms for the current tenant.",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/{id}/deliverystatus" : {
+      "get" : {
+        "tags" : [ "notification" ],
+        "summary" : "Returns the delivery status of notification",
+        "description" : "Returns the delivery status of notification.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The notification id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/notifications/{id}/responses" : {
+      "get" : {
+        "tags" : [ "notification" ],
+        "summary" : "Returns inbound messages of a notification",
+        "description" : "Returns a page of inbound messages in descending order of the date/time it was received by the mail server for the given notification id.",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The notification id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AndClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "BooleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "CallbackEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Clause" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CoalesceEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ComplexDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        }
+      } ]
+    },
+    "ComplexEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "values" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cases" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "case"
+            },
+            "items" : {
+              "$ref" : "#/definitions/ConditionalEvaluatorCase"
+            }
+          },
+          "defaulValue" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluatorCase" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ConnectivityStatus" : {
+      "type" : "object",
+      "properties" : {
+        "provider" : {
+          "$ref" : "#/definitions/NotificationProvider"
+        },
+        "testPassed" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ConstantClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/booleanLiteral"
+          }
+        }
+      } ]
+    },
+    "ConstantValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/literal"
+          }
+        }
+      } ]
+    },
+    "Constraint" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ContainsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ContextPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CriteriaOperator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CustomPropertyDefinitionMetadata" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "required" : [ "field" ],
+        "properties" : {
+          "field" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "CustomValidationConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DataType" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "typeId" : {
+          "type" : "string",
+          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+        }
+      }
+    },
+    "DefaultValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DynamicLayoutReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "context" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          },
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicValueContext" : {
+      "type" : "object",
+      "required" : [ "parameterMappings" ],
+      "properties" : {
+        "providerEntityId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "EditableBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ElementState" : {
+      "type" : "object",
+      "properties" : {
+        "dependencies" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "dependency",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Constraint"
+          }
+        }
+      }
+    },
+    "EmailNotificationProvider" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/NotificationProvider"
+      }, {
+        "type" : "object",
+        "required" : [ "sslEnabled" ],
+        "properties" : {
+          "serverName" : {
+            "type" : "string",
+            "minLength" : 0,
+            "maxLength" : 255
+          },
+          "protocol" : {
+            "type" : "string",
+            "enum" : [ "IMAP", "POP", "SMTPSSL", "SMTPTLS", "SMTP" ]
+          },
+          "port" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sslEnabled" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "username" : {
+            "type" : "string",
+            "minLength" : 0,
+            "maxLength" : 255
+          },
+          "password" : {
+            "type" : "string",
+            "minLength" : 0,
+            "maxLength" : 255
+          },
+          "authenticationRequired" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "emailAddress" : {
+            "type" : "string",
+            "minLength" : 0,
+            "maxLength" : 255
+          },
+          "deleteMessagesAfterRead" : {
+            "type" : "boolean",
+            "default" : false
+          },
+          "folder" : {
+            "type" : "string"
+          },
+          "selfSignedCertificateAccepted" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }
+      } ]
+    },
+    "EncryptedBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EndsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntityReferenceDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Evaluator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "Expression" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "operator" : {
+            "$ref" : "#/definitions/CriteriaOperator"
+          },
+          "leftOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          },
+          "rightOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ExtensionRendererContext" : {
+      "type" : "object",
+      "properties" : {
+        "extensionId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "ExternalValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "dynamicValueProviderInfo" ],
+        "properties" : {
+          "dynamicValueProviderInfo" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          }
+        }
+      } ]
+    },
+    "Field" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "displayAdvice" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+        },
+        "orderIndex" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "permissibleValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "isMultiValued" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "columns" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "column",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "FieldReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FixedValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "FormsNotificationContent" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/NotificationContent"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subject" : {
+            "$ref" : "#/definitions/LayoutFlow"
+          },
+          "body" : {
+            "$ref" : "#/definitions/layout"
+          },
+          "data" : {
+            "$ref" : "#/definitions/literalMap"
+          },
+          "dataPrefixes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "GreaterThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IaasPropertyNameBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InboundNotification" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "notificationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "userToken" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "action" : {
+          "type" : "string"
+        },
+        "subject" : {
+          "type" : "string"
+        },
+        "body" : {
+          "type" : "string"
+        },
+        "fromUser" : {
+          "type" : "string"
+        },
+        "messageReceivedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "IncrementBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InternalConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IsDefinedOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutCell" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LayoutExtension" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "fieldPrefix" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LayoutField" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "orderIndex" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "dataType" : {
+            "$ref" : "#/definitions/DataType"
+          },
+          "displayAdvice" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+          },
+          "permissibleValues" : {
+            "$ref" : "#/definitions/PermissibleValueList"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "labelSize" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "detailLayout" : {
+            "$ref" : "#/definitions/LayoutReference"
+          },
+          "extensionRendererContext" : {
+            "$ref" : "#/definitions/ExtensionRendererContext"
+          },
+          "isMultiValued" : {
+            "type" : "boolean",
+            "xml" : {
+              "attribute" : true
+            },
+            "default" : false
+          },
+          "columns" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "column",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutField"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlow" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "parts" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "part",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutFlowElement"
+          }
+        }
+      }
+    },
+    "LayoutFlowElement" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LayoutPage" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "sections" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "section",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutSection"
+          }
+        }
+      }
+    },
+    "LayoutPlaceholderCell" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "LayoutRow" : {
+      "type" : "object",
+      "properties" : {
+        "items" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "item",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutCell"
+          }
+        }
+      }
+    },
+    "LayoutSection" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "rows" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "row",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutRow"
+          }
+        }
+      }
+    },
+    "LayoutText" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LessThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "MandatoryConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaximumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MinCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinimumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "MultipleEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "NotClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClause" : {
+            "$ref" : "#/definitions/Clause"
+          }
+        }
+      } ]
+    },
+    "NotEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Notification" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "notificationScenarioId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "recipients" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationPrincipal"
+          }
+        },
+        "content" : {
+          "$ref" : "#/definitions/NotificationContent"
+        },
+        "entityId" : {
+          "type" : "string"
+        },
+        "serviceId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 300
+        },
+        "priority" : {
+          "type" : "string",
+          "enum" : [ "HIGHEST", "HIGH", "NORMAL", "LOW", "LOWEST" ]
+        },
+        "attachment" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "attachments",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/NotificationAttachment"
+          }
+        }
+      }
+    },
+    "NotificationAction" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "NotificationAttachment" : {
+      "type" : "object",
+      "properties" : {
+        "contentId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "fileName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "mimeType" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "byte"
+          }
+        }
+      }
+    },
+    "NotificationContent" : {
+      "type" : "object"
+    },
+    "NotificationDeliveryMechanism" : {
+      "type" : "object",
+      "required" : [ "enabled", "notificationProvider" ],
+      "properties" : {
+        "enabled" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "notificationProvider" : {
+          "$ref" : "#/definitions/NotificationProvider"
+        }
+      }
+    },
+    "NotificationDeliveryStatus" : {
+      "type" : "object",
+      "properties" : {
+        "notificationId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "deliveryStatus" : {
+          "type" : "string",
+          "enum" : [ "INPROGRESS", "SENT", "SENT_WITH_FAILURES", "FAILED", "DISABLED" ]
+        },
+        "recipientDeliveryStatuses" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RecipientDeliveryStatus"
+          }
+        }
+      }
+    },
+    "NotificationPrincipal" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "USER", "GROUP" ]
+        }
+      }
+    },
+    "NotificationProvider" : {
+      "type" : "object",
+      "required" : [ "providerDirection", "type" ],
+      "discriminator" : "@type",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "EMAIL_PROVIDER" ]
+        },
+        "providerDirection" : {
+          "type" : "string",
+          "enum" : [ "INBOUND", "OUTBOUND" ]
+        },
+        "providerMode" : {
+          "$ref" : "#/definitions/ProviderMode"
+        }
+      }
+    },
+    "NotificationProviderCreationInfo" : {
+      "type" : "object",
+      "properties" : {
+        "providerType" : {
+          "type" : "string",
+          "enum" : [ "EMAIL_PROVIDER" ]
+        },
+        "direction" : {
+          "type" : "string",
+          "enum" : [ "INBOUND", "OUTBOUND" ]
+        },
+        "createable" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "NotificationScenario" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "actions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationAction"
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "serviceTypeId" : {
+          "type" : "string"
+        },
+        "serviceName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "NotificationScenarioConfiguration" : {
+      "type" : "object",
+      "properties" : {
+        "settings" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationScenarioSetting"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "NotificationScenarioSetting" : {
+      "type" : "object",
+      "required" : [ "enabled", "notificationScenario" ],
+      "properties" : {
+        "notificationScenario" : {
+          "$ref" : "#/definitions/NotificationScenario"
+        },
+        "enabled" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "NullDisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ObjectDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "OrClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "PageInboundNotification" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/InboundNotification"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNotificationDeliveryMechanism" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationDeliveryMechanism"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNotificationProvider" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationProvider"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNotificationProviderCreationInfo" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationProviderCreationInfo"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNotificationScenarioSetting" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationScenarioSetting"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageString" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ParameterMapping" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ParameterMappingCollection" : {
+      "type" : "object",
+      "properties" : {
+        "params" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "param",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/ParameterMapping"
+          }
+        }
+      }
+    },
+    "PermissibleValueList" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "customAllowed" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "PrimitiveDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "typeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          }
+        }
+      } ]
+    },
+    "ProviderMode" : {
+      "type" : "object",
+      "properties" : {
+        "role" : {
+          "type" : "string",
+          "enum" : [ "GLOBAL", "CUSTOM" ]
+        },
+        "overriddenGlobalProviderId" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      }
+    },
+    "ReadOnlyConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RecipientDeliveryStatus" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "recipientId" : {
+          "type" : "string"
+        },
+        "deliveryStatuses" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string",
+            "enum" : [ "INPROGRESS", "SENT", "SENT_WITH_FAILURES", "FAILED", "DISABLED" ]
+          }
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "INPROGRESS", "SENT", "SENT_WITH_FAILURES", "FAILED", "DISABLED" ]
+        }
+      }
+    },
+    "RefreshOnChangeBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RegexpConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "errorMessage" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "ResetValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Schema" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "field"
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "SkipExportBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "StartsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StaticLayout" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticNotificationContent" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/NotificationContent"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subject" : {
+            "type" : "string"
+          },
+          "bodyFormat" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "HTML", "PLAIN_TEXT" ]
+          },
+          "body" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "StaticPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "value"
+            },
+            "items" : {
+              "$ref" : "#/definitions/value"
+            }
+          }
+        }
+      } ]
+    },
+    "SubsetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "SupersetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "UniqueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UnspecifiedEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UserNotificationPreference" : {
+      "type" : "object",
+      "required" : [ "notificationDeliveryMechanisms" ],
+      "properties" : {
+        "locale" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 20
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "notificationDeliveryMechanisms" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NotificationDeliveryMechanism"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        }
+      }
+    },
+    "VisibilityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WithinOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WrapperClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "booleanLiteral" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "type" : "boolean",
+          "description" : "The boolean value.",
+          "default" : false
+        }
+      },
+      "description" : "Wraps a boolean value.",
+      "xml" : {
+        "name" : "booleanLiteral"
+      }
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "layout" : {
+      "type" : "object",
+      "properties" : {
+        "pages" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "page",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutPage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "layout"
+      }
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "value" : {
+      "type" : "object",
+      "properties" : {
+        "underlyingValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "label" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "value"
+      }
+    }
+  }
+}

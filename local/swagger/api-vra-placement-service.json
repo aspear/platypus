@@ -1,0 +1,105 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "## Overview\n\nThe placement service allows vRealize Automation (vRA) to use an external metrics provider\nsuch as vRealize Operations Manager (vROps) to obtain placement recommendations for machine\nresources within deployments.\n\nThe public placement service REST API allows callers to manage their tenant-level placement\npolicy, which tells vRA whether it should obtain placement recommendations from the external\nmetrics provider or use its own placement algorithms.\n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Placement Service API"
+  },
+  "basePath" : "/placement-service",
+  "tags" : [ {
+    "name" : "placement-policy"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/placementpolicy" : {
+      "get" : {
+        "tags" : [ "placement-policy" ],
+        "summary" : "Get Placement policy for a tenant.",
+        "description" : "This method will return the selected placement policy for a tenant.",
+        "responses" : {
+          "200" : {
+            "description" : "Success - return the tenant selected placement policy.",
+            "schema" : {
+              "$ref" : "#/definitions/PlacementPolicy"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "placement-policy" ],
+        "summary" : "Create Placement policy for a tenant.",
+        "description" : "This method will persist the selected placement policy for a tenant.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "placementPolicy",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PlacementPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success."
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "placement-policy" ],
+        "summary" : "Update Placement policy for a tenant.",
+        "description" : "This method will update the selected placement policy for a tenant.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "placementPolicy",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PlacementPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success."
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "PlacementPolicy" : {
+      "type" : "object",
+      "required" : [ "tenantId" ],
+      "properties" : {
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "advancedPlacementSelected" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "fatalErrorForNoRecommendation" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    }
+  }
+}

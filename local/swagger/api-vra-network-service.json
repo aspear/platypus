@@ -1,0 +1,6436 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Network Service API Specification\n\n## What is the Network Service REST API?\n\nThe network service provides features that allow you to manage network and security settings. It acts as an abstraction layer over the networking and security features provided by the infrastructure (vSphere, NSX and VCNS).\n\nThe network service provides support for creating and configuring existing networks, on-demand NAT networks and on-demand routed networks, creating load balancers, and adding and configuring security groups and security tags for vSphere machines.\nIaaS is registered as a provider for all the networking domain objects.\n\nThere are five domain objects associated with the network service:\n\n1. Network\n2. Load Balancer\n3. Security Group\n4. Security Tag\n5. Security Policy\n\nEach object has its corresponding type.\nThe provider registers the a domain object type with the service.\n\n\n## Typical Use Cases\n\nYou can use the network service REST API to:\n\n * Allocate or deallocate a network or security component\n * Validate a network or security component at authoring time\n * Create, update, or delete load balancer types\n * Create or delete on-demand network objects\n * Request a network resource\n * Create, update, or delete network types\n * Return a list of on-demand networks\n * Return a list of existing security groups\n * Create, update or delete on-demand security groups\n * Assign a security group (on-demand or existing) to a machine\n * Create, update, or delete security group types\n * Return a list of existing security tags\n * Assign a security tag to a machine\n * Return a list of existing security policies\n * Create an on-demand security group with a list of selected security policies\n \nFor example, the composition service calls the network service for allocation, provisioning and day-2 operations, by using the converged blueprint format.\n\n## Key Concepts\n\n### Network\n\nA collection of nodes interconnected via physical or virtual paths/links.\n\n### Load Balancer\n\nA physical or logical device that distributes incoming requests evenly among multiple servers that can handle traffic so as to maximize throughput and avoid single points of failure. This allows cumulative network traffic to be split up into multiple paths before the traffic reaches the destination/target.\n\n### Security Group\nSecurity groups are a mechanism that enables the network administrator to dynamically associate and group workloads or objects that belong to one's vSphere inventory.\nUsers can assign machines to an existing security group or define an on-demand security group by selecting one or more existing security policies.\n\n### Security Tag\n\nA security tag is a qualifier object or categorizing entry that is used as a grouping mechanism. Using NSX, administrators define the criteria that an object must meet to be added to a security group to configure security tags.  Users can use the network component APIs to query and assign existing security tags to machines.\n\n### Security Policy\n\nA security policy is a re-usable set of specific rules spanning network and security services that can be applied to a security group. Users can define an on-demand security group by selecting one or more of the existing security policies.\n\n\n\n## Additional Information\n\nFor additional information about the VRealize Automation REST API, see the *VRealize Automation Programming Guide*  or the user documentation for VRealize Automation.\n",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Network Service API"
+  },
+  "basePath" : "/network-service/",
+  "tags" : [ {
+    "name" : "data-service"
+  }, {
+    "name" : "network-component"
+  }, {
+    "name" : "network-component-type"
+  }, {
+    "name" : "network-request"
+  }, {
+    "name" : "schema"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/catalog/providers/{providerId}/requests/{bindingId}/complete" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Method to be called by a composition-service to notify the network-service that a previously submitted deployment update request has been completed",
+        "description" : "Callback called by composition",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "Provider ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "Binding ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Status object returned from the provider",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/requestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Indicate completion of a request"
+          }
+        }
+      }
+    },
+    "/api/composition/allocationconstraints/resourcetypes/{resTypeId}" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Retrieve allocation constraint for network or security component",
+        "description" : "",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Provisioning request from the composition service",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/compositionProviderRequest"
+          }
+        }, {
+          "name" : "resTypeId",
+          "in" : "path",
+          "description" : "Component type ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "componenttypeid",
+          "in" : "query",
+          "description" : "Component type ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Retrieve allocation constraint",
+            "schema" : {
+              "$ref" : "#/definitions/allocationConstraint"
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/componentallocator/requests" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Allocate network or security component",
+        "description" : "",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Allocation request, includes allocation constraints and component info",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/allocateComponentRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Retrieve allocation component",
+            "schema" : {
+              "$ref" : "#/definitions/ResponseEntity"
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/componentdeallocator/requests" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "De-allocate network or security component",
+        "description" : "Destroy the network or security components. Called as day-2 destroy operation. ",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Composition request, includes component info",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/compositionProviderRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "De-allocation of component initiated."
+          }
+        }
+      }
+    },
+    "/api/composition/componentvalidator" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Validates a single network or security component",
+        "description" : "Called by the composition service when the blueprint is saved",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Composition request, includes component info",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/compositionProviderRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Component validated",
+            "schema" : {
+              "$ref" : "#/definitions/validationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/composition/requests" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "New request for provisioning network or security components",
+        "description" : "",
+        "operationId" : "provision",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Provisioning request from composition service",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/compositionProviderRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Provisioned request created",
+            "schema" : {
+              "$ref" : "#/definitions/ResponseEntity"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/data/{classId}/{id}" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get a set of data for the specified object",
+        "description" : "Get a set of data for the specified object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The identifier of the type of object to get data for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique id of the object to get data for. This should be sufficient to identify the object given classId.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/DynamicDataRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/DynamicDataResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/default" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/list/{classId}/types/{typeFilter}" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Retrieves the list of possible values for a given type of object",
+        "description" : "Retrieves the list of possible values for a given type of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default" : {
+      "get" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the schema for the specified object class",
+        "description" : "Get the schema for the specified object class.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/update" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/default/{fieldId}/values" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}" : {
+      "get" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the schema for the specified object",
+        "description" : "This returns the schema of a particular type adjusted to the state of a specific instance..",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/update" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/instances/{id}/{fieldId}/values" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The unique identifier of an instance of the object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}" : {
+      "get" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the schema for the specified object type",
+        "description" : "This returns the schema of a particular type within a class of object.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object to retrieve the schema for.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/update" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the state of a field in the specified schema",
+        "description" : "Get the state of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/batchElementUpdateRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/formUpdateResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/data-service/schema/{classId}/types/{typeFilter}/{fieldId}/values" : {
+      "post" : {
+        "tags" : [ "schema", "data-service" ],
+        "summary" : "Get the permissible values of a field in the specified schema",
+        "description" : "Get the permissible values of a field in the specified schema.",
+        "parameters" : [ {
+          "name" : "classId",
+          "in" : "path",
+          "description" : "The class of object.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "typeFilter",
+          "in" : "path",
+          "description" : "A type filter defining the specific subtype that owns the field.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fieldId",
+          "in" : "path",
+          "description" : "The id of a field on the schema of the specified object class.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the data",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/load-balancers" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of load balancers with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listLoadBalancers",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageLoadBalancer"
+            }
+          }
+        }
+      }
+    },
+    "/api/load-balancers/types" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Returns a collection of load balancer types with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listLoadBalancerTypes",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageLoadBalancerType"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create a load balancer type",
+        "description" : "",
+        "operationId" : "createLoadBalancerType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Load balancer type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LoadBalancerType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LoadBalancerType"
+            }
+          },
+          "201" : {
+            "description" : "Load balancer type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/LoadBalancerType"
+            }
+          }
+        }
+      }
+    },
+    "/api/load-balancers/types/{id}" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Retrieve load balancer type by ID",
+        "description" : "",
+        "operationId" : "getLoadBalancerType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Load balancer type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned load balancer type",
+            "schema" : {
+              "$ref" : "#/definitions/LoadBalancerType"
+            }
+          },
+          "404" : {
+            "description" : "Load balancer type not found with the provided id"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create or update a load balancer type",
+        "description" : "",
+        "operationId" : "updateOrCreateLoadBalancerType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Load balancer type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Load balancer type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/LoadBalancerType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Load balancer type created or updated successfully",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Delete a load balancer type",
+        "description" : "",
+        "operationId" : "deleteLoadBalancerType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Load balancer type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Load balancer type deleted Successfully"
+          }
+        }
+      }
+    },
+    "/api/load-balancers/{id}" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Retrieve a load balancer by ID",
+        "description" : "",
+        "operationId" : "getLoadBalancer",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Load balancer ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned Load balancer",
+            "schema" : {
+              "$ref" : "#/definitions/LoadBalancer"
+            }
+          }
+        }
+      }
+    },
+    "/api/networks" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of networks with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listNetworks",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageNetwork"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Create a network",
+        "description" : "",
+        "operationId" : "createNetwork",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The network object to be created",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Network"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Network"
+            }
+          },
+          "201" : {
+            "description" : "Network created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/Network"
+            }
+          }
+        }
+      }
+    },
+    "/api/networks/types" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Returns a collection of network types with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listNetworkTypes",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageNetworkType"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create a network type",
+        "description" : "",
+        "operationId" : "createNetworkType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Network type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NetworkType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/NetworkType"
+            }
+          },
+          "201" : {
+            "description" : "Network type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/NetworkType"
+            }
+          }
+        }
+      }
+    },
+    "/api/networks/types/{id}" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Get a network type by ID",
+        "description" : "",
+        "operationId" : "getNetworkType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The network type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned network type",
+            "schema" : {
+              "$ref" : "#/definitions/NetworkType"
+            }
+          },
+          "404" : {
+            "description" : "Network type not found with the provided id"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create or update a network type",
+        "description" : "",
+        "operationId" : "createOrUpdateNetworkType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Network type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Network type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NetworkType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Network type created or updated successfully",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Delete a network type",
+        "description" : "",
+        "operationId" : "deleteNetworkType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the network type",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Successfully deleted network type"
+          }
+        }
+      }
+    },
+    "/api/networks/{id}" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Retrieve a network",
+        "description" : "",
+        "operationId" : "getNetwork",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Network ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned network",
+            "schema" : {
+              "$ref" : "#/definitions/Network"
+            }
+          },
+          "404" : {
+            "description" : "Network not found with the provided id"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Delete a network",
+        "description" : "",
+        "operationId" : "deleteNetwork",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Network ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Network deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/allocation-requests/{bindingId}/complete" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Method to be called by a provider to notify the network service that a previously submitted allocation request has been completed",
+        "description" : "Callback called by the provider iaas-proxy",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "Provider ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "Binding ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Status object returned from the provider",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/allocationRequestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Indicate completion of a request"
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/deallocation-requests/{bindingId}/complete" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Method to be called by a provider to notify the network service that a previously submitted de-allocation request has been completed",
+        "description" : "Callback called by the provider iaas-proxy",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "Provider ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "Binding ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Status object returned from the provider",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/deallocationRequestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Indicate completion of a request"
+          }
+        }
+      }
+    },
+    "/api/providers/{providerId}/requests/{bindingId}/complete" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Method to be called by a provider to notify the network service that a previously submitted request has been completed",
+        "description" : "Callback called by the provider iaas-proxy",
+        "parameters" : [ {
+          "name" : "providerId",
+          "in" : "path",
+          "description" : "Provider ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "bindingId",
+          "in" : "path",
+          "description" : "Binding ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Status object returned from the provider",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/networkRequestCompletion"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Indicate completion of a request"
+          }
+        }
+      }
+    },
+    "/api/requestValidations" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "Validate catalog request",
+        "description" : "",
+        "operationId" : "validateRequest",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Service Catalog representation of a blueprint request.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/providerRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/requests" : {
+      "post" : {
+        "tags" : [ "network-request" ],
+        "summary" : "New request for network or security resource, or any day-two operation request on an existing resource",
+        "description" : "",
+        "operationId" : "createNetworkResource",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Provider request with the resource parameters",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/providerRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Network resource created",
+            "schema" : {
+              "$ref" : "#/definitions/ResponseEntity"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-groups" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security groups with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityGroups",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint name for filtering the security groups",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityGroup"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Create and return the newly created on-demand security group",
+        "description" : "In case of an existing security group, the api returns the security group object based on external id or name",
+        "operationId" : "createSecurityGroup",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security group to be found or created",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityGroup"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityGroup"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/security-groups/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security groups within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityGroupsForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityGroup"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-groups/types" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Returns a collection of security group types with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityGroupTypes",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityGroupType"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create a security group type",
+        "description" : "",
+        "operationId" : "createSecurityGroupType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security group type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityGroupType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityGroupType"
+            }
+          },
+          "201" : {
+            "description" : "Security group type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityGroupType"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-groups/types/{id}" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Get the security group type by ID",
+        "description" : "",
+        "operationId" : "getSecurityGroupType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security group type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned security group type",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityGroupType"
+            }
+          },
+          "404" : {
+            "description" : "Security group type not found with provided id"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Updates a security group type by its ID",
+        "description" : "",
+        "operationId" : "updateOrCreateSecurityGroupType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security group type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security group type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityGroupType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security group type created or updated successfully",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Deletes a security group type by its ID",
+        "description" : "",
+        "operationId" : "deleteSecurityGroupType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security group type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Security group type deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/security-groups/{id}" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Retrieve the security group identified by its ID",
+        "description" : "",
+        "operationId" : "getSecurityGroup",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security group",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security group returned successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityGroup"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Update the security group identified by its ID",
+        "description" : "",
+        "operationId" : "updateSecurityGroup",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security group",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security group to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityGroup"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Delete the security group identified by its ID",
+        "description" : "",
+        "operationId" : "deleteSecurityGroup",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security group",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Security group deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/security-groups/{id}/machines" : {
+      "post" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Assign the security group to the specified machine(s)",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security group",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Collection of machine IDs",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Security group assigned to machine(s) successfully"
+          }
+        }
+      }
+    },
+    "/api/security-groups/{id}/security-policies" : {
+      "post" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Add a list of security policies to an on-demand security group",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security group",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "List of security policy IDs",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Added a list of security policies to an on-demand security group successfully"
+          }
+        }
+      }
+    },
+    "/api/security-policies" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security policies with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "ListSecurityPolicy",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Pagination Information",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityPolicy"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-policies/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security policies within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "ListSecurityPolicyForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Pagination Information",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityPolicy"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-policies/types" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Returns a collection of security policy types with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityPolicyType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging, sorting and filtering criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityPolicyType"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Create a security policy type",
+        "description" : "",
+        "operationId" : "createSecurityPolicyType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security policy type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityPolicyType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityPolicyType"
+            }
+          },
+          "201" : {
+            "description" : "Security policy type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityPolicyType"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-policies/types/{id}" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Get the security policy type by ID",
+        "description" : "",
+        "operationId" : "getSecurityPolicyType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security Policy type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned security policy type",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityPolicyType"
+            }
+          },
+          "404" : {
+            "description" : "Security policy type not found with provided id"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Updates a security policy type by its ID",
+        "description" : "",
+        "operationId" : "updateOrCreateSecurityPolicyType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security Policy type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security Policy type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityPolicyType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security policy type created or updated successfully",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Deletes a security policy type by its ID",
+        "description" : "",
+        "operationId" : "deleteSecurityPolicyType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security Policy type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Security policy type deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/security-policies/{id}" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : " Returns the security policy associated with the given id",
+        "description" : "",
+        "operationId" : "getSecurityPolicy",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security policy ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security policy returned successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityPolicy"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Update the security policy identified by its ID",
+        "description" : "",
+        "operationId" : "updateSecurityPolicy",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security policy",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security policy to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-tags" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security tags with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityTags",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint name for filtering the security tags",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityTag"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-tags/applyToMachine/{machineId}" : {
+      "post" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Apply a collection of security tags to a machine",
+        "description" : "",
+        "operationId" : "applyToMachineSecurityTags",
+        "parameters" : [ {
+          "name" : "machineId",
+          "in" : "path",
+          "description" : "Machine ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Collection of security tag IDs",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Successfully applied security tags to machines"
+          }
+        }
+      }
+    },
+    "/api/security-tags/tenant" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns a collection of security tags within current tenant with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityTagsForTenant",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityTag"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-tags/types" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Returns a collection of security tag types with specified paging, sorting and filtering parameters",
+        "description" : "",
+        "operationId" : "listSecurityTagType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging, sorting and filtering criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageSecurityTagType"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Creates a security tag type",
+        "description" : "",
+        "operationId" : "createSecurityTagType",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security tag type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityTagType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityTagType"
+            }
+          },
+          "201" : {
+            "description" : "Security tag type created successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityTagType"
+            }
+          }
+        }
+      }
+    },
+    "/api/security-tags/types/{id}" : {
+      "get" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Get the security tag type by ID",
+        "description" : "",
+        "operationId" : "getSecurityTagType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security tag type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully returned security tag type",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityTagType"
+            }
+          },
+          "404" : {
+            "description" : "Security tag type not found with provided id"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Updates or creates a security tag type by its ID",
+        "description" : "",
+        "operationId" : "updateOrCreateSecurityTagType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security Tag type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Security Tag type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityTagType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security tag type created or updated successfully",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "network-component-type" ],
+        "summary" : "Deletes a security tag type by its ID",
+        "description" : "",
+        "operationId" : "deleteSecurityTagType",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security Tag type ID",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Security tag type deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/security-tags/{id}" : {
+      "get" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Returns the security tag associated with the given id",
+        "description" : "",
+        "operationId" : "getSecurityTags",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Security tag ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Security tag returned successfully",
+            "schema" : {
+              "$ref" : "#/definitions/SecurityTag"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "network-component" ],
+        "summary" : "Update the security tag identified by its ID",
+        "description" : "",
+        "operationId" : "updateSecurityTag",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The ID of the security tag",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security tag to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/SecurityTag"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AndClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "BoolCommonExpression" : {
+      "type" : "object"
+    },
+    "BooleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/booleanLiteral"
+      }, {
+        "type" : "object",
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "CallbackEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Clause" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CoalesceEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "CommonExpression" : {
+      "type" : "object"
+    },
+    "ComplexDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        }
+      } ]
+    },
+    "ComplexEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "values" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cases" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "case"
+            },
+            "items" : {
+              "$ref" : "#/definitions/ConditionalEvaluatorCase"
+            }
+          },
+          "defaulValue" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluatorCase" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ConstantClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/booleanLiteral"
+          }
+        }
+      } ]
+    },
+    "ConstantValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/literal"
+          }
+        }
+      } ]
+    },
+    "Constraint" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ContainsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ContextPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CriteriaOperator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CustomPropertyDefinitionMetadata" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "required" : [ "field" ],
+        "properties" : {
+          "field" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "CustomValidationConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DataType" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "typeId" : {
+          "type" : "string",
+          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+        }
+      }
+    },
+    "DefaultValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DynamicDataRequest" : {
+      "type" : "object",
+      "properties" : {
+        "tenantId" : {
+          "type" : "string"
+        },
+        "ignoreUnknownFields" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "ids" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "id"
+          },
+          "readOnly" : true,
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "DynamicDataResponse" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "DynamicLayoutReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "context" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          },
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicValueContext" : {
+      "type" : "object",
+      "required" : [ "parameterMappings" ],
+      "properties" : {
+        "providerEntityId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "EditableBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ElementState" : {
+      "type" : "object",
+      "properties" : {
+        "dependencies" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "dependency",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Constraint"
+          }
+        }
+      }
+    },
+    "ElementValuesPagingInfo" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "EncryptedBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EndsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntityReferenceDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntitySimpleProperty" : {
+      "type" : "object",
+      "properties" : {
+        "propertyName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "EqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Evaluator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "Expression" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "operator" : {
+            "$ref" : "#/definitions/CriteriaOperator"
+          },
+          "leftOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          },
+          "rightOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ExtensionForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExtensionRendererContext" : {
+      "type" : "object",
+      "properties" : {
+        "extensionId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "ExternalFormReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "formId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "ExternalValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "dynamicValueProviderInfo" ],
+        "properties" : {
+          "dynamicValueProviderInfo" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          }
+        }
+      } ]
+    },
+    "FacetValueMap" : {
+      "type" : "object",
+      "properties" : {
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/FacetValueMapEntry"
+          }
+        }
+      }
+    },
+    "FacetValueMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "Field" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "displayAdvice" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+        },
+        "orderIndex" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "permissibleValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "isMultiValued" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "columns" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "column",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "FieldReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FixedValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "FormReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "GreaterThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IaasPropertyNameBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IncrementBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InternalConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IsDefinedOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutCell" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "size" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LayoutExtension" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "extensionPointId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "fieldPrefix" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LayoutField" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "orderIndex" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "dataType" : {
+            "$ref" : "#/definitions/DataType"
+          },
+          "displayAdvice" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+          },
+          "permissibleValues" : {
+            "$ref" : "#/definitions/PermissibleValueList"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "labelSize" : {
+            "type" : "integer",
+            "format" : "int32",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "detailLayout" : {
+            "$ref" : "#/definitions/LayoutReference"
+          },
+          "extensionRendererContext" : {
+            "$ref" : "#/definitions/ExtensionRendererContext"
+          },
+          "isMultiValued" : {
+            "type" : "boolean",
+            "xml" : {
+              "attribute" : true
+            },
+            "default" : false
+          },
+          "columns" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "column",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutField"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlow" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          },
+          "parts" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "part",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/LayoutFlowElement"
+            }
+          }
+        }
+      } ]
+    },
+    "LayoutFlowElement" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutPage" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "sections" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "section",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutSection"
+          }
+        }
+      }
+    },
+    "LayoutPlaceholderCell" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutCell"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LayoutReference" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "LayoutRow" : {
+      "type" : "object",
+      "properties" : {
+        "items" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "item",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutCell"
+          }
+        }
+      }
+    },
+    "LayoutSection" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "rows" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "row",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutRow"
+          }
+        }
+      }
+    },
+    "LayoutText" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutFlowElement"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "state" : {
+            "$ref" : "#/definitions/ElementState"
+          }
+        }
+      } ]
+    },
+    "LessThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "LoadBalancer" : {
+      "type" : "object",
+      "required" : [ "extensionData", "monitors", "pools", "virtualIps" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "loadBalancerTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "pools" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerPool"
+          }
+        },
+        "monitors" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerMonitor"
+          }
+        },
+        "virtualIps" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerVirtualIp"
+          }
+        },
+        "vipNetwork" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "vipNicIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tierNetwork" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tierNicIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "loggingLevel" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        }
+      }
+    },
+    "LoadBalancerMember" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "address" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "port" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "LoadBalancerMonitor" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "timeout" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "interval" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "maxRetries" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "method" : {
+          "type" : "string"
+        },
+        "monitorPath" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "send" : {
+          "type" : "string"
+        },
+        "receive" : {
+          "type" : "string"
+        },
+        "newEntity" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "LoadBalancerPool" : {
+      "type" : "object",
+      "required" : [ "extensionData", "members", "monitorIds" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "protocol" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "healthCheckProtocol" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "memberPort" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "monitorPort" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "memberMaxConnections" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "memberMinConnections" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "acceleration" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "transparent" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "connectionRate" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "connectionLimit" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "algorithm" : {
+          "type" : "string"
+        },
+        "algorithmParameter" : {
+          "type" : "string"
+        },
+        "persistenceMethod" : {
+          "type" : "string"
+        },
+        "persistenceCookieName" : {
+          "type" : "string"
+        },
+        "persistenceCookieMode" : {
+          "type" : "string"
+        },
+        "persistenceExpiration" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "monitorIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "uniqueMonitorId" : {
+          "type" : "string"
+        },
+        "servicePortId" : {
+          "type" : "string"
+        },
+        "members" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerMember"
+          }
+        }
+      }
+    },
+    "LoadBalancerType" : {
+      "type" : "object",
+      "required" : [ "formReference" ],
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "formReference" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "allocationRelatedResourceTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "schema" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkObjectSchema"
+          }
+        }
+      }
+    },
+    "LoadBalancerVirtualIp" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "poolId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "address" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        }
+      }
+    },
+    "MandatoryConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaximumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MinCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinimumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "MoneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "MultipleEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "NatRule" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "order" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "action" : {
+          "type" : "string"
+        },
+        "protocol" : {
+          "type" : "string"
+        },
+        "enabled" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "originalAddress" : {
+          "type" : "string"
+        },
+        "translatedAddress" : {
+          "type" : "string"
+        },
+        "originalPort" : {
+          "type" : "string"
+        },
+        "translatedPort" : {
+          "type" : "string"
+        },
+        "tag" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "interfaceIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "peerInterfaceIndex" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machineId" : {
+          "type" : "string"
+        },
+        "componentName" : {
+          "type" : "string"
+        },
+        "componentId" : {
+          "type" : "string"
+        },
+        "targetType" : {
+          "type" : "string"
+        },
+        "userDefined" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "networkInterfaceId" : {
+          "type" : "string"
+        },
+        "edgeId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Network" : {
+      "type" : "object",
+      "required" : [ "extensionData", "networkProfileType" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "networkTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "networkProfileType" : {
+          "type" : "string",
+          "enum" : [ "NONE", "EXTERNAL", "PRIVATE", "NAT", "ROUTED" ]
+        },
+        "machineIdCollection" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "networkBackings" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkBacking"
+          }
+        },
+        "natRules" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NatRule"
+          }
+        }
+      }
+    },
+    "NetworkBacking" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "computeResourceNetworkId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "computeResourceName" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "computeResourceId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "NetworkObject" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "NetworkObjectSchema" : {
+      "type" : "object",
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "schemaClassId" : {
+          "type" : "string"
+        },
+        "schema" : {
+          "$ref" : "#/definitions/Schema"
+        }
+      }
+    },
+    "NetworkType" : {
+      "type" : "object",
+      "required" : [ "formReference" ],
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "formReference" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "allocationRelatedResourceTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "schema" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkObjectSchema"
+          }
+        }
+      }
+    },
+    "NotClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClause" : {
+            "$ref" : "#/definitions/Clause"
+          }
+        }
+      } ]
+    },
+    "NotEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "NullDisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ObjectDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "OdataQueryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "inlineCount" : {
+          "type" : "string",
+          "enum" : [ "NONE", "ALLPAGES" ]
+        },
+        "top" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "skip" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "filter" : {
+          "$ref" : "#/definitions/BoolCommonExpression"
+        },
+        "orderBy" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderByExpression"
+          }
+        },
+        "skipToken" : {
+          "type" : "string"
+        },
+        "customOptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "expand" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "select" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "rawFilter" : {
+          "type" : "string"
+        },
+        "rawOrderBy" : {
+          "type" : "string"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        }
+      }
+    },
+    "OrClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "OrderByExpression" : {
+      "type" : "object",
+      "properties" : {
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        },
+        "direction" : {
+          "type" : "string",
+          "enum" : [ "ASCENDING", "DESCENDING" ]
+        }
+      }
+    },
+    "PageAndSortRequest" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "queryInfo" : {
+          "$ref" : "#/definitions/OdataQueryInfo"
+        },
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageLoadBalancer" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancer"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageLoadBalancerType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerType"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNetwork" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Network"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageNetworkType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkType"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityGroup" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityGroup"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityGroupType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityGroupType"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityPolicy" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityPolicy"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityPolicyType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityPolicyType"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityTag" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityTag"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "PageSecurityTagType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SecurityTagType"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ParameterMapping" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ParameterMappingCollection" : {
+      "type" : "object",
+      "properties" : {
+        "params" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "param",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/ParameterMapping"
+          }
+        }
+      }
+    },
+    "PermissibleValueList" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "customAllowed" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "PrimitiveDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "typeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          }
+        }
+      } ]
+    },
+    "ProviderRequestValidation" : {
+      "type" : "object",
+      "properties" : {
+        "quote" : {
+          "$ref" : "#/definitions/RequestQuote"
+        },
+        "updatedData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "ReadOnlyConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RefreshOnChangeBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RegexpConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "errorMessage" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "RequestQuote" : {
+      "type" : "object",
+      "properties" : {
+        "leasePeriod" : {
+          "$ref" : "#/definitions/timeSpan"
+        },
+        "leaseRate" : {
+          "$ref" : "#/definitions/moneyTimeRate"
+        },
+        "totalLeaseCost" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "ResetValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ResponseEntity" : {
+      "type" : "object",
+      "properties" : {
+        "headers" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "body" : {
+          "type" : "object"
+        },
+        "statusCode" : {
+          "type" : "string",
+          "enum" : [ "CONTINUE", "SWITCHING_PROTOCOLS", "PROCESSING", "CHECKPOINT", "OK", "CREATED", "ACCEPTED", "NON_AUTHORITATIVE_INFORMATION", "NO_CONTENT", "RESET_CONTENT", "PARTIAL_CONTENT", "MULTI_STATUS", "ALREADY_REPORTED", "IM_USED", "MULTIPLE_CHOICES", "MOVED_PERMANENTLY", "FOUND", "MOVED_TEMPORARILY", "SEE_OTHER", "NOT_MODIFIED", "USE_PROXY", "TEMPORARY_REDIRECT", "PERMANENT_REDIRECT", "BAD_REQUEST", "UNAUTHORIZED", "PAYMENT_REQUIRED", "FORBIDDEN", "NOT_FOUND", "METHOD_NOT_ALLOWED", "NOT_ACCEPTABLE", "PROXY_AUTHENTICATION_REQUIRED", "REQUEST_TIMEOUT", "CONFLICT", "GONE", "LENGTH_REQUIRED", "PRECONDITION_FAILED", "PAYLOAD_TOO_LARGE", "REQUEST_ENTITY_TOO_LARGE", "URI_TOO_LONG", "REQUEST_URI_TOO_LONG", "UNSUPPORTED_MEDIA_TYPE", "REQUESTED_RANGE_NOT_SATISFIABLE", "EXPECTATION_FAILED", "I_AM_A_TEAPOT", "INSUFFICIENT_SPACE_ON_RESOURCE", "METHOD_FAILURE", "DESTINATION_LOCKED", "UNPROCESSABLE_ENTITY", "LOCKED", "FAILED_DEPENDENCY", "UPGRADE_REQUIRED", "PRECONDITION_REQUIRED", "TOO_MANY_REQUESTS", "REQUEST_HEADER_FIELDS_TOO_LARGE", "INTERNAL_SERVER_ERROR", "NOT_IMPLEMENTED", "BAD_GATEWAY", "SERVICE_UNAVAILABLE", "GATEWAY_TIMEOUT", "HTTP_VERSION_NOT_SUPPORTED", "VARIANT_ALSO_NEGOTIATES", "INSUFFICIENT_STORAGE", "LOOP_DETECTED", "BANDWIDTH_LIMIT_EXCEEDED", "NOT_EXTENDED", "NETWORK_AUTHENTICATION_REQUIRED" ]
+        }
+      }
+    },
+    "Schema" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "field"
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "SecurityGroup" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "securityGroupTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "internal" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "machineIdCollection" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "ipAddressCollection" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "SecurityGroupType" : {
+      "type" : "object",
+      "required" : [ "formReference" ],
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "formReference" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "allocationRelatedResourceTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "schema" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkObjectSchema"
+          }
+        }
+      }
+    },
+    "SecurityPolicy" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "securityPolicyTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        },
+        "internal" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "SecurityPolicyType" : {
+      "type" : "object",
+      "required" : [ "formReference" ],
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "formReference" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "allocationRelatedResourceTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "schema" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkObjectSchema"
+          }
+        }
+      }
+    },
+    "SecurityTag" : {
+      "type" : "object",
+      "required" : [ "extensionData" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 40
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "tenantId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "extensionData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "securityTagTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 255
+        }
+      }
+    },
+    "SecurityTagType" : {
+      "type" : "object",
+      "required" : [ "formReference" ],
+      "properties" : {
+        "createdDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lastUpdated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "serviceTypeId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "formReference" : {
+          "$ref" : "#/definitions/FormReference"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "allocationRelatedResourceTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "schema" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/NetworkObjectSchema"
+          }
+        }
+      }
+    },
+    "SkipExportBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "StartsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StaticForm" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/FormReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticLayout" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/LayoutReference"
+      }, {
+        "type" : "object",
+        "required" : [ "layout" ],
+        "properties" : {
+          "layout" : {
+            "$ref" : "#/definitions/layout"
+          }
+        }
+      } ]
+    },
+    "StaticPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "value"
+            },
+            "items" : {
+              "$ref" : "#/definitions/value"
+            }
+          }
+        }
+      } ]
+    },
+    "SubsetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "SupersetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "UniqueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UnspecifiedEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "VisibilityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WithinOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WrapperClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "allocateComponentRequest" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/compositionProviderRequest"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "allocationConstraint" : {
+            "$ref" : "#/definitions/allocationConstraint"
+          }
+        },
+        "xml" : {
+          "name" : "allocateComponentRequest"
+        }
+      } ]
+    },
+    "allocationConstraint" : {
+      "type" : "object",
+      "properties" : {
+        "filter" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "allocationConstraint"
+      }
+    },
+    "allocationRequestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "allocationResult" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "requestId" : {
+          "type" : "string"
+        },
+        "requestCallbackAdditionalUrlPath" : {
+          "type" : "string"
+        },
+        "serviceCallbackId" : {
+          "type" : "string"
+        },
+        "errMsg" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "allocationRequestCompletion"
+      }
+    },
+    "batchElementUpdateRequest" : {
+      "type" : "object",
+      "required" : [ "formValues" ],
+      "properties" : {
+        "formValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "trigger" : {
+          "type" : "string"
+        },
+        "triggeredDetailsLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "affectedElements" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "batchElementUpdateRequest"
+      }
+    },
+    "booleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "boolean",
+            "description" : "The boolean value.",
+            "default" : false
+          }
+        },
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "catalogOrganizationReference" : {
+      "type" : "object",
+      "properties" : {
+        "tenantRef" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLabel" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "subtenantRef" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "subtenantLabel" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "catalogOrganizationReference"
+      }
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "componentRequestInfo" : {
+      "type" : "object",
+      "properties" : {
+        "componentId" : {
+          "type" : "string"
+        },
+        "componentTypeId" : {
+          "type" : "string"
+        },
+        "componentSchema" : {
+          "$ref" : "#/definitions/Schema"
+        },
+        "componentData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "requestInputData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "resourceId" : {
+          "type" : "string"
+        },
+        "previousComponentData" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "componentRequestInfo"
+      }
+    },
+    "compositionProviderRequest" : {
+      "type" : "object",
+      "properties" : {
+        "userContext" : {
+          "$ref" : "#/definitions/requestUserContext"
+        },
+        "componentInfo" : {
+          "$ref" : "#/definitions/componentRequestInfo"
+        },
+        "blueprintId" : {
+          "type" : "string"
+        },
+        "blueprintName" : {
+          "type" : "string"
+        },
+        "blueprintRequestId" : {
+          "type" : "string"
+        },
+        "requestId" : {
+          "type" : "string"
+        },
+        "rootCafeDeploymentId" : {
+          "type" : "string"
+        },
+        "callbackServiceId" : {
+          "type" : "string"
+        },
+        "rootCafeRequestId" : {
+          "type" : "string"
+        },
+        "callbackAdditionalUrlPath" : {
+          "type" : "string"
+        },
+        "requestType" : {
+          "type" : "string",
+          "enum" : [ "PROVISION", "UPDATE", "ALLOCATE", "DEALLOCATE" ]
+        },
+        "targetResourceId" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "compositionProviderRequest"
+      }
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "deallocationRequestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "requestId" : {
+          "type" : "string"
+        },
+        "requestCallbackAdditionalUrlPath" : {
+          "type" : "string"
+        },
+        "serviceCallbackId" : {
+          "type" : "string"
+        },
+        "errMsg" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "deallocationRequestCompletion"
+      }
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "elementValues" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "elementValues"
+      }
+    },
+    "elementValuesRequest" : {
+      "type" : "object",
+      "properties" : {
+        "text" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "dependencyValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "pagingInfo" : {
+          "$ref" : "#/definitions/ElementValuesPagingInfo"
+        },
+        "associateValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "elementValuesRequest"
+      }
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "formUpdateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "elementUpdates" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "elementUpdate",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/updateElementEntry"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "formUpdateResponse"
+      }
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "layout" : {
+      "type" : "object",
+      "properties" : {
+        "pages" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "page",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/LayoutPage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "layout"
+      }
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "networkRequestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "networkObject" : {
+          "$ref" : "#/definitions/NetworkObject"
+        },
+        "rootCafeRequestId" : {
+          "type" : "string"
+        },
+        "originalCallbackServiceId" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "subtenantId" : {
+          "type" : "string"
+        },
+        "completionDetails" : {
+          "type" : "string"
+        },
+        "requestSuccessful" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "operationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "READ", "UPDATE", "DELETE", "ALLOCATE", "DEALLOCATE", "UNREGISTER" ]
+        },
+        "resourceId" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "networkRequestCompletion"
+      }
+    },
+    "providerRequest" : {
+      "type" : "object",
+      "properties" : {
+        "requestedObjectId" : {
+          "type" : "string"
+        },
+        "requestType" : {
+          "type" : "string",
+          "enum" : [ "CATALOG_ITEM", "RESOURCE_ACTION" ]
+        },
+        "catalogItemTypeId" : {
+          "type" : "string"
+        },
+        "targetResourceId" : {
+          "type" : "string"
+        },
+        "targetResourceTypeId" : {
+          "type" : "string"
+        },
+        "targetResourceProviderId" : {
+          "type" : "string"
+        },
+        "targetCafeResourceId" : {
+          "type" : "string"
+        },
+        "requestBindingId" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "reasons" : {
+          "type" : "string"
+        },
+        "organization" : {
+          "$ref" : "#/definitions/catalogOrganizationReference"
+        },
+        "requestedFor" : {
+          "type" : "string"
+        },
+        "requestedBy" : {
+          "type" : "string"
+        },
+        "requestData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "solution" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "rootCafeResourceId" : {
+          "type" : "string"
+        },
+        "catalogRequestId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "callbackServiceId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "requestNumber" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "providerRequest"
+      }
+    },
+    "requestCompletion" : {
+      "type" : "object",
+      "properties" : {
+        "completionDetails" : {
+          "type" : "string"
+        },
+        "requestCompletionState" : {
+          "type" : "string",
+          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLED", "REJECTED" ]
+        },
+        "resourceBindingIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "requestCompletion"
+      }
+    },
+    "requestUserContext" : {
+      "type" : "object",
+      "properties" : {
+        "requestedBy" : {
+          "type" : "string"
+        },
+        "requestedFor" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "subtenantId" : {
+          "type" : "string"
+        },
+        "reasons" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "requestUserContext"
+      }
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "updateElementEntry" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "detailLayout" : {
+          "$ref" : "#/definitions/layout"
+        },
+        "facetValues" : {
+          "$ref" : "#/definitions/FacetValueMap"
+        },
+        "extensionRendererContext" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "permissibleValues" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        },
+        "errors" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "error",
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "updateElementEntry"
+      }
+    },
+    "validationError" : {
+      "type" : "object",
+      "properties" : {
+        "errorCode" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "errorMessage" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "validationError"
+      }
+    },
+    "validationResponse" : {
+      "type" : "object",
+      "properties" : {
+        "errors" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/validationError"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "validationResponse"
+      }
+    },
+    "value" : {
+      "type" : "object",
+      "properties" : {
+        "underlyingValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "label" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "value"
+      }
+    }
+  }
+}

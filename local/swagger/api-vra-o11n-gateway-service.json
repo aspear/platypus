@@ -1,0 +1,3126 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Orchestration Gateway Service API Specification\n\n## What Is the Orchestration Gateway Service?\n\nThe orchestration gateway service provides a gateway to VMware Realize Orchestrator (vRO) for services running on vRealize Automation. By using the gateway, consumers of the API can access a vRO instance, and initiate workflows or script actions without having to deal directly with the vRO APIs.\n\n      Note: Currently orchestration gateway service users can access only one vRO\n      configuration (i.e., instance) per tenant.  Access to multiple configurations is not suported.\n\nThe orchestration gateway service provides a standard way to request code execution by using:\n\n* Well-defined and well-known model abstractions; for example, `LiteralMap` for input/output.\n* Additional metadata needed to handle the request properly; for example, workflow/action definition ID, tenant ID, requester details, and so on.\n\n\nWhen execution of a vRO workflow based on the request occurs, the orchestration gateway tracks code execution, collects the output from the vRO execution, and if needed,  provides feedback to the requester.\n\n## Typical Use Cases\n\n* The IP address management (IPAM) service or another internal vRA service calls  the orchestration gateway service APIs to access a vRO workflow or execute a script.\n* A solution user, system administrator, or tenant administrator accesses a GUI to configure, modify, or delete a vRO endpoint.\n\n## Key Concepts\n\n### Configuration\n\nConfiguration for a concrete vRO instance per tenant\n\n### Workflow\n\nA vRO workflow.\n\n### ScriptAction\n\nA vRO script action.\n\n### vRO Endpoint\n\nAn endpoint defined on a tenant for accessing vRO.\n\n## How the Orchestration Gateway Works\n\nThe orchestration gateway service provides APIs that allow an application to list existing categories and workflows associated with a category, and retrieve the workflow definition and workflow definition presentation for a workflow.\n\nAfter the application has obtained a workflow definition and definition presentation, it can request execution of a workflow definition.\n\nSimilarly, an application can list vRO action definitions, retrieve a specified action definition, and then request vRO action definition execution.\nIn addition, an application can configure a vRO endpoint.\n\nAfter a workflow or action execution is requested, the orchestration gateway service can get execution details and status.  It then broadcasts events indicating the changes in the status of tracked workflows, and if requested, notifify the requesterer of a vRO workflow by using a callback method.\n\n## Additional Information\n\nFor additional information, see the *VRealize Automation Programming Guide*.",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Orchestration (o11n) Gateway Service API"
+  },
+  "basePath" : "/o11n-gateway-service",
+  "tags" : [ {
+    "name" : "cancel"
+  }, {
+    "name" : "catalog"
+  }, {
+    "name" : "category"
+  }, {
+    "name" : "create"
+  }, {
+    "name" : "default"
+  }, {
+    "name" : "delete"
+  }, {
+    "name" : "endpointMetadata"
+  }, {
+    "name" : "get"
+  }, {
+    "name" : "get-operation"
+  }, {
+    "name" : "icon"
+  }, {
+    "name" : "import"
+  }, {
+    "name" : "inventory"
+  }, {
+    "name" : "inventoryResource"
+  }, {
+    "name" : "inventoryType"
+  }, {
+    "name" : "log"
+  }, {
+    "name" : "o11nAction"
+  }, {
+    "name" : "orchestrationConfiguration"
+  }, {
+    "name" : "package"
+  }, {
+    "name" : "presentation"
+  }, {
+    "name" : "root"
+  }, {
+    "name" : "routine"
+  }, {
+    "name" : "run"
+  }, {
+    "name" : "run-request"
+  }, {
+    "name" : "schema"
+  }, {
+    "name" : "search"
+  }, {
+    "name" : "test"
+  }, {
+    "name" : "update"
+  }, {
+    "name" : "values"
+  }, {
+    "name" : "workflow"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/tenants/{tenantId}/actions" : {
+      "get" : {
+        "tags" : [ "search", "o11nAction" ],
+        "summary" : "Search for o11nAction",
+        "description" : "Searches for o11nAction by containment of name, description and categoryName",
+        "operationId" : "findO11nActions",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "description",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/o11n-action"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/actions/{categoryName}/{actionName}/execute" : {
+      "post" : {
+        "tags" : [ "run", "o11nAction" ],
+        "summary" : "execute script action",
+        "description" : "Executes synchronously script action.",
+        "operationId" : "executeAction",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "path",
+          "description" : "the category name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "actionName",
+          "in" : "path",
+          "description" : "the action name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/literalMap"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the run request id",
+            "schema" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/actions/{categoryName}/{name}" : {
+      "get" : {
+        "tags" : [ "get", "o11nAction" ],
+        "summary" : "Get o11nAction",
+        "description" : "Get o11nAction by given category name and action name for tenant.",
+        "operationId" : "getO11nAction",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "path",
+          "description" : "the parent category name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "path",
+          "description" : "the o11nAction",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the o11nAction",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-action"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11nAction for provided input"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/categories/workflows" : {
+      "get" : {
+        "tags" : [ "get", "workflow", "root", "category" ],
+        "summary" : "get root category for given tenant",
+        "description" : "Get the root category for the given tenantId.",
+        "operationId" : "getWorklfowsRootCategory",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the root workflowCategory",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-workflowCategory"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/categories/workflows/{categoryId}" : {
+      "get" : {
+        "tags" : [ "get", "workflow", "category" ],
+        "summary" : "get category by parent category id in tenant",
+        "description" : "Get a category by parent category id for requested tenantId.",
+        "operationId" : "getWorkflowCategory",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the workflowCategory",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-workflowCategory"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations" : {
+      "get" : {
+        "tags" : [ "get", "orchestrationConfiguration" ],
+        "summary" : "Get orchestrationConfiguration in tenant",
+        "description" : "Get the orchestrationConfiguration for the given tenant.",
+        "operationId" : "getConfigurations",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the orchestrationConfiguration",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/o11n-configuration"
+              }
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no orchestrationConfiguration with provided configurationId"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "create", "update", "orchestrationConfiguration" ],
+        "summary" : "Create or Update orchestrationConfiguration in tenant",
+        "description" : "Create or Update orchestrationConfiguration for the given tenant.",
+        "operationId" : "createOrUpdate",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/o11n-configuration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the orchestrationConfiguration",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-configuration"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations/certificate" : {
+      "put" : {
+        "tags" : [ "get-operation" ],
+        "summary" : "Gets a certificate",
+        "description" : "Gets a certificate for the given configuration",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/o11n-configuration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations/default" : {
+      "put" : {
+        "tags" : [ "default", "orchestrationConfiguration" ],
+        "summary" : "Set default orchestrationConfiguration for tenant",
+        "description" : "Set the default/embedded orchestrationConfiguration for the given tenant.",
+        "operationId" : "useDefault",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the orchestrationConfiguration",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-configuration"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations/default/status" : {
+      "put" : {
+        "tags" : [ "test", "default", "orchestrationConfiguration" ],
+        "summary" : "test default orchestrationConfiguration for tenant",
+        "description" : "test connectivity to default vRO for the given tenant.",
+        "operationId" : "testDefaultConfiguration",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the ConfigurationStatus",
+            "schema" : {
+              "type" : "string",
+              "enum" : [ "SUCCESS", "FAILURE", "FAILURE_VCO_NO_ENDPOINT", "FAILURE_VCO_CONNECTION_FAILURE", "FAILURE_VCO_CONNECTION_TIMEOUT", "FAILURE_VCO_CONNECTION_FAILURE_UNTRUSTED_CERTIFICATE", "FAILURE_BAD_CREDENTIALS", "FAILURE_UNKNOWN_HOST", "FAILURE_BAD_PORT", "FAILURE_NO_SSO_AUTHENTICATION" ]
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations/status" : {
+      "put" : {
+        "tags" : [ "test", "orchestrationConfiguration" ],
+        "summary" : "test orchestrationConfiguration for tenant",
+        "description" : "test connectivity to vRO according to the given orchestrationConfiguration for the given tenant.",
+        "operationId" : "testConfiguration",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/o11n-configuration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the ConfigurationStatus",
+            "schema" : {
+              "type" : "string",
+              "enum" : [ "SUCCESS", "FAILURE", "FAILURE_VCO_NO_ENDPOINT", "FAILURE_VCO_CONNECTION_FAILURE", "FAILURE_VCO_CONNECTION_TIMEOUT", "FAILURE_VCO_CONNECTION_FAILURE_UNTRUSTED_CERTIFICATE", "FAILURE_BAD_CREDENTIALS", "FAILURE_UNKNOWN_HOST", "FAILURE_BAD_PORT", "FAILURE_NO_SSO_AUTHENTICATION" ]
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/configurations/{configurationId}" : {
+      "get" : {
+        "tags" : [ "get", "orchestrationConfiguration" ],
+        "summary" : "Get orchestrationConfiguration",
+        "description" : "Get orchestrationConfiguration by given configurationId in specified tenantId.",
+        "operationId" : "getConfiguration",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "configurationId",
+          "in" : "path",
+          "description" : "the configuration id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the orchestrationConfiguration",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-configuration"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no orchestrationConfiguration with provided configurationId"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "orchestrationConfiguration", "delete" ],
+        "summary" : "Delete orchestrationConfiguration",
+        "description" : "Delete orchestrationConfiguration. Only Solution user, system and tenant admins can delete orchestrationConfigurations.",
+        "operationId" : "deleteConfiguration",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "configurationId",
+          "in" : "path",
+          "description" : "the configuration id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "'No Content' is returned on successful delete."
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/inventory/catalog/{namespace}/{vcoType}/{vcoId}/tags" : {
+      "get" : {
+        "tags" : [ "get", "catalog" ],
+        "summary" : "List Tags for the Given Inventory Resource",
+        "description" : "Get tags of the object in the VCO for given vcoId",
+        "operationId" : "findObjectTags",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "namespace",
+          "in" : "path",
+          "description" : "The name of the plugin",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "vcoType",
+          "in" : "path",
+          "description" : "String representation of a type registered in vRO.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "vcoId",
+          "in" : "path",
+          "description" : "The id of the VCO Onject",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'The Request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-tagInstanceList"
+            }
+          },
+          "401" : {
+            "description" : "'User is not authorized"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/inventory/objectUri/{objectUri}" : {
+      "get" : {
+        "tags" : [ "get", "inventory", "inventoryResource" ],
+        "summary" : "Get inventory resource by objectUri in given tenant",
+        "description" : "Get inventory resource by provided objectUri in given tenant.",
+        "operationId" : "findInventoryResourceByObjectUri",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "objectUri",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the o11n-inventoryResource",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-inventoryResource"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11n-inventoryResource with requested parameters"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/inventory/{vcoType}" : {
+      "get" : {
+        "tags" : [ "get", "inventory", "inventoryResource" ],
+        "summary" : "Get inventory resources by provided vcoType in given tenant",
+        "description" : "Get inventory resources by provided vcoType in given tenant. Additional ciretira could be supplied to narrow down the response",
+        "operationId" : "findInventoryResources",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "vcoType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "criteria",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with list of o11n-inventoryResource",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/o11n-inventoryResource"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/inventory/{vcoType}/{id}" : {
+      "get" : {
+        "tags" : [ "get", "inventory", "inventoryResource" ],
+        "summary" : "Get inventory resource by provided vcoType and id in given tenant",
+        "description" : "Get inventory resource by provided vcoType and id in given tenant.",
+        "operationId" : "findInventoryResource",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "vcoType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the o11n-inventoryResource",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-inventoryResource"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11n-inventoryResource with requested parameters"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata" : {
+      "get" : {
+        "tags" : [ "get", "endpointMetadata" ],
+        "summary" : "Get endpoint names in given tenant",
+        "description" : "Get endpoint names in given tenant.",
+        "operationId" : "getPluginNames",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with collection of names",
+            "schema" : {
+              "$ref" : "#/definitions/entities"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata/types" : {
+      "get" : {
+        "tags" : [ "get", "endpointMetadata", "inventoryType" ],
+        "summary" : "Get Inventory types",
+        "description" : "Get inventory types in the provided tenantId, according to filter criteria .",
+        "operationId" : "getInventoryTypes",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "typeName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "includeSimpleTypes",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the inventory type Schema",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/o11n-inventoryType"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata/{endpointName}" : {
+      "get" : {
+        "tags" : [ "get", "endpointMetadata" ],
+        "summary" : "Get endpoint metadata for given endpointName",
+        "description" : "Get endpoint metadata for given endpointName in provided tenantId.",
+        "operationId" : "findPluginMetadata",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the o11nEndpointMetadata",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-endpointMetadata"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11nEndpointMetadata with provided endpointName in requested tenant"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata/{endpointName}/{type}/icon" : {
+      "get" : {
+        "tags" : [ "get", "endpointMetadata", "inventoryType", "icon" ],
+        "summary" : "Get Inventory type icon",
+        "description" : "Get inventory type icon for the given endpointName and type in provided tenantId.",
+        "operationId" : "getInventoryTypeIcon",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "type",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the inventory type icon",
+            "schema" : {
+              "$ref" : "#/definitions/O11nIcon"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11nEndpointMetadata with provided endpointName in requested tenant"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata/{endpointName}/{type}/schema" : {
+      "get" : {
+        "tags" : [ "get", "endpointMetadata", "inventoryType", "schema" ],
+        "summary" : "Get Inventory type schema",
+        "description" : "Get inventory type schema for the given endpointName and type in provided tenantId.",
+        "operationId" : "getInventoryTypeSchema",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "type",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the inventory type Schema",
+            "schema" : {
+              "$ref" : "#/definitions/Schema"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no o11nEndpointMetadata with provided endpointName in requested tenant"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/metadata/{endpointName}/{type}/values" : {
+      "post" : {
+        "tags" : [ "get", "endpointMetadata", "inventoryType", "values" ],
+        "summary" : "Get permissible values",
+        "description" : "Get permissible values for inventory type from given endpoint in provided tenantId.",
+        "operationId" : "getFieldValues",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "type",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "asTree",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/elementValuesRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the values",
+            "schema" : {
+              "$ref" : "#/definitions/elementValues"
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/package/import" : {
+      "post" : {
+        "tags" : [ "import", "package" ],
+        "summary" : "Import package",
+        "description" : "Import package in vCO. Operation will succeed even in case the prerequisites for the content to import are not presented.",
+        "operationId" : "importPackage",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "fileupload",
+          "in" : "formData",
+          "required" : true,
+          "type" : "file"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the string value 'SUCCESS' in case of success",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "400" : {
+            "description" : "'Bad Request' in case of error"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/requests/correlation/{correlationType}/{correlationId}/info" : {
+      "get" : {
+        "tags" : [ "get", "run-request" ],
+        "summary" : "Get run info",
+        "description" : "Retrieves a run information for the given correlation type and id.",
+        "operationId" : "getRoutineRunInfoWithCorrelation",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "correlationType",
+          "in" : "path",
+          "description" : "the correlation type",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "correlationId",
+          "in" : "path",
+          "description" : "the correlation id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the runInfo",
+            "schema" : {
+              "$ref" : "#/definitions/routineRunInfo"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no runInfo with provided requestId"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/requests/{requestId}/cancel" : {
+      "patch" : {
+        "tags" : [ "cancel", "run-request" ],
+        "summary" : "Cancel run request",
+        "description" : "Cancels run result for the given request id.",
+        "operationId" : "cancelRunRequest",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "the request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "'No Content' is returned on successful cancel."
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/requests/{requestId}/info" : {
+      "get" : {
+        "tags" : [ "get", "run-request" ],
+        "summary" : "Get run info",
+        "description" : "Retrieves a run information for a given request id.",
+        "operationId" : "getRoutineRunInfo",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "the request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the runInfo",
+            "schema" : {
+              "$ref" : "#/definitions/routineRunInfo"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no runInfo with provided requestId"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/requests/{requestId}/logs" : {
+      "get" : {
+        "tags" : [ "get", "run-request", "log" ],
+        "summary" : "Get run logs",
+        "description" : "Retrieves a run logs for a given request id.",
+        "operationId" : "getRunStateLogs",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "the request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the logs",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-logs"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no runRequest with provided requestId"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/requests/{requestId}/result" : {
+      "get" : {
+        "tags" : [ "get", "run-request" ],
+        "summary" : "Get run result",
+        "description" : "Retrieves a run result for a given request id.",
+        "operationId" : "getRoutineRunResult",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "the request id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the runResult",
+            "schema" : {
+              "$ref" : "#/definitions/routineRunRunResult"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no runResult with provided requestId"
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/workflows/{workflowId}" : {
+      "get" : {
+        "tags" : [ "get", "workflow" ],
+        "summary" : "Get workflow",
+        "description" : "Get workflow by given workflowId from the vRO configured for the current tenant.",
+        "operationId" : "getWorkflowById",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "workflowId",
+          "in" : "path",
+          "description" : "the workflow id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the workflow",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-workflow"
+            }
+          },
+          "404" : {
+            "description" : "'Not found' if no workflow with provided workflowId in current tenant"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "run", "workflow" ],
+        "summary" : "Request workflow to run",
+        "description" : "Request workflow, by given workflowId, to run by the vRO configured for the current tenant.",
+        "operationId" : "runWorkflow",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "workflowId",
+          "in" : "path",
+          "description" : "the workflow id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/routineRunRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "'Success' with the run request id",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AndClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "BooleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "CallbackEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CertificateInfo" : {
+      "type" : "object",
+      "properties" : {
+        "identityCertificateExists" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "issuerName" : {
+          "type" : "string"
+        },
+        "principalName" : {
+          "type" : "string"
+        },
+        "notValidBefore" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "notValidAfter" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "thumbprint" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Clause" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CoalesceEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ComplexDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "schema" : {
+            "$ref" : "#/definitions/Schema"
+          }
+        }
+      } ]
+    },
+    "ComplexEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "values" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cases" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "case"
+            },
+            "items" : {
+              "$ref" : "#/definitions/ConditionalEvaluatorCase"
+            }
+          },
+          "defaulValue" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ConditionalEvaluatorCase" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ConstantClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/booleanLiteral"
+          }
+        }
+      } ]
+    },
+    "ConstantValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/literal"
+          }
+        }
+      } ]
+    },
+    "Constraint" : {
+      "type" : "object",
+      "required" : [ "value" ],
+      "discriminator" : "type",
+      "properties" : {
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ContainsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ContextPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "CriteriaOperator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "CustomPropertyDefinitionMetadata" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "required" : [ "field" ],
+        "properties" : {
+          "field" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      } ]
+    },
+    "CustomValidationConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DataType" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "typeId" : {
+          "type" : "string",
+          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+        }
+      }
+    },
+    "DefaultValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "DynamicPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "context" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          },
+          "dependencies" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "dependency",
+              "wrapped" : true
+            },
+            "uniqueItems" : true,
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      } ]
+    },
+    "DynamicValueContext" : {
+      "type" : "object",
+      "required" : [ "parameterMappings" ],
+      "properties" : {
+        "providerEntityId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameterMappings" : {
+          "$ref" : "#/definitions/ParameterMappingCollection"
+        }
+      }
+    },
+    "EditableBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "ElementState" : {
+      "type" : "object",
+      "properties" : {
+        "dependencies" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "dependency",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "facets" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "facet",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Constraint"
+          }
+        }
+      }
+    },
+    "ElementValuesPagingInfo" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "EncryptedBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EndsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EntityReferenceDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "EqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Evaluator" : {
+      "type" : "object",
+      "discriminator" : "type"
+    },
+    "Expression" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "operator" : {
+            "$ref" : "#/definitions/CriteriaOperator"
+          },
+          "leftOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          },
+          "rightOperand" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "ExternalValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "dynamicValueProviderInfo" ],
+        "properties" : {
+          "dynamicValueProviderInfo" : {
+            "$ref" : "#/definitions/DynamicValueContext"
+          }
+        }
+      } ]
+    },
+    "Field" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "displayAdvice" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
+        },
+        "orderIndex" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "permissibleValues" : {
+          "$ref" : "#/definitions/PermissibleValueList"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ElementState"
+        },
+        "isMultiValued" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "columns" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "column",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "FieldReference" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "FixedValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "GreaterThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IaasPropertyNameBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IncrementBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "InternalConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "IsDefinedOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "LessThanOrEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "rel" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "LiteralMapEntry" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/literal"
+        }
+      }
+    },
+    "MandatoryConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaxValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MaximumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MinCardinalityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinLengthConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinValueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "MinimumValueEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "arguments" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "argument",
+              "wrapped" : true
+            },
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "MonetaryValue" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "currencyCode" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The ISO 4217 code used to identify the currency (if any) associated with this value."
+          }
+        },
+        "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
+        "xml" : {
+          "name" : "literal"
+        }
+      } ]
+    },
+    "MultipleEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "required" : [ "items" ],
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Evaluator"
+            }
+          }
+        }
+      } ]
+    },
+    "NotClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClause" : {
+            "$ref" : "#/definitions/Clause"
+          }
+        }
+      } ]
+    },
+    "NotEqualsOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "NullDisplayTextBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "O11nIcon" : {
+      "type" : "object",
+      "properties" : {
+        "contentType" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "format" : "byte"
+          }
+        },
+        "href" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ObjectDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "label" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          }
+        }
+      } ]
+    },
+    "OrClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "subClauses" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "clause"
+            },
+            "items" : {
+              "$ref" : "#/definitions/Clause"
+            }
+          }
+        }
+      } ]
+    },
+    "ParameterMapping" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "ParameterMappingCollection" : {
+      "type" : "object",
+      "properties" : {
+        "params" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "param",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/ParameterMapping"
+          }
+        }
+      }
+    },
+    "PermissibleValueList" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "customAllowed" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "PrimitiveDataType" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/DataType"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "typeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          }
+        }
+      } ]
+    },
+    "ReadOnlyConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RefreshOnChangeBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "RegexpConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "errorMessage" : {
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "ResetValueBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Schema" : {
+      "type" : "object",
+      "properties" : {
+        "fields" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "field"
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/Field"
+          }
+        }
+      }
+    },
+    "SkipExportBehavior" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StartsWithOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "StaticPermissibleValueList" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/PermissibleValueList"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "value"
+            },
+            "items" : {
+              "$ref" : "#/definitions/value"
+            }
+          }
+        }
+      } ]
+    },
+    "SubsetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "SupersetOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "TimeSpan" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+        "xml" : {
+          "name" : "timeSpan"
+        }
+      } ]
+    },
+    "UniqueConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "UnspecifiedEvaluator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "VisibilityConstraint" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Constraint"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WithinOperator" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CriteriaOperator"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "WrapperClause" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Evaluator"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "$ref" : "#/definitions/Evaluator"
+          }
+        }
+      } ]
+    },
+    "booleanLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "boolean",
+            "description" : "The boolean value.",
+            "default" : false
+          }
+        },
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
+        }
+      } ]
+    },
+    "complexLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "componentTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component type."
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's component."
+          },
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier for this literal's class."
+          },
+          "typeFilter" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The type filter for this literal."
+          },
+          "values" : {
+            "description" : "Map of values, keyed by the field ids of some complex type.",
+            "$ref" : "#/definitions/literalMap"
+          }
+        },
+        "description" : "A complex value composed of multiple values keyed by the field ids of some complex type.",
+        "xml" : {
+          "name" : "complexLiteral"
+        }
+      } ]
+    },
+    "dateTimeLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "The date."
+          }
+        },
+        "description" : "Wraps a Date & Time value. This is a wrapper for the Java {@link Date} class.",
+        "xml" : {
+          "name" : "dateTimeLiteral"
+        }
+      } ]
+    },
+    "decimalLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The decimal value."
+          }
+        },
+        "description" : "Wraps a decimal value.",
+        "xml" : {
+          "name" : "decimalLiteral"
+        }
+      } ]
+    },
+    "elementValues" : {
+      "type" : "object",
+      "properties" : {
+        "values" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "value",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/value"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "elementValues"
+      }
+    },
+    "elementValuesRequest" : {
+      "type" : "object",
+      "properties" : {
+        "text" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "dependencyValues" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "pagingInfo" : {
+          "$ref" : "#/definitions/ElementValuesPagingInfo"
+        },
+        "associateValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        }
+      },
+      "xml" : {
+        "name" : "elementValuesRequest"
+      }
+    },
+    "entities" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "links",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "content" : {
+          "type" : "array",
+          "xml" : {
+            "wrapped" : true
+          },
+          "items" : {
+            "type" : "object"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "entities"
+      }
+    },
+    "entityRef" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "classId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The identifier of the type or category to which the referenced entity belongs."
+          },
+          "id" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The unique identifier of the referenced entity, encoded as a string"
+          },
+          "componentId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The durable identifier of a component registered in the suite component registry that owns and manages the referenced entity. This can be omitted if this component can be derived from the context within which this entity reference occurs. It must be specified, if no such context exists or if the component differs from that defined by the context."
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "description" : "Represents a reference to an entity defined somewhere in the suite.",
+        "xml" : {
+          "name" : "entityRef"
+        }
+      } ]
+    },
+    "entityRefEx" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "description" : "the Href"
+          }
+        },
+        "description" : "Represents a reference to an entity by uri",
+        "xml" : {
+          "name" : "entityRefEx"
+        }
+      } ]
+    },
+    "integerLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The integer value."
+          }
+        },
+        "description" : "Wraps a signed 64-bit integer value.",
+        "xml" : {
+          "name" : "integerLiteral"
+        }
+      } ]
+    },
+    "literal" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "description" : "Wraps a value such that values of different types can be treated generically.",
+      "xml" : {
+        "name" : "literal"
+      }
+    },
+    "literalMap" : {
+      "type" : "object",
+      "properties" : {
+        "entries" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "entry"
+          },
+          "items" : {
+            "$ref" : "#/definitions/LiteralMapEntry"
+          }
+        }
+      },
+      "description" : "Equivalent of java.util.Map",
+      "xml" : {
+        "name" : "literalMap"
+      }
+    },
+    "money" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The amount associated with this value (with no specific currency)."
+          }
+        },
+        "description" : "Represents a single, precise monetary value.",
+        "xml" : {
+          "name" : "money"
+        }
+      } ]
+    },
+    "moneyRange" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "minValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The lower limit of the range."
+          },
+          "maxValue" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "The upper limit of the range."
+          }
+        },
+        "description" : "Represents a range of money values, between some defined minimums and maximums.",
+        "xml" : {
+          "name" : "moneyRange"
+        }
+      } ]
+    },
+    "moneyRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "cost" : {
+            "description" : "The cost (including optional currency code).",
+            "$ref" : "#/definitions/literal"
+          }
+        },
+        "description" : "A base type for literals representing a rate of some monetary value over a specified basis. E.g. $5 / hour; $1-2 / GB.",
+        "xml" : {
+          "name" : "moneyRate"
+        }
+      } ]
+    },
+    "moneyTimeRate" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "basis" : {
+            "description" : "The span of time to calculate the rate of money for.",
+            "$ref" : "#/definitions/timeSpan"
+          }
+        },
+        "description" : "Represents a rate of money over time.",
+        "xml" : {
+          "name" : "moneyTimeRate"
+        }
+      } ]
+    },
+    "multipleLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "elementTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            },
+            "description" : "The data type of the items in the list.",
+            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
+          },
+          "items" : {
+            "type" : "array",
+            "xml" : {
+              "name" : "item"
+            },
+            "description" : "The list of specified values. NOTE: All values must be of the same data type.",
+            "items" : {
+              "$ref" : "#/definitions/literal"
+            }
+          }
+        },
+        "description" : "A literal which represents multiple values. All of these component values must be of the same data type.",
+        "xml" : {
+          "name" : "multipleLiteral"
+        }
+      } ]
+    },
+    "o11n-action" : {
+      "type" : "object",
+      "required" : [ "description", "fqn", "name" ],
+      "properties" : {
+        "inputParameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/o11n-actionParameter"
+          }
+        },
+        "resultType" : {
+          "type" : "string"
+        },
+        "resultContentType" : {
+          "$ref" : "#/definitions/DataType"
+        },
+        "fqn" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 2000
+        }
+      },
+      "xml" : {
+        "name" : "o11n-action"
+      }
+    },
+    "o11n-actionParameter" : {
+      "type" : "object",
+      "required" : [ "name", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "type" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "contentType" : {
+          "$ref" : "#/definitions/DataType"
+        }
+      },
+      "xml" : {
+        "name" : "o11n-actionParameter"
+      }
+    },
+    "o11n-configuration" : {
+      "type" : "object",
+      "required" : [ "host", "name", "tenantId" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Configuration name",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Configuration description",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "host" : {
+          "type" : "string",
+          "description" : "vRO host",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "port" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "vRO port"
+        },
+        "username" : {
+          "type" : "string",
+          "description" : "username to use for authentication"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "user password to use for authentication"
+        },
+        "ssoMode" : {
+          "type" : "boolean",
+          "description" : "Indicates whether this condifuration is for sso mode or not",
+          "default" : false
+        },
+        "tenantId" : {
+          "type" : "string",
+          "description" : "the id of the tenant where this condifuration belongs to",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "certificate" : {
+          "type" : "string",
+          "description" : "certificate used to connect to vRO"
+        },
+        "embedded" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "systemDefault" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      },
+      "description" : "Represents a Configuration for vCO server",
+      "xml" : {
+        "name" : "o11n-configuration"
+      }
+    },
+    "o11n-configurationCertificateInfo" : {
+      "type" : "object",
+      "properties" : {
+        "configurationStatus" : {
+          "type" : "string",
+          "enum" : [ "SUCCESS", "FAILURE", "FAILURE_VCO_NO_ENDPOINT", "FAILURE_VCO_CONNECTION_FAILURE", "FAILURE_VCO_CONNECTION_TIMEOUT", "FAILURE_VCO_CONNECTION_FAILURE_UNTRUSTED_CERTIFICATE", "FAILURE_BAD_CREDENTIALS", "FAILURE_UNKNOWN_HOST", "FAILURE_BAD_PORT", "FAILURE_NO_SSO_AUTHENTICATION" ]
+        },
+        "certificateInfo" : {
+          "$ref" : "#/definitions/CertificateInfo"
+        },
+        "certificate" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "o11n-configurationCertificateInfo"
+      }
+    },
+    "o11n-endpointMetadata" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "enabled" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "configurable" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "icon" : {
+          "$ref" : "#/definitions/O11nIcon"
+        },
+        "version" : {
+          "type" : "string"
+        },
+        "buildNumber" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "description" : "Represents an endpoint metadata (e.g. vRO plugin metadata)",
+      "xml" : {
+        "name" : "o11n-endpointMetadata"
+      }
+    },
+    "o11n-inventoryResource" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
+        "pluginName" : {
+          "type" : "string"
+        },
+        "pluginType" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "additionalAttributes" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "o11n-inventoryResource"
+      }
+    },
+    "o11n-inventoryType" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "pluginType" : {
+          "type" : "string"
+        },
+        "pluginName" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "properties" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/o11n-inventoryTypeProperty"
+          }
+        },
+        "icon" : {
+          "$ref" : "#/definitions/O11nIcon"
+        }
+      },
+      "xml" : {
+        "name" : "o11n-inventoryType"
+      }
+    },
+    "o11n-inventoryTypeProperty" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "o11n-inventoryTypeProperty"
+      }
+    },
+    "o11n-logEntry" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "description" : "long description"
+        },
+        "severity" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "severity"
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "timestamp"
+        },
+        "user" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "user"
+        },
+        "short-description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "short description"
+        }
+      },
+      "description" : "Represents a Workflow run log entry",
+      "xml" : {
+        "name" : "o11n-logEntry"
+      }
+    },
+    "o11n-logs" : {
+      "type" : "object",
+      "required" : [ "logEntries" ],
+      "properties" : {
+        "logEntries" : {
+          "type" : "array",
+          "description" : "log entries",
+          "items" : {
+            "$ref" : "#/definitions/o11n-logEntry"
+          }
+        }
+      },
+      "description" : "Represents a Workflow run logs. Contains list of o11n-logEntry.",
+      "xml" : {
+        "name" : "o11n-logs"
+      }
+    },
+    "o11n-tagInstanceList" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "globalTags" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "userTags" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "o11n-tagInstanceList"
+      }
+    },
+    "o11n-workflow" : {
+      "type" : "object",
+      "required" : [ "description", "id", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Workflow id",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Workflow name",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Workflow description",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "inputParameters" : {
+          "type" : "array",
+          "description" : "Workflow input parameters",
+          "items" : {
+            "$ref" : "#/definitions/o11n-workflowParameter"
+          }
+        },
+        "outputParameters" : {
+          "type" : "array",
+          "description" : "Workflow output parameters",
+          "items" : {
+            "$ref" : "#/definitions/o11n-workflowParameter"
+          }
+        }
+      },
+      "description" : "Represents a Workflow definition",
+      "xml" : {
+        "name" : "o11n-workflow"
+      }
+    },
+    "o11n-workflowCategory" : {
+      "type" : "object",
+      "required" : [ "id", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Workflow category id",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Workflow category name",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "categories" : {
+          "type" : "array",
+          "description" : "Children Workflow categories",
+          "items" : {
+            "$ref" : "#/definitions/o11n-workflowCategory"
+          }
+        },
+        "workflows" : {
+          "type" : "array",
+          "description" : "Children Workflows",
+          "items" : {
+            "$ref" : "#/definitions/o11n-workflow"
+          }
+        }
+      },
+      "description" : "Represents a Workflow category",
+      "xml" : {
+        "name" : "o11n-workflowCategory"
+      }
+    },
+    "o11n-workflowParameter" : {
+      "type" : "object",
+      "required" : [ "name", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Workflow parameter name",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "Workflow parameter value type",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "parameterType" : {
+          "type" : "string",
+          "description" : "Workflow parameter type",
+          "minLength" : 0,
+          "maxLength" : 255,
+          "enum" : [ "DEFAULT", "CUSTOM" ]
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Workflow parameter description",
+          "minLength" : 0,
+          "maxLength" : 2000
+        }
+      },
+      "description" : "Represents a Workflow parameter",
+      "xml" : {
+        "name" : "o11n-workflowParameter"
+      }
+    },
+    "routineRunCorrelation" : {
+      "type" : "object",
+      "required" : [ "correlationId", "correlationType" ],
+      "properties" : {
+        "correlationType" : {
+          "type" : "string"
+        },
+        "correlationId" : {
+          "type" : "string"
+        }
+      },
+      "description" : "Represents a Routine run correlation",
+      "xml" : {
+        "name" : "routineRunCorrelation"
+      }
+    },
+    "routineRunInfo" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "routineId" : {
+          "type" : "string"
+        },
+        "executionId" : {
+          "type" : "string"
+        },
+        "routineRunStatus" : {
+          "type" : "string",
+          "enum" : [ "CANCELED", "COMPLETED", "RUNNING", "SUSPENDED", "WAITING", "WAITING_SIGNAL", "FAILED", "INITIALIZING" ]
+        },
+        "traceId" : {
+          "type" : "string"
+        },
+        "correlation" : {
+          "$ref" : "#/definitions/routineRunCorrelation"
+        },
+        "tenantId" : {
+          "type" : "string"
+        }
+      },
+      "description" : "Represents a Routine run information",
+      "xml" : {
+        "name" : "routineRunInfo"
+      }
+    },
+    "routineRunRequest" : {
+      "type" : "object",
+      "properties" : {
+        "requestHeader" : {
+          "description" : "optional request header to pass to the service which is going to call the routine",
+          "$ref" : "#/definitions/literalMap"
+        },
+        "requestData" : {
+          "description" : "optional request data to pass as input when call the routine",
+          "$ref" : "#/definitions/literalMap"
+        },
+        "correlation" : {
+          "description" : "correlation",
+          "$ref" : "#/definitions/routineRunCorrelation"
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "description" : "name/id of the user requested the routine run"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "human readable description for the routine run request"
+        },
+        "callbackServiceId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "service id to callback on routine run complete/fail"
+        }
+      },
+      "description" : "Represents a Routine run request",
+      "xml" : {
+        "name" : "routineRunRequest"
+      }
+    },
+    "routineRunRunResult" : {
+      "type" : "object",
+      "properties" : {
+        "correlation" : {
+          "$ref" : "#/definitions/routineRunCorrelation"
+        },
+        "resultHeader" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "resultData" : {
+          "$ref" : "#/definitions/literalMap"
+        },
+        "runDetails" : {
+          "type" : "string"
+        },
+        "runStatus" : {
+          "type" : "string",
+          "enum" : [ "CANCELED", "COMPLETED", "RUNNING", "SUSPENDED", "WAITING", "WAITING_SIGNAL", "FAILED", "INITIALIZING" ]
+        },
+        "requestId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "requestedBy" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "createDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "completeDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "description" : "Represents a Routine run result",
+      "xml" : {
+        "name" : "routineRunRunResult"
+      }
+    },
+    "secureString" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a secured string value, such as a password.",
+        "xml" : {
+          "name" : "secureString"
+        }
+      } ]
+    },
+    "stringLiteral" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/literal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "string",
+            "description" : "The string value."
+          }
+        },
+        "description" : "Wraps a String value.",
+        "xml" : {
+          "name" : "stringLiteral"
+        }
+      } ]
+    },
+    "timeSpan" : {
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The unit of measure for the time span. e.g: days.",
+          "enum" : [ "MILLISECONDS", "SECONDS", "MINUTES", "HOURS", "DAYS", "WEEKS", "MONTHS", "YEARS" ]
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          },
+          "description" : "The amount for the time span."
+        }
+      },
+      "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
+      "xml" : {
+        "name" : "timeSpan"
+      }
+    },
+    "value" : {
+      "type" : "object",
+      "properties" : {
+        "underlyingValue" : {
+          "$ref" : "#/definitions/literal"
+        },
+        "label" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "value"
+      }
+    }
+  }
+}

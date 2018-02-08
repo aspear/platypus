@@ -1,0 +1,425 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "# Portal Service\n\n## What Is the Portal Service REST API?\n\nYou can use the portal service REST API to create and manage portlet elements on the vRA dashboard.  \n\n## Typical Use Cases\n\nYou can use the portal service REST APIs to:\n\n* Create a portal\n* Retrieve the configuration for a specified portal\n* Update portal configurations\n* Create a portlet configuration\n* Update or delete the configuration for a portlet with a specified universally unique identifier (UUID)\n\n## Key Concepts\n\n### Portal\n\nAn element displayed within the dashboard view. A portal has a portal ID, a name, an associated user ID and tenant ID, and attributes that determine the number of columns and the column length of the portal element.\n\n### Portlet Configuration\n\nThe configuration attributes for a dashboard portlet indicate the window state, position, and mode of the portal element.\n\n## Additional Information\n\nFor additional information about the VRealize Automation REST API, see the *VRealize Automation Programming Guide*  or the user documentation for VRealize Automation.",
+    "version" : "7.4.0-SNAPSHOT",
+    "title" : "Portal Services API"
+  },
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "portal"
+  }, {
+    "name" : "portlet-config"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/portals" : {
+      "get" : {
+        "summary" : "Returns a page of the resources",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "portal" ],
+        "summary" : "Create portal",
+        "description" : "Creates the portal with populated attributes. Sets the userID based on the value received inthe SSO token. Invokes the base class implementation to create the portal.",
+        "operationId" : "createPortal",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The portal to create",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Portal"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Portal"
+            }
+          },
+          "201" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/portals/name/{name}" : {
+      "get" : {
+        "tags" : [ "portal" ],
+        "summary" : "Get portal",
+        "description" : "Retrieves the portal corresponding to the name.",
+        "operationId" : "getPortalByName",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "description" : "The name of the portal to get",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Portal"
+            }
+          }
+        }
+      }
+    },
+    "/api/portals/{id}" : {
+      "get" : {
+        "tags" : [ "portal" ],
+        "summary" : "Gets the portal identified by id",
+        "description" : "",
+        "operationId" : "getPortalById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "the id of the portal",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Portal"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "portal" ],
+        "summary" : "Update portal",
+        "description" : "Updates the portal with the changed attributes supplied in the PUT request. Sets the userIDbased on the value received in the SSO token. Overrides the implementation in the AbstractCrudController.",
+        "operationId" : "updateOrCreatePortal",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "UUID of the portal to update",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "UUID of the portal to update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Portal"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "portal" ],
+        "summary" : "Remove a portal",
+        "description" : "Remove the portal matching the provided id.",
+        "operationId" : "deletePortal",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "the id of the portal",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/portletconfigurations" : {
+      "get" : {
+        "summary" : "Returns a page of the resources",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "portlet-config" ],
+        "summary" : "Create a portlet configuration",
+        "description" : "Creates a new portlet config.",
+        "operationId" : "createPortletConfig",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The portlet config to create",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PortletConfiguration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PortletConfiguration"
+            }
+          }
+        }
+      }
+    },
+    "/api/portletconfigurations/{id}" : {
+      "get" : {
+        "tags" : [ "portlet-config" ],
+        "summary" : "Gets the portlet configuration identified by id",
+        "description" : "",
+        "operationId" : "getPortletConfig",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "the id of the portlet configuration",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PortletConfiguration"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "portlet-config" ],
+        "summary" : "Update portlet configuration",
+        "description" : "Updates the portlet config corresponding to the UUID.",
+        "operationId" : "createOrUpdatePortletConfig",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The UUID of the config to update",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The portlet config to update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PortletConfiguration"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "portlet-config" ],
+        "summary" : "Delete a portlet configuration",
+        "description" : "Deletes the portlet config corresponding to the UUID.",
+        "operationId" : "deletePortletConfig",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The UUID of the config to delete",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Portal" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        },
+        "layoutType" : {
+          "type" : "string",
+          "enum" : [ "SINGLE_COLUMN", "TWO_COLUMN_EVEN", "TWO_COLUMN_WIDE_RIGHT", "TWO_COLUMN_WIDE_LEFT", "THREE_COLUMN_EVEN", "THREE_COLUMN_WIDE_CENTER", "FOUR_COLUMN_EVEN" ]
+        },
+        "columnLengths" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "portletConfigurations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PortletConfiguration"
+          }
+        }
+      }
+    },
+    "PortletConfiguration" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "NORMAL", "MINIMIZED", "MAXIMIZED" ]
+        },
+        "mode" : {
+          "type" : "string"
+        },
+        "extensionId" : {
+          "type" : "string"
+        },
+        "portletPreferences" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/PortletPreference"
+          }
+        }
+      }
+    },
+    "PortletPreference" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "portletPreferenceValues" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PortletPreferenceValue"
+          }
+        }
+      }
+    },
+    "PortletPreferenceValue" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
