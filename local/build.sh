@@ -35,13 +35,13 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 # wish.  If not provided, all output is created in this (the script) directory.
 BUILD_DIR=${BUILD_DIR:-${SCRIPT_DIR}}
 
-APIX_SERVER=https://vdc-repo.vmware.com
+APIX_SERVER=https://apigw.vmware.com/v1/m4/api/dcr/rest/apix/apis
 
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.0.0"
-export MILESTONE="rc3"
+export VER="2.0.0"
+export MILESTONE="a6"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
@@ -50,6 +50,7 @@ OUTPUT_DIR=${BUILD_DIR}/staging
 OUTPUT_DIR_VA=${BUILD_DIR}/staging-va
 TOOLS_DIR=${BUILD_DIR}/tools
 DOWNLOAD_DIR=${BUILD_DIR}/download
+WAR_DIR=${BUILD_DIR}/war
 
 mkdir -p ${DOWNLOAD_DIR}
 
@@ -86,8 +87,10 @@ pushd ${OUTPUT_DIR}
 echo "Extracting APIX distribution"
 unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
-echo "Overwriting stock config with local config"
-cp -f ${SCRIPT_DIR}/config.js .
+echo "Overwriting stock apix-config.json with custom config"
+cp -f ${SCRIPT_DIR}/apix-config.json ./assets
+
+popd
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
@@ -127,4 +130,3 @@ echo "Creating VA staging dir"
 cp -R ${OUTPUT_DIR}/* ${OUTPUT_DIR_VA}
 find ${OUTPUT_DIR_VA} -type f -exec  ${SCRIPT_DIR}/adjustApiPathsForVra.sh {} \;
 
-popd

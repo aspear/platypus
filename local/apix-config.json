@@ -1,0 +1,34 @@
+{
+    "useHash": true,
+    "base" : "/",
+    "path" : "",
+    "title" : "VMware API Explorer",
+    "apiListHeaderText" : "VMware vRealize Automation APIs",
+    "remoteApiUrl" : "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix",
+    "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
+    "localApiUrl" : "local.json",
+    "enableLocal" : true,
+    "enableRemote" : true,
+    "vmwareCodeClient" : "apix,VMC",
+    "vmwareCodeClientUUID" : null,
+    "defaultFilters" : {
+        "keywords" : "",
+        "products" : ["vRealize Automation"],
+        "languages": [],
+        "types" : [],
+        "sources" : ["local"]
+    },
+    "hideFilters" : true,
+    "hideProductsFilter" : false,
+    "hideLanguagesFilter" : false,
+    "hideSourcesFilter" : false,
+    "hidePreference" : false,
+    "hideApiInfo" : false,
+    "sso": [
+       { "id": "vra_sso",
+         "swaggerAuthName": "ApiKeyAuth",
+         "displayName": "vRealize Automation SSO",
+         "authUrl": "/identity/api/tokens"
+       }
+    ]
+}
