@@ -41,7 +41,7 @@ APIX_SERVER=https://apigw.vmware.com/v1/m4/api/dcr/rest/apix/apis
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
 export VER="2.0.0"
-export MILESTONE="a5"
+export MILESTONE="a6"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
