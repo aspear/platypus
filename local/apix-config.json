@@ -9,7 +9,7 @@
     "localApiUrl" : "local.json",
     "enableLocal" : true,
     "enableRemote" : true,
-    "vmwareCodeClient" : "apix,VMC",
+    "vmwareCodeClient" : "apix,vRealize Automation,7.4",
     "vmwareCodeClientUUID" : null,
     "defaultFilters" : {
         "keywords" : "",
