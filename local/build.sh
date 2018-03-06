@@ -84,7 +84,7 @@ echo "Extracting APIX distribution"
 unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 
 echo "Overwriting stock apix-config.json with custom config"
-cp -f ${SCRIPT_DIR}/apix-config.json .
+cp -f ${SCRIPT_DIR}/apix-config.json ./assets
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
@@ -101,6 +101,6 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
  --output_file ${OUTPUT_DIR}/local.json \
- --file_name_to_api_uid_properties_file_path ${SCRIPT_DIR}/ni_uid_mappings.properties
+ --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties
 
 popd
