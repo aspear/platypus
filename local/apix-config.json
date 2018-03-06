@@ -1,6 +1,6 @@
 {
     "baseRoute" : "/",
-    "apiListHeaderText" : "vSphere REST APIs",
+    "apiListHeaderText" : "Network Insight REST APIs",
     "remoteApiUrl" : "https://vdc-repo.vmware.com/apix",
     "remoteSampleExchangeUrl" : "https://apigw.vmware.com/sampleExchange/v1",
     "localApiUrl" : "local.json",
@@ -8,7 +8,7 @@
     "enableRemote" : true,
     "defaultFilters" : {
         "keywords" : "",
-        "products" : ["vSphere"],
+        "products" : ["Network Insight"],
         "languages": [],
         "types" : [],
         "sources" : ["local"]
