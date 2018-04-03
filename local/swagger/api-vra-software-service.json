@@ -2746,7 +2746,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "REJECTED", "ABORTED" ]
+          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "CANCELLED", "CANCELLING", "REJECTED", "ABORTED" ]
         },
         "details" : {
           "type" : "array",
@@ -3140,7 +3140,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "REJECTED", "ABORTED" ]
+          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "CANCELLED", "CANCELLING", "REJECTED", "ABORTED" ]
         },
         "log" : {
           "type" : "string"

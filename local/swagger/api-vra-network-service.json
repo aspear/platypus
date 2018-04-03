@@ -3520,6 +3520,11 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "externalId" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
         }
@@ -4424,12 +4429,12 @@
     "OrderByExpression" : {
       "type" : "object",
       "properties" : {
-        "expression" : {
-          "$ref" : "#/definitions/CommonExpression"
-        },
         "direction" : {
           "type" : "string",
           "enum" : [ "ASCENDING", "DESCENDING" ]
+        },
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
         }
       }
     },
@@ -4446,11 +4451,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -4459,24 +4464,16 @@
     "PageLoadBalancer" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -4495,22 +4492,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageLoadBalancerType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4519,6 +4500,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageLoadBalancerType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4537,22 +4534,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageNetwork" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4561,6 +4542,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageNetwork" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4579,22 +4576,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageNetworkType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4603,6 +4584,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageNetworkType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4621,22 +4618,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityGroup" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4645,6 +4626,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityGroup" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4663,22 +4660,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityGroupType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4687,6 +4668,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityGroupType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4705,22 +4702,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityPolicy" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4729,6 +4710,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityPolicy" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4747,22 +4744,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityPolicyType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4771,6 +4752,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityPolicyType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4789,22 +4786,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityTag" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4813,6 +4794,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityTag" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4831,22 +4828,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSecurityTagType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4855,6 +4836,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSecurityTagType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4873,6 +4870,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -6247,7 +6252,7 @@
         },
         "requestCompletionState" : {
           "type" : "string",
-          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLED", "REJECTED" ]
         },
         "resourceBindingIds" : {
           "type" : "array",

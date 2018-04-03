@@ -4313,6 +4313,63 @@
         }
       }
     },
+    "/api/tenants/{tenantId}/groups/{groupId}/advanced-membership" : {
+      "get" : {
+        "summary" : "Gets the group's advanced membership",
+        "description" : "The method can be used to obtain a specific custom group's advanced membership.\nThe method returns String, which holds the JSON value of the composition rules which are part of the passed custom group.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the id of the tenant in which the passed group resides",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "groupId",
+          "in" : "path",
+          "description" : "principal id of the group",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Sets the group's advanced membership",
+        "description" : "The method can be used to set a specific custom group's advanced membership.\nThe method accepts String, which holds the JSON value of the composition rules which will be set to the passed custom group.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the id of the tenant in which the passed group resides",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "groupId",
+          "in" : "path",
+          "description" : "principal id of the group",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "the advanced membership to be applied",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
     "/api/tenants/{tenantId}/groups/{groupId}/parents" : {
       "get" : {
         "summary" : "Return all parent groups",
@@ -6001,16 +6058,16 @@
     "AclEntry" : {
       "type" : "object",
       "properties" : {
-        "resourceRefId" : {
-          "type" : "string"
-        },
-        "roleId" : {
+        "tenant" : {
           "type" : "string"
         },
         "principalId" : {
           "type" : "string"
         },
-        "tenant" : {
+        "resourceRefId" : {
+          "type" : "string"
+        },
+        "roleId" : {
           "type" : "string"
         }
       }
@@ -7161,24 +7218,16 @@
     "PageAclEntry" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7197,22 +7246,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageIdentityStore" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -7221,6 +7254,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageIdentityStore" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -7239,22 +7288,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PagePrincipalData" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -7263,6 +7296,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PagePrincipalData" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -7281,22 +7330,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSubtenant" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -7305,6 +7338,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSubtenant" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -7323,22 +7372,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageSubtenantRole" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -7347,6 +7380,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageSubtenantRole" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -7365,6 +7414,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -8191,6 +8248,9 @@
           "type" : "string"
         },
         "customDirectorySearchAttribute" : {
+          "type" : "string"
+        },
+        "customDirectorySearchAttributeForGroups" : {
           "type" : "string"
         },
         "membershipAttribute" : {

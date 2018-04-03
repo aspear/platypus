@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 if [ "$1" != "" ]; then
 VRA_HOST=$1
 else
-VRA_HOST=cava-pn-209-000.eng.vmware.com
+VRA_HOST=cava-n-80-047.eng.vmware.com
 fi
 
 echo "Downloading vRA Swagger files from host $VRA_HOST"

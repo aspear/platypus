@@ -7,7 +7,11 @@
   },
   "basePath" : "/forms-service",
   "tags" : [ {
+    "name" : "action"
+  }, {
     "name" : "create"
+  }, {
+    "name" : "externalvalues"
   }, {
     "name" : "form"
   }, {
@@ -27,6 +31,8 @@
   }, {
     "name" : "request-form-callback-operation"
   }, {
+    "name" : "searchActions"
+  }, {
     "name" : "update"
   }, {
     "name" : "validate"
@@ -35,6 +41,138 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
+    "/api/externalvalues/data" : {
+      "post" : {
+        "tags" : [ "request-form-callback-operation" ],
+        "summary" : "Retrieves data for one or more requests from external sources",
+        "description" : "Typically an external source provider is vRO (scriptAction) and a request triggers a vRO action.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/FormExternalDataRequest"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful data request",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/externalvalues/search" : {
+      "post" : {
+        "tags" : [ "externalvalues" ],
+        "summary" : "Query for external field values like vRO inventory objects or any kind of objects return as a result of vRO action execution.",
+        "description" : "This operation can be used to search for vRO inventory objects or any kind of resources and returns a list of [value:label] elements and count of all elements.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/FormExtValueRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the Action Search",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
+    "/api/externalvalues/sources/actions/search" : {
+      "post" : {
+        "tags" : [ "externalvalues", "searchActions" ],
+        "summary" : "Search for vRO actions by a given name fragment.",
+        "description" : "Returns a list of vRO actions and properties for the given search criteria.",
+        "operationId" : "generateForm",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/FormExtValueSourceSearchRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the Action Search",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Not found."
+          }
+        }
+      }
+    },
+    "/api/externalvalues/sources/actions/{categoryName}/{name}" : {
+      "get" : {
+        "tags" : [ "externalvalues", "action" ],
+        "summary" : "Get vRO action spec for a given action FQDN",
+        "description" : "Returns complete vRO action spec for a given FQDN",
+        "operationId" : "action",
+        "parameters" : [ {
+          "name" : "categoryName",
+          "in" : "path",
+          "description" : "the action category name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "path",
+          "description" : "the action name",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the Action",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          },
+          "404" : {
+            "description" : "Not found."
+          }
+        }
+      }
+    },
     "/api/forms" : {
       "get" : {
         "tags" : [ "form", "get", "get-all" ],
@@ -252,17 +390,17 @@
         }
       }
     },
-    "/api/formsprovider/formElementsUpdate" : {
+    "/api/formsprovider/externalValidation" : {
       "post" : {
         "tags" : [ "request-form-callback-operation" ],
-        "summary" : "Get element update",
-        "description" : "Retrieves the update to the form in response to change in one of the form's field",
+        "summary" : "Performs external validation",
+        "description" : "Retrieves the evaluated validation results from vRO actions.",
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/FormElementsUpdateRequest"
+            "$ref" : "#/definitions/ExternalValidationContext"
           }
         } ],
         "responses" : {
@@ -495,6 +633,42 @@
         }
       } ]
     },
+    "ComplexTypeField" : {
+      "type" : "object",
+      "properties" : {
+        "label" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "signpost" : {
+          "type" : "string"
+        },
+        "type" : {
+          "$ref" : "#/definitions/FormSchemaFieldType"
+        },
+        "step" : {
+          "type" : "number",
+          "format" : "float"
+        },
+        "default" : {
+          "type" : "object"
+        },
+        "valueList" : {
+          "type" : "object"
+        },
+        "placeholder" : {
+          "type" : "string"
+        },
+        "constraints" : {
+          "$ref" : "#/definitions/Constraints"
+        },
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
     "ConditionalEvaluator" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Evaluator"
@@ -560,6 +734,9 @@
           "$ref" : "#/definitions/Evaluator"
         }
       }
+    },
+    "Constraints" : {
+      "type" : "object"
     },
     "ContainsOperator" : {
       "allOf" : [ {
@@ -1055,6 +1232,40 @@
         }
       }
     },
+    "ExternalValidationContext" : {
+      "type" : "object",
+      "properties" : {
+        "externalValidations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExternalValidationElement"
+          }
+        },
+        "context" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "$ref" : "#/definitions/FormElementContext"
+          }
+        }
+      }
+    },
+    "ExternalValidationElement" : {
+      "type" : "object",
+      "properties" : {
+        "label" : {
+          "type" : "string"
+        },
+        "source" : {
+          "$ref" : "#/definitions/ExternalValueSource"
+        },
+        "target" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
     "ExternalValue" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Evaluator"
@@ -1067,6 +1278,30 @@
           }
         }
       } ]
+    },
+    "ExternalValueSource" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "type" : {
+          "type" : "string",
+          "readOnly" : true,
+          "enum" : [ "SCRIPT_ACTION", "INVENTORY" ]
+        },
+        "parameters" : {
+          "type" : "array",
+          "readOnly" : true,
+          "items" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
     },
     "Field" : {
       "type" : "object",
@@ -1152,50 +1387,104 @@
       "properties" : {
         "dataType" : {
           "type" : "string",
-          "enum" : [ "STRING", "SECURE_STRING", "INTEGER", "DECIMAL", "BOOLEAN", "REFERENCE" ]
+          "enum" : [ "STRING", "SECURE_STRING", "INTEGER", "DECIMAL", "BOOLEAN", "REFERENCE", "COMPLEX", "DATE" ]
         },
         "value" : {
           "type" : "string"
         }
       }
     },
-    "FormElementTrigger" : {
+    "FormExtValueRequest" : {
       "type" : "object",
       "properties" : {
-        "propertyId" : {
+        "filter" : {
           "type" : "string"
         },
-        "externalValueId" : {
-          "type" : "string"
+        "valueSource" : {
+          "$ref" : "#/definitions/ExternalValueSource"
         },
-        "externalValueType" : {
-          "type" : "string"
+        "valueType" : {
+          "$ref" : "#/definitions/FormSchemaFieldType"
         },
-        "externalValueParameters" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "FormElementsUpdateRequest" : {
-      "type" : "object",
-      "properties" : {
         "context" : {
           "type" : "object",
           "additionalProperties" : {
             "$ref" : "#/definitions/FormElementContext"
           }
+        }
+      }
+    },
+    "FormExtValueSourceSearchRequest" : {
+      "type" : "object",
+      "properties" : {
+        "filter" : {
+          "type" : "string"
         },
-        "elementTriggers" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/FormElementTrigger"
-            }
+        "valueType" : {
+          "$ref" : "#/definitions/FormSchemaFieldType"
+        },
+        "resultSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "FormExternalDataParameter" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "useResultFromRequestId" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "FormExternalDataRequest" : {
+      "type" : "object",
+      "properties" : {
+        "uri" : {
+          "type" : "string"
+        },
+        "dataSource" : {
+          "type" : "string"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FormExternalDataParameter"
           }
+        },
+        "requestId" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "FormSchemaFieldType" : {
+      "type" : "object",
+      "properties" : {
+        "dataType" : {
+          "type" : "string",
+          "readOnly" : true,
+          "enum" : [ "STRING", "SECURE_STRING", "INTEGER", "DECIMAL", "BOOLEAN", "REFERENCE", "COMPLEX", "DATE" ]
+        },
+        "referenceType" : {
+          "type" : "string"
+        },
+        "fields" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ComplexTypeField"
+          }
+        },
+        "isMultiple" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -1496,24 +1785,16 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -1532,6 +1813,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },

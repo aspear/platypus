@@ -2066,6 +2066,28 @@
         }
       }
     },
+    "/api/workflowExecution/{catalogRequestId}" : {
+      "get" : {
+        "tags" : [ "get-operation" ],
+        "summary" : "Gets the workflow execution data",
+        "description" : "Gets the workflow execution data for given catalogRequestId",
+        "parameters" : [ {
+          "name" : "catalogRequestId",
+          "in" : "path",
+          "description" : "The catalog request id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/XaasRequestWorkflowInfo"
+            }
+          }
+        }
+      }
+    },
     "/api/workflows/{workflowId}" : {
       "get" : {
         "tags" : [ "get-operation" ],
@@ -3975,24 +3997,16 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -4011,6 +4025,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4521,6 +4543,34 @@
       },
       "xml" : {
         "name" : "XaaSComponentConfiguration"
+      }
+    },
+    "XaasRequestWorkflowInfo" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "startDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "completionDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "workflowName" : {
+          "type" : "string"
+        },
+        "executionState" : {
+          "type" : "string"
+        },
+        "provisionSourceType" : {
+          "type" : "string"
+        },
+        "errorDetails" : {
+          "type" : "string"
+        }
       }
     },
     "batchElementUpdateRequest" : {

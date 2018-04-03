@@ -1274,14 +1274,14 @@
             "attribute" : true
           }
         },
-        "fromEndpointId" : {
+        "toEndpointId" : {
           "type" : "string",
           "format" : "uuid",
           "xml" : {
             "attribute" : true
           }
         },
-        "toEndpointId" : {
+        "fromEndpointId" : {
           "type" : "string",
           "format" : "uuid",
           "xml" : {
@@ -2431,24 +2431,16 @@
     "PageAssociationType" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -2467,22 +2459,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageEndpoint" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -2491,6 +2467,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageEndpoint" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2509,22 +2501,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageEndpointType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -2533,6 +2509,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageEndpointType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2551,22 +2543,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageEndpointTypeCategory" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -2575,6 +2551,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageEndpointTypeCategory" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -2593,6 +2585,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },

@@ -69,7 +69,7 @@
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Find catalog items",
-        "description" : "Finds all CatalogItems that the current user is allowed to review.",
+        "description" : "Finds all CatalogItems that the current user is allowed to review. Here are some common OData properties to use for $filter or $orderby<br/> name - filter based off catalog item's name<br/> status - filter based off catalog item's status<br/> service/id - filter based off catalog item's service id<br/> service/name - filter based off catalog item's service name<br/> organization/subTenant/id - filter based off catalog item's business group id (which can be found in catalogItem payload under organization -> subtenantRef)<br/> organization/subTenant/name - filter based off catalog item's business group name (which can be found in catalogItem payload under organization -> subtenantLabel)<br/> outputResourceType/id - filter based off catalog item's output resource type id  (e.g.:'Infrastructure.Virtual')<br/> outputResourceType/name - filter based off catalog item's output resource type name (e.g.: 'Virtual Machine')<br/> catalogItemType/id - filter based off catalog item's type id (e.g.:  'Infrastructure.Virtual')<br/> catalogItemType/name - filter based off catalog item's type id (e.g.: 'Virtual Machine')<br/> icon/id - filter based off catalog item's icon id",
         "operationId" : "getCatalogItemsForUser",
         "parameters" : [ {
           "name" : "page",
@@ -178,7 +178,7 @@
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Find all entitlements for catalog item",
-        "description" : "Retrieve all entitlements for a CatalogItem and the service to which the catalog item belongs.If the service identifier is not supplied while making the API call ; it is computed on the server side.",
+        "description" : "Retrieve all entitlements for a CatalogItem and the service to which the catalog item belongs.If the service identifier is not supplied while making the API call ; it is computed on the server side.<br/> Here are some common OData properties to use for $filter or $orderby<br/> name - filter based off the entitlement's name<br/> description - filter based off entitlement's description<br/> status - filter based off entitlement's status (e.g.: DRAFT, ACTIVE, INACTIVE)<br/> organization/subTenant/id - filter based off entitlement's business group id (which can be found in entitlement payload under organization -> subtenantRef)<br/> organization/subTenant/name - filter based off entitlement's business group name (which can be found in entitlement payload under organization -> subtenantLabel)",
         "parameters" : [ {
           "name" : "catalogItemId",
           "in" : "path",
@@ -320,11 +320,42 @@
         }
       }
     },
+    "/api/consumer/calendarEvents" : {
+      "get" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Get calendar events",
+        "description" : "Fetches the calendar events accessible to the current user from the CAFE database. Note that this does not query the provider and only returns the information stored in the CAFE resource database.",
+        "parameters" : [ {
+          "name" : "start",
+          "in" : "query",
+          "description" : "The start date",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "end",
+          "in" : "query",
+          "description" : "The end date",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/consumerCalendarEvent"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/consumer/catalogItems" : {
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Get catalog items",
-        "description" : "Retrieve a page of catalog items a catalog consumer is permitted to see.",
+        "description" : "Retrieve a page of catalog items a catalog consumer is permitted to see. For backward compatible behavior add http header [-H 'version = 6.2'] and refer to 6.2. documentation. ",
         "parameters" : [ {
           "name" : "page",
           "in" : "query",
@@ -778,7 +809,7 @@
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Get a Consumer Entitled Catalog Items",
-        "description" : "Get a ConsumerEntitledCatalogItem by its unique Id.ConsumerEntitledCatalogItem are basically catalog items: - in an active state. - the current user has the right to consume. - the current user is entitled to consume. - associated to a service.",
+        "description" : "Get a ConsumerEntitledCatalogItem by its unique Id.ConsumerEntitledCatalogItem are basically catalog items:<br/>  - in an active state.<br/>  - the current user has the right to consume.<br/>  - the current user is entitled to consume.<br/>  - associated to a service.<br/> Here are some common OData properties to use for $filter or $orderby<br/> name - filter based off catalog item's name<br/> status - filter based off catalog item's status<br/> service/id - filter based off catalog item's service id<br/> service/name - filter based off catalog item's service name<br/> organization/subTenant/id - filter based off catalog item's business group id (which can be found in catalogItem payload under organization -> subtenantRef)<br/> organization/subTenant/name - filter based off catalog item's business group name (which can be found in catalogItem payload under organization -> subtenantLabel)<br/> outputResourceType/id - filter based off catalog item's output resource type id  (e.g.:'Infrastructure.Virtual')<br/> outputResourceType/name - filter based off catalog item's output resource type name (e.g.: 'Virtual Machine')<br/> catalogItemType/id - filter based off catalog item's type id (e.g.:  'Infrastructure.Virtual')<br/> catalogItemType/name - filter based off catalog item's type id (e.g.: 'Virtual Machine')<br/> icon/id - filter based off catalog item's icon id",
         "parameters" : [ {
           "name" : "serviceId",
           "in" : "query",
@@ -978,6 +1009,64 @@
       }
     },
     "/api/consumer/requests" : {
+      "get" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Get User Friendly Resource Provisioned By Request",
+        "description" : "Retrieves all Requests the current user has access to based on the permissions.<br/> Here are some common OData properties to use for $filter and $orderby : <br/> state- filter based off request's state (e.g.: UNSUBMITTED, SUBMITTED, PENDING_PRE_APPROVAL, etc.) <br/> requestedBy- filter based off who submitted the request <br/> requestFor- filter based off who the request was for <br/> description- filter based off who the request's description field <br/> reasons- filter based off who the request's reason field <br/> organization/subTenant/id- filter based off the request's business group id  (which can be found in the requestpayload under organization -> subtenantRef) <br/> organization/subTenant/name- filter based off the request's business group name (which can be found in the requestpayload under organization -> subtenantLabel )<br/> requestorEntitlement/id- filter based off the entitlement id associated with the request <br/> dateCreated,dateSubmitted,dateCompleted,dateApproved- filter based off the date fields associated with the request <br/> requestCompletion/requestCompletionState- filter based off request completion state (e.g.: SUCCESSFUL, FAILED)",
+        "parameters" : [ {
+          "name" : "managedOnly",
+          "in" : "query",
+          "description" : "Managed Only Boolean",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageRequest"
+            }
+          }
+        }
+      },
       "post" : {
         "tags" : [ "catalog" ],
         "summary" : "Create request",
@@ -1024,7 +1113,8 @@
               "$ref" : "#/definitions/form"
             }
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/api/consumer/requests/{id}/forms/details/update" : {
@@ -1376,6 +1466,34 @@
         }
       }
     },
+    "/api/consumer/requests/{requestId}/cancel" : {
+      "post" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Cancel Request",
+        "description" : "Cancels a Request corresponding to its unique Id.",
+        "parameters" : [ {
+          "name" : "requestId",
+          "in" : "path",
+          "description" : "The uuid of a Request.",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Optional Cancel body. Can be used to set force cancel to true. Force Cancel forces the request to 'cancelled' state. It is recommended to try simple cancellation first and only use forced cancellation as a last resort solution in the event of a stuck request.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RequestCancel"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
     "/api/consumer/resourceOperations/{id}" : {
       "get" : {
         "tags" : [ "catalog" ],
@@ -1421,6 +1539,67 @@
                 "type" : "string",
                 "format" : "byte"
               }
+            }
+          }
+        }
+      }
+    },
+    "/api/consumer/resourceTypes" : {
+      "get" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Get Resource Type List",
+        "description" : "Get resource types that are registered in the system that are active and for which resources exist in the system. This API call is expected to be used by the Left side navigation on the My Items view.",
+        "parameters" : [ {
+          "name" : "parentResourceId",
+          "in" : "query",
+          "description" : "The Parent Resource Id",
+          "required" : false,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageResourceType"
             }
           }
         }
@@ -1564,11 +1743,83 @@
         }
       }
     },
+    "/api/consumer/resources" : {
+      "get" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Get Resources",
+        "description" : "Fetches the resources accessible to the current user from the CAFE database. For backward compatible behavior add http header [-H 'version = 6.2'] and refer to 6.2. documentation. <br/> Here are some other common OData properties to use for $filter or $orderby -   <br/> name - filter based off the resource's name <br/> description - filter based off the resource's description <br/> status - filter based off the resource's status (e.g.: ACTIVE, PENDING_APPROVAL, REJECTED, DELETED) <br/> request/id - filter based off the resource's request id <br/> request/requestedBy - filter based off who the resource was requested by <br/> request/requestedFor - filter based off who the resource was requested for <br/> catalogItem/id - filter based off the resource's catalog item id <br/> catalogItem/name - filter based off the resource's catalog item name <br/> organization/subTenant/id - filter based off the resource's business group id (which can be found in catalogResource payload under organization -> subtenantRef) <br/> organization/subTenant/name - filter based off the resource's business group name (which can be found in catalogResource payload under organization -> subtenantLabel) <br/> resourceType/id - filter based off the resource's resource type id (e.g.: 'Infrastructure.Virtual') <br/> resourceType/name - filter based off the resource's resource type name (e.g.: 'Virtual Machine') <br/> dateCreated,lastUpdated - filter based off the resource's date-related fields <br/>",
+        "parameters" : [ {
+          "name" : "managedOnly",
+          "in" : "query",
+          "description" : "Managed Only Boolean",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "withExtendedData",
+          "in" : "query",
+          "description" : "With Extended Data boolean",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "withOperations",
+          "in" : "query",
+          "description" : "With Operations Boolean",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageConsumerResource"
+            }
+          }
+        }
+      }
+    },
     "/api/consumer/resources/types/{resourceTypeId}" : {
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Get Resources By Resource Type",
-        "description" : "Fetches the resources given a Resource Type, accessible to the current user from the CAFE database.",
+        "description" : "Fetches the resources given a Resource Type, accessible to the current user from the CAFE database. For backward compatible behavior add http header [-H 'version = 6.2'] and refer to 6.2. documentation. <br/> Here are some other common OData properties to use for $filter or $orderby -   <br/> name - filter based off the resource's name <br/> description - filter based off the resource's description <br/> status - filter based off the resource's status (e.g.: ACTIVE, PENDING_APPROVAL, REJECTED, DELETED) <br/> request/id - filter based off the resource's request id <br/> request/requestedBy - filter based off who the resource was requested by <br/> request/requestedFor - filter based off who the resource was requested for <br/> catalogItem/id - filter based off the resource's catalog item id <br/> catalogItem/name - filter based off the resource's catalog item name <br/> organization/subTenant/id - filter based off the resource's business group id (which can be found in catalogResource payload under organization -> subtenantRef) <br/> organization/subTenant/name - filter based off the resource's business group name (which can be found in catalogResource payload under organization -> subtenantLabel) <br/> resourceType/id - filter based off the resource's resource type id (e.g.: 'Infrastructure.Virtual') <br/> resourceType/name - filter based off the resource's resource type name (e.g.: 'Virtual Machine') <br/> dateCreated,lastUpdated - filter based off the resource's date-related fields <br/>",
         "parameters" : [ {
           "name" : "resourceTypeId",
           "in" : "path",
@@ -1646,7 +1897,7 @@
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Get Resource",
-        "description" : "Get a resource by its unique identifier. It retrieves a specific resource with its up to date Provider Data by its unique id.",
+        "description" : "Get a resource by its unique identifier. It retrieves a specific resource with its up to date Provider Data by its unique id. For backward compatible behavior add http header [-H 'version = 6.2'] and refer to 6.2. documentation. ",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -2023,7 +2274,7 @@
       "get" : {
         "tags" : [ "catalog" ],
         "summary" : "Get Services",
-        "description" : "Get all Active Services the current user is entitled to see. Each returned services must own at least one Catalog Item the current user is entitled to.",
+        "description" : "Get all Active Services the current user is entitled to see. Each returned services must own at least one Catalog Item the current user is entitled to. <br/> Here are some common OData properties to use for $filter or $orderby  <br/> name - filter based off catalog service's name  <br/> description - filter based off catalog service's name  <br/> status - filter based off catalog service's status (e.g.: ACTIVE, RETIRED, DELETED)  <br/> organization/subTenant/id - filter based off catalog service's business group id (which can be found in service payload under organization -> subtenantRef) <br/> organization/subTenant/name - filter based off catalog service's business group name (which can be found in service payload under organization -> subtenantLabel) <br/> owner/ref - filter based off catalog service's owner principal (e.g.: tony@company.com) <br/> supportTeam/ref - filter based off catalog service's support team principal (e.g.: tony@company.com) <br/> icon/id - filter based off catalog service's icon id",
         "parameters" : [ {
           "name" : "onBehalfOf",
           "in" : "query",
@@ -2080,6 +2331,64 @@
       }
     },
     "/api/entitlements" : {
+      "get" : {
+        "tags" : [ "catalog" ],
+        "summary" : "Get entitlements by tenant/user ",
+        "description" : "Get Entitlements that belongs to a particular tenant or user. If the user Id is specified in the request then the entitlements for the user are returned otherwise the entitlements for the tenant are returned.",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "The user's Id. This is an optional parameter.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageEntitlement"
+            }
+          }
+        }
+      },
       "post" : {
         "tags" : [ "catalog" ],
         "summary" : "Create Entitlement",
@@ -3048,147 +3357,20 @@
       }
     },
     "CatalogItemRequest" : {
-      "type" : "object",
-      "required" : [ "catalogItemRef", "state" ],
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "format" : "uuid"
-        },
-        "iconId" : {
-          "$ref" : "#/definitions/Icon"
-        },
-        "version" : {
-          "type" : "integer",
-          "format" : "int64",
-          "xml" : {
-            "attribute" : true
+      "allOf" : [ {
+        "$ref" : "#/definitions/Request"
+      }, {
+        "type" : "object",
+        "required" : [ "catalogItemRef" ],
+        "properties" : {
+          "catalogItemRef" : {
+            "$ref" : "#/definitions/CatalogItem"
+          },
+          "catalogItemProviderBinding" : {
+            "$ref" : "#/definitions/ProviderBinding"
           }
-        },
-        "requestNumber" : {
-          "type" : "integer",
-          "format" : "int64",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "state" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED" ]
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "reasons" : {
-          "type" : "string"
-        },
-        "requestedFor" : {
-          "type" : "string"
-        },
-        "requestedBy" : {
-          "type" : "string"
-        },
-        "organization" : {
-          "$ref" : "#/definitions/Organization"
-        },
-        "requestorEntitlementId" : {
-          "$ref" : "#/definitions/Entitlement"
-        },
-        "preApprovalId" : {
-          "type" : "string"
-        },
-        "postApprovalId" : {
-          "type" : "string"
-        },
-        "dateCreated" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "lastUpdated" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "dateSubmitted" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "dateApproved" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "dateCompleted" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "quote" : {
-          "$ref" : "#/definitions/RequestQuote"
-        },
-        "requestCompletion" : {
-          "$ref" : "#/definitions/RequestCompletion"
-        },
-        "requestData" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "retriesRemaining" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "requestedItemName" : {
-          "type" : "string"
-        },
-        "requestedItemDescription" : {
-          "type" : "string"
-        },
-        "components" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/RequestComponent"
-          }
-        },
-        "stateName" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "catalogItemRef" : {
-          "$ref" : "#/definitions/CatalogItem"
-        },
-        "catalogItemProviderBinding" : {
-          "$ref" : "#/definitions/ProviderBinding"
-        },
-        "phase" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
-        },
-        "approvalStatus" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "PENDING", "PRE_APPROVED", "POST_APPROVED", "REJECTED" ]
-        },
-        "executionStatus" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "NOT_STARTED", "STARTED", "STOPPED" ]
-        },
-        "waitingStatus" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         }
-      }
+      } ]
     },
     "CatalogItemType" : {
       "type" : "object",
@@ -3300,7 +3482,7 @@
         },
         "requestState" : {
           "type" : "string",
-          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED" ]
+          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLING", "CANCELLED" ]
         },
         "resourceType" : {
           "type" : "string"
@@ -3878,12 +4060,12 @@
           "type" : "boolean",
           "default" : false
         },
+        "catalogItemRef" : {
+          "$ref" : "#/definitions/CatalogItem"
+        },
         "catalogItemRequestable" : {
           "type" : "boolean",
           "default" : false
-        },
-        "catalogItemRef" : {
-          "$ref" : "#/definitions/CatalogItem"
         }
       }
     },
@@ -3893,9 +4075,15 @@
         "approvalPolicyId" : {
           "type" : "string"
         },
+        "resourceOperationRef" : {
+          "$ref" : "#/definitions/ResourceOperation"
+        },
         "active" : {
           "type" : "boolean",
           "default" : false
+        },
+        "externalId" : {
+          "type" : "string"
         },
         "targetResourceTypeRef" : {
           "$ref" : "#/definitions/ResourceType"
@@ -3903,12 +4091,6 @@
         "resourceOperationType" : {
           "type" : "string",
           "enum" : [ "ACTION", "EXTENSION" ]
-        },
-        "resourceOperationRef" : {
-          "$ref" : "#/definitions/ResourceOperation"
-        },
-        "externalId" : {
-          "type" : "string"
         }
       }
     },
@@ -4816,24 +4998,16 @@
     "PageCatalogItem" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -4852,22 +5026,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageCatalogItemType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4876,6 +5034,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageCatalogItemType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4894,22 +5068,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageConsumerEntitledCatalogItem" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4918,6 +5076,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageConsumerEntitledCatalogItem" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4936,22 +5110,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageConsumerEntitledCatalogItemView" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4960,6 +5118,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageConsumerEntitledCatalogItemView" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4978,22 +5152,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageConsumerResource" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5002,6 +5160,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageConsumerResource" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5020,22 +5194,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageConsumerResourceView" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5044,6 +5202,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageConsumerResourceView" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5062,22 +5236,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageEntitlement" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5086,6 +5244,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageEntitlement" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5104,22 +5278,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageProvider" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5128,6 +5286,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageProvider" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5146,22 +5320,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageProviderType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5170,6 +5328,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageProviderType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5188,22 +5362,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageResourceOperation" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5212,6 +5370,64 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageRequest" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Request"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageResourceOperation" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5230,22 +5446,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageResourceType" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5254,6 +5454,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageResourceType" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5272,22 +5488,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageService" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -5296,6 +5496,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageService" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -5314,6 +5530,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -5504,7 +5728,7 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED" ]
+          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLING", "CANCELLED" ]
         },
         "description" : {
           "type" : "string"
@@ -5581,12 +5805,12 @@
             "attribute" : true
           }
         },
-        "phase" : {
+        "waitingStatus" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
         },
         "approvalStatus" : {
           "type" : "string",
@@ -5602,13 +5826,27 @@
           },
           "enum" : [ "NOT_STARTED", "STARTED", "STOPPED" ]
         },
-        "waitingStatus" : {
+        "phase" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "NOT_WAITING", "WAITING_FOR_APPROVAL", "WAITING_FOR_PROVIDER" ]
+          "enum" : [ "UNSUBMITTED", "PENDING_PRE_APPROVAL", "IN_PROGRESS", "PENDING_POST_APPROVAL", "SUCCESSFUL", "FAILED", "REJECTED" ]
         }
+      }
+    },
+    "RequestCancel" : {
+      "type" : "object",
+      "properties" : {
+        "force" : {
+          "type" : "boolean",
+          "description" : "Indicates if the request should be force cancelled.",
+          "default" : false
+        }
+      },
+      "description" : "DTO used by cancel request API.",
+      "xml" : {
+        "name" : "RequestCancel"
       }
     },
     "RequestCompletion" : {
@@ -5617,7 +5855,7 @@
       "properties" : {
         "requestCompletionState" : {
           "type" : "string",
-          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLED", "REJECTED" ]
         },
         "completionDetails" : {
           "type" : "string"
@@ -5786,23 +6024,20 @@
         "requestBindingId" : {
           "type" : "string"
         },
-        "subTenantId" : {
-          "type" : "string"
+        "tenant" : {
+          "$ref" : "#/definitions/CatalogTenant"
         },
         "leaseForDisplay" : {
           "$ref" : "#/definitions/timeSpan"
         },
-        "tenant" : {
-          "$ref" : "#/definitions/CatalogTenant"
-        },
-        "totalLeaseCost" : {
-          "$ref" : "#/definitions/literal"
-        },
-        "tenantId" : {
+        "subTenantId" : {
           "type" : "string"
         },
         "costToDate" : {
           "description" : "Deprecated since version 7.3. Use expenseMonthToDate to get the expense information.",
+          "$ref" : "#/definitions/literal"
+        },
+        "totalLeaseCost" : {
           "$ref" : "#/definitions/literal"
         },
         "linkedIcon" : {
@@ -5813,39 +6048,68 @@
           "items" : {
             "$ref" : "#/definitions/Resource"
           }
+        },
+        "tenantId" : {
+          "type" : "string"
         }
       }
     },
     "ResourceAction" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/ResourceOperation"
-      }, {
-        "type" : "object",
-        "required" : [ "bindingId", "providerTypeRef" ],
-        "properties" : {
-          "organization" : {
-            "$ref" : "#/definitions/Organization"
-          },
-          "requestSchema" : {
-            "$ref" : "#/definitions/SchemaInfo"
-          },
-          "forms" : {
-            "$ref" : "#/definitions/ResourceActionForms"
-          },
-          "callbacks" : {
-            "$ref" : "#/definitions/ResourceActionCallbackSupport"
-          },
-          "lifecycleAction" : {
-            "type" : "string"
-          },
-          "providerTypeRef" : {
-            "$ref" : "#/definitions/ProviderType"
-          },
-          "bindingId" : {
-            "type" : "string"
-          }
+      "type" : "object",
+      "required" : [ "bindingId", "name", "providerTypeRef", "status", "targetResourceTypeRef" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "iconId" : {
+          "$ref" : "#/definitions/Icon"
+        },
+        "targetCriteria" : {
+          "$ref" : "#/definitions/Clause"
+        },
+        "targetResourceTypeRef" : {
+          "$ref" : "#/definitions/ResourceType"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "STAGING", "PUBLISHED", "RETIRED", "DELETED" ]
+        },
+        "entitleable" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "organization" : {
+          "$ref" : "#/definitions/Organization"
+        },
+        "requestSchema" : {
+          "$ref" : "#/definitions/SchemaInfo"
+        },
+        "forms" : {
+          "$ref" : "#/definitions/ResourceActionForms"
+        },
+        "callbacks" : {
+          "$ref" : "#/definitions/ResourceActionCallbackSupport"
+        },
+        "lifecycleAction" : {
+          "type" : "string"
+        },
+        "providerTypeRef" : {
+          "$ref" : "#/definitions/ProviderType"
+        },
+        "bindingId" : {
+          "type" : "string"
         }
-      } ]
+      }
     },
     "ResourceActionCallbackSupport" : {
       "type" : "object",
@@ -6477,7 +6741,7 @@
         },
         "requestState" : {
           "type" : "string",
-          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED" ]
+          "enum" : [ "UNSUBMITTED", "SUBMITTED", "DELETED", "PENDING_PRE_APPROVAL", "PRE_APPROVAL_SEND_ERROR", "PRE_APPROVED", "PRE_REJECTED", "PROVIDER_DELETION_ERROR", "IN_PROGRESS", "PROVIDER_SEND_ERROR", "PROVIDER_COMPLETED", "PROVIDER_FAILED", "PENDING_POST_APPROVAL", "POST_APPROVAL_SEND_ERROR", "POST_APPROVED", "POST_REJECTION_RECEIVED", "ROLLBACK_ERROR", "POST_REJECTED", "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLING", "CANCELLED" ]
         },
         "providerBinding" : {
           "$ref" : "#/definitions/ProviderBinding"
@@ -7004,21 +7268,22 @@
       } ]
     },
     "moneyTimeRate" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/literal"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "basis" : {
-            "description" : "The span of time to calculate the rate of money for.",
-            "$ref" : "#/definitions/timeSpan"
-          }
+      "type" : "object",
+      "discriminator" : "type",
+      "properties" : {
+        "cost" : {
+          "description" : "The cost (including optional currency code).",
+          "$ref" : "#/definitions/literal"
         },
-        "description" : "Represents a rate of money over time.",
-        "xml" : {
-          "name" : "moneyTimeRate"
+        "basis" : {
+          "description" : "The span of time to calculate the rate of money for.",
+          "$ref" : "#/definitions/timeSpan"
         }
-      } ]
+      },
+      "description" : "Represents a rate of money over time.",
+      "xml" : {
+        "name" : "moneyTimeRate"
+      }
     },
     "multipleLiteral" : {
       "allOf" : [ {

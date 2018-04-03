@@ -588,52 +588,6 @@
         }
       }
     },
-    "/api/blueprints/{blueprintId}/forms/{formType}/validate/{validationType}" : {
-      "get" : {
-        "tags" : [ "blueprints", "author-api" ],
-        "summary" : "Validate custom form for blueprint",
-        "description" : "Validate custom form for blueprint.",
-        "operationId" : "validateForm",
-        "parameters" : [ {
-          "name" : "blueprintId",
-          "in" : "path",
-          "description" : "The objectId of the blueprint.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "formType",
-          "in" : "path",
-          "description" : "The type of the form.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "validationType",
-          "in" : "path",
-          "description" : "The type of performed validation..",
-          "required" : true,
-          "type" : "generatedForm",
-          "x-example" : "generatedForm"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Success - the custom form is validated successfully.",
-            "schema" : {
-              "$ref" : "#/definitions/RestEntity"
-            }
-          },
-          "400" : {
-            "description" : "Invalid request - bad data."
-          },
-          "403" : {
-            "description" : "Forbidden."
-          },
-          "404" : {
-            "description" : "Blueprint not found."
-          }
-        },
-        "deprecated" : true
-      }
-    },
     "/api/blueprints/{id}" : {
       "get" : {
         "tags" : [ "blueprints", "consumer-api" ],
@@ -2787,7 +2741,7 @@
         },
         "customFormStatus" : {
           "type" : "string",
-          "enum" : [ "OFF", "ON", "INVALID" ]
+          "enum" : [ "NA", "OFF", "ON", "INVALID" ]
         },
         "customFormStatusName" : {
           "type" : "string"
@@ -2870,7 +2824,7 @@
         },
         "customFormStatus" : {
           "type" : "string",
-          "enum" : [ "OFF", "ON", "INVALID" ]
+          "enum" : [ "NA", "OFF", "ON", "INVALID" ]
         },
         "customFormStatusName" : {
           "type" : "string"
@@ -3975,24 +3929,16 @@
     "PageComponentTypeExtension" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -4011,22 +3957,6 @@
         "first" : {
           "type" : "boolean",
           "default" : false
-        }
-      }
-    },
-    "PageResourceDetails" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
         "last" : {
           "type" : "boolean",
@@ -4035,6 +3965,22 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageResourceDetails" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "size" : {
           "type" : "integer",
@@ -4053,6 +3999,14 @@
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -4821,7 +4775,7 @@
         },
         "requestCompletionState" : {
           "type" : "string",
-          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "REJECTED" ]
+          "enum" : [ "SUCCESSFUL", "PARTIALLY_SUCCESSFUL", "FAILED", "CANCELLED", "REJECTED" ]
         },
         "resourceBindingIds" : {
           "type" : "array",
