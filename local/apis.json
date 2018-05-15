@@ -1,0 +1,36 @@
+{
+    "apis": [ {
+        "api_uid": "api_sample_exchange", 
+        "description": "REST API to search, download, and manage samples on VMware Sample Exchange.", 
+        "name" : "VMware Sample Exchange REST API",
+        "products": [
+            "VMware {code}"
+        ], 
+        "resources": {
+        "docs": [
+        ]
+        }, 
+        "type": "swagger", 
+        "version" : "v1",
+        "url" : "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1/swagger.json",
+        "languages" : ["Java","Python"]
+
+    }, {
+        "api_uid": "api_vmware_code_apix", 
+        "description": "REST APIS to search, download, and manage VMware API related resources.", 
+        "name" : "VMware API Services REST API",
+        "products": [
+            "VMware {code}"
+        ], 
+        "resources": {
+        "docs": []
+        }, 
+        "type": "swagger", 
+        "version" : "v1",
+        "url" : "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest/swagger.json",
+        "languages" : ["Java","Python"]
+
+    }
+    
+    ]
+}

@@ -40,11 +40,12 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="2.0.0"
-export MILESTONE="a6"
+export VER="1.0.0"
+export MILESTONE=""
 
 # -----------------------------------------------------------------------------
-APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
+#FIXME THIS URL IS BAD
+APIX_RELEASE_URL=https://code.vmware.com/fix/this/url/download/${VER}${MILESTONE}
 
 OUTPUT_DIR=${BUILD_DIR}/staging
 TOOLS_DIR=${BUILD_DIR}/tools
@@ -54,12 +55,12 @@ WAR_DIR=${BUILD_DIR}/war
 mkdir -p ${DOWNLOAD_DIR}
 
 # download zips of the distribution and tools if not cached locally
-if [ ! -f ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/dev-center-app-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip
 fi
 
-if [ ! -f ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/dev-center-app-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip
     rm -rf ${TOOLS_DIR}  # if we downloaded new tools, wipe the old ones
 fi
 
@@ -70,7 +71,7 @@ else
     echo "Staging tools"
     mkdir -p ${TOOLS_DIR}
     pushd ${TOOLS_DIR}
-    unzip ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
+    unzip ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip
     popd
 fi
 
@@ -80,11 +81,25 @@ mkdir -p ${OUTPUT_DIR}/local/swagger
 
 pushd ${OUTPUT_DIR}
 
-echo "Extracting APIX distribution"
-unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
+echo "Extracting dev-center distribution"
+unzip ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip
+
+echo "Cleaning up unneeded files in distribution"
+rm -fv ./assets/apix-swagger.json
+rm -fv ./assets/dev-center-overview.html
+rm -fv ./assets/sample-exchange-swagger.json
+rm -fv ./assets/swagger-auth.json
+rm -fv ./assets/swagger-complete.json
+rm -fv ./assets/vra-auth.json
+rm -fv ./assets/vra-config.json
+
+# these are the files we will overwrite
+rm -fv ./assets/dev-center-config.json
+rm -fv ./assets/apis.json
 
 echo "Overwriting stock apix-config.json with custom config"
-cp -f ${SCRIPT_DIR}/apix-config.json ./assets
+cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
+cp -fv ${SCRIPT_DIR}/apis.json ./
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
@@ -92,15 +107,15 @@ cp -f ${SCRIPT_DIR}/apix-config.json ./assets
 # markdown description from the swagger and generating overview HTML
 # next to the json files.  When it does this it generates an "overview"
 # resource in the local.json file that has all of the configuration in it
-echo "staging local API content"
-python ${TOOLS_DIR}/apixlocal/apixlocal.py \
- stage \
- --product_name="Network Insight" \
- --api_version="" \
- --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
- --html_root_dir ${OUTPUT_DIR} \
- --output_file ${OUTPUT_DIR}/local.json \
- --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties
+#echo "staging local API content"
+#python ${TOOLS_DIR}/apixlocal/apixlocal.py \
+# stage \
+# --product_name="VMware {code}" \
+# --api_version="" \
+# --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
+# --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
+# --html_root_dir ${OUTPUT_DIR} \
+# --output_file ${OUTPUT_DIR}/local.json \
+# --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties
 
 popd

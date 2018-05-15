@@ -1,0 +1,22 @@
+{
+    "showProductsList" : false,
+    "enableRemote" : true,
+    "base" : "",
+    "host" : "",
+    "basePath" : "",
+    "title" : "VMware {code} Developer Center",
+    "platform" : "VMware {code}",
+    "productId" : 129,
+    "releaseId" : 206,
+    "localApiUrl" : "/assets/apis.json",
+    "overviewPath" : null,
+    "samplePageOverview": "More samples can be found in the",
+    "sdkPageOverview": "Improve your development experience with our SDKs allowing you to develop and integrate with the product features.",
+    "auth": [
+    {   "id": "basic",
+        "swaggerAuthName": "BasicAuth",
+        "displayName": "MyVMware credential Basic Authentication",
+        "authUrl": "/rest/v1"
+    }
+    ]
+}
