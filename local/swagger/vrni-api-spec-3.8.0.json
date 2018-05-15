@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "vRealize Network Insight API Reference",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "vRealize Network Insight API Reference"
   },
   "host": "vrni.example.com",
@@ -39,6 +39,18 @@
     {
       "name": "Info",
       "description": "Info APIs"
+    },
+    {
+      "name": "Settings",
+      "description": "Settings APIs"
+    },
+    {
+      "name": "Schema",
+      "description": "Schema APIs"
+    },
+    {
+      "name": "Metrics",
+      "description": "Metrics APIs"
     }
   ],
   "schemes": [
@@ -658,7 +670,7 @@
             "schema": {
               "$ref": "#/definitions/CiscoSwitchDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "400": {
             "description": "Bad Request",
@@ -1041,7 +1053,7 @@
             "schema": {
               "$ref": "#/definitions/DellSwitchDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -1079,6 +1091,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:902:993642895",
+                  "entity_type": "DellSwitchDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -1421,7 +1442,7 @@
             "schema": {
               "$ref": "#/definitions/BrocadeSwitchDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -1459,6 +1480,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:908:993642895",
+                  "entity_type": "BrocadeSwitchDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -1803,7 +1833,7 @@
             "schema": {
               "$ref": "#/definitions/JuniperSwitchDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -1841,6 +1871,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:909:993642895",
+                  "entity_type": "JuniperSwitchDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -2187,7 +2226,7 @@
             "schema": {
               "$ref": "#/definitions/AristaSwitchDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -2225,6 +2264,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:906:993642895",
+                  "entity_type": "AristaSwitchDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -2571,7 +2619,7 @@
             "schema": {
               "$ref": "#/definitions/CheckpointFirewallDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -2609,6 +2657,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:910:993642895",
+                  "entity_type": "CheckpointFirewallDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -2860,7 +2917,7 @@
             "schema": {
               "$ref": "#/definitions/PanFirewallDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -2898,6 +2955,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:911:993642895",
+                  "entity_type": "PanFirewallDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -3124,8 +3190,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Create an ucs manager data source",
-        "description": "Add an ucs manager as data source",
+        "summary": "Create a ucs manager data source",
+        "description": "Add a ucs manager as data source",
         "operationId": "addUcsManager",
         "parameters": [
           {
@@ -3148,7 +3214,7 @@
             "schema": {
               "$ref": "#/definitions/UCSManagerDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -3186,6 +3252,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:912:993642895",
+                  "entity_type": "UCSManagerDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -3245,8 +3320,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Update an ucs manager data source",
-        "description": "Update an ucs manager data source",
+        "summary": "Update a ucs manager data source",
+        "description": "Update a ucs manager data source",
         "operationId": "updateUcsManager",
         "parameters": [
           {
@@ -3298,8 +3373,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Delete an ucs manager data source",
-        "description": "Delete an ucs manager data source",
+        "summary": "Delete a ucs manager data source",
+        "description": "Delete a ucs manager data source",
         "operationId": "deleteUcsManager",
         "parameters": [
           {
@@ -3334,8 +3409,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Enable an ucs manager data source",
-        "description": "Enable an ucs manager data source",
+        "summary": "Enable a ucs manager data source",
+        "description": "Enable a ucs manager data source",
         "operationId": "enableUcsManager",
         "parameters": [
           {
@@ -3373,8 +3448,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Disable an ucs manager data source",
-        "description": "Disable an ucs manager data source",
+        "summary": "Disable a ucs manager data source",
+        "description": "Disable a ucs manager data source",
         "operationId": "disableUcsManager",
         "parameters": [
           {
@@ -3532,7 +3607,7 @@
             "schema": {
               "$ref": "#/definitions/HPVCManagerDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -3570,6 +3645,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:914:993642895",
+                  "entity_type": "HPVCManagerDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -3820,7 +3904,7 @@
             "schema": {
               "$ref": "#/definitions/HPOneViewManagerDataSource"
             },
-            "description": "OK"
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -3858,6 +3942,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:915:993642895",
+                  "entity_type": "HPOneViewManagerDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -4079,13 +4172,304 @@
         }
       }
     },
+    "/data-sources/nsxt-managers": {
+      "post": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Create an nsx-t manager data source",
+        "description": "Add an nsx-t manager data source",
+        "operationId": "addNsxtManagerDatasource",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/NSXTManagerDataSourceRequest"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/NSXTManagerDataSource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "List nsx-t manager data sources",
+        "description": "List nsx-t manager data sources",
+        "operationId": "listNsxtManagers",
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:903:993642895",
+                  "entity_type": "NSXTManagerDataSource"
+                }
+              ],
+              "total_count": 1
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/data-sources/nsxt-managers/{id}": {
+      "get": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Show nsx-t manager data source details",
+        "description": "Show nsx-t manager data source details",
+        "operationId": "getNsxtManager",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Identifier"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/NSXTManagerDataSource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Update an nsx-t manager data source",
+        "description": "Update an nsx-t manager data source",
+        "operationId": "updateNsxtManager",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/NSXTManagerDataSource"
+            }
+          },
+          {
+            "$ref": "#/parameters/Identifier"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/NSXTManagerDataSource"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Delete an nsx-t manager data source",
+        "description": "Delete an nsx-t manager data source",
+        "operationId": "deleteNsxtManager",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Identifier"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/data-sources/nsxt-managers/{id}/enable": {
+      "post": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Enable an nsx-t manager data source",
+        "description": "Enable an nsx-t manager data source",
+        "operationId": "enableNsxtManager",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Identifier"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/data-sources/nsxt-managers/{id}/disable": {
+      "post": {
+        "tags": [
+          "Data Sources"
+        ],
+        "summary": "Disable an nsx-t manager data source",
+        "description": "Disable an nsx-t manager data source",
+        "operationId": "disableNsxtManager",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Identifier"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
     "/data-sources/nsxv-managers": {
       "post": {
         "tags": [
           "Data Sources"
         ],
-        "summary": "Create a nsx-v manager data source",
-        "description": "Add a nsx-v manager data source",
+        "summary": "Create an nsx-v manager data source",
+        "description": "Add an nsx-v manager data source",
         "operationId": "addNsxvManagerDatasource",
         "parameters": [
           {
@@ -4105,7 +4489,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Success",
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/NSXVManagerDataSource"
             }
@@ -4146,6 +4530,15 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/DataSourceListResponse"
+            },
+            "examples": {
+              "results": [
+                {
+                  "entity_id": "18230:903:993642895",
+                  "entity_type": "NSXVManagerDataSource"
+                }
+              ],
+              "total_count": 1
             }
           },
           "401": {
@@ -4205,8 +4598,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Update a nsx-v manager data source",
-        "description": "Update a nsx-v manager data source",
+        "summary": "Update an nsx-v manager data source",
+        "description": "Update an nsx-v manager data source",
         "operationId": "updateNsxvManager",
         "parameters": [
           {
@@ -4252,8 +4645,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Delete a nsx-v manager data source",
-        "description": "Delete a nsx-v manager data source",
+        "summary": "Delete an nsx-v manager data source",
+        "description": "Delete an nsx-v manager data source",
         "operationId": "deleteNsxvManager",
         "parameters": [
           {
@@ -4288,8 +4681,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Enable a nsx-v manager data source",
-        "description": "Enable a nsx-v manager data source",
+        "summary": "Enable an nsx-v manager data source",
+        "description": "Enable an nsx-v manager data source",
         "operationId": "enableNsxvManager",
         "parameters": [
           {
@@ -4327,8 +4720,8 @@
         "tags": [
           "Data Sources"
         ],
-        "summary": "Disable a nsx-v manager data source",
-        "description": "Disable a nsx-v manager data source",
+        "summary": "Disable an nsx-v manager data source",
+        "description": "Disable an nsx-v manager data source",
         "operationId": "disableNsxvManager",
         "parameters": [
           {
@@ -4803,6 +5196,51 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/entities/fetch": {
+      "post": {
+        "tags": [
+          "Entities"
+        ],
+        "summary": "Get details of entities",
+        "description": "Bulk fetch of entities",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/FetchRequest"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BulkFetchResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
           },
           "500": {
             "description": "Internal Error"
@@ -6002,7 +6440,6 @@
               "parent_security_groups": [
 
               ],
-              "translated_vm_count": 0,
               "direct_source_rules": [
 
               ],
@@ -6346,7 +6783,6 @@
                   "entity_type": "SecurityTag"
                 }
               ],
-              "translated_vm_count": 0,
               "vendor_id": "securitygroup-25",
               "excluded_members": [
 
@@ -7699,6 +8135,122 @@
         }
       }
     },
+    "/metrics": {
+      "get": {
+        "tags": [
+          "Metrics"
+        ],
+        "summary": "Get metric points for an entity",
+        "description": "Get metric points for an entity",
+        "operationId": "getMetrics",
+        "parameters": [
+          {
+            "name": "entity_id",
+            "in": "query",
+            "description": "entity type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "description": "metric name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "metric points interval",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "start time for query in epoch seconds",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "description": "end time for query in epoch seconds",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MetricResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/schema/{entity-type}/metrics": {
+      "get": {
+        "tags": [
+          "Schema"
+        ],
+        "summary": "Get metrics schema for an entity type",
+        "description": "Get details of metrics available for entity type",
+        "operationId": "getMetricsSchema",
+        "parameters": [
+          {
+            "name": "entity-type",
+            "in": "path",
+            "description": "entity type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EntityMetricsSchema"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
     "/groups/applications": {
       "post": {
         "tags": [
@@ -7726,7 +8278,7 @@
         ],
         "responses": {
           "201": {
-            "description": "OK",
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/Application"
             },
@@ -7886,6 +8438,45 @@
         }
       }
     },
+    "/groups/applications/fetch": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Get application details bulk",
+        "description": "Get application details bulk",
+        "operationId": "listApplicationsDetails",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Size"
+          },
+          {
+            "$ref": "#/parameters/Cursor"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PagedApplicationListResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
     "/groups/applications/{id}/tiers": {
       "post": {
         "tags": [
@@ -7916,7 +8507,7 @@
         ],
         "responses": {
           "201": {
-            "description": "OK",
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/Tier"
             },
@@ -8369,6 +8960,212 @@
           }
         }
       }
+    },
+    "/settings/ip-tags/tag-ids": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Show ip tag ids",
+        "description": "Show ip tag ids",
+        "operationId": "getIpTagIds",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization Header",
+            "required": true,
+            "type": "string",
+            "format": "NetworkInsight <token>"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/IpTagIdList"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/settings/ip-tags/{tag-id}": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Show ip tag details",
+        "description": "Show ip tag details",
+        "operationId": "getIpTag",
+        "parameters": [
+          {
+            "name": "tag-id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization Header",
+            "required": true,
+            "type": "string",
+            "format": "NetworkInsight <token>"
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/IpTag"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/settings/ip-tags/{tag-id}/add": {
+      "post": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Tag ip addresses with tag-id",
+        "description": "Tag ip addresses with tag-id",
+        "operationId": "addIpTag",
+        "parameters": [
+          {
+            "name": "tag-id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization Header",
+            "required": true,
+            "type": "string",
+            "format": "NetworkInsight <token>"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Ip Tag",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/IpTag"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/settings/ip-tags/{tag-id}/remove": {
+      "post": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Remove tag from ip addresses",
+        "description": "Remove tag from ip addresses",
+        "operationId": "removeIpTag",
+        "parameters": [
+          {
+            "name": "tag-id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Authorization Header",
+            "required": true,
+            "type": "string",
+            "format": "NetworkInsight <token>"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Ip Tag",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/IpTag"
+            }
+          }
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": [
+
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -8434,7 +9231,7 @@
       ],
       "example": {
         "entity_type": "VCenterDataSource",
-        "id": "1000:33:12890123",
+        "entity_id": "1000:902:12890123",
         "ip": "192.168.10.1",
         "fqdn": "go.vc.org",
         "proxy_id": "1000:104:12313412",
@@ -8533,8 +9330,7 @@
     "PasswordCredentials": {
       "type": "object",
       "required": [
-        "username",
-        "password"
+        "username"
       ],
       "properties": {
         "username": {
@@ -8550,14 +9346,42 @@
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "AristaSwitchDataSource",
+        "entity_id": "1000:906:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "JuniperSwitchDataSource": {
       "allOf": [
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "JuniperSwitchDataSource",
+        "entity_id": "1000:909:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "CiscoSwitchDataSource": {
       "allOf": [
@@ -8571,7 +9395,22 @@
             }
           }
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "CiscoSwitchDataSource",
+        "entity_id": "1000:905:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes",
+        "switch_type": "NEXUS_5K"
+      }
     },
     "DellSwitchDataSource": {
       "allOf": [
@@ -8585,14 +9424,43 @@
             }
           }
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "DellSwitchDataSource",
+        "entity_id": "1000:907:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes",
+        "switch_type": "S6000"
+      }
     },
     "BrocadeSwitchDataSource": {
       "allOf": [
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "BrocadeSwitchDataSource",
+        "entity_id": "1000:908:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "UCSManagerDataSourceRequest": {
       "allOf": [
@@ -8620,21 +9488,63 @@
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "UCSManagerDataSource",
+        "entity_id": "1000:912:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "HPVCManagerDataSource": {
       "allOf": [
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "HPVCManagerDataSource",
+        "entity_id": "1000:914:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "HPOneViewManagerDataSource": {
       "allOf": [
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "HPOneViewManagerDataSource",
+        "entity_id": "1000:915:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "SwitchDataSourceRequest": {
       "allOf": [
@@ -8739,14 +9649,42 @@
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "CheckpointFirewallDataSource",
+        "entity_id": "1000:910:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "PanFirewallDataSource": {
       "allOf": [
         {
           "$ref": "#/definitions/SwitchDataSource"
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "PanFirewallDataSource",
+        "entity_id": "1000:911:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "readonly",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "CheckpointFirewallDataSourceRequest": {
       "allOf": [
@@ -8786,7 +9724,44 @@
             }
           }
         }
-      ]
+      ],
+      "example": {
+        "entity_type": "NSXVManagerDataSource",
+        "entity_id": "1000:903:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.vc.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "admin@vsphere.local",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes",
+        "ipfix_enabled": false,
+        "central_cli_enabled": true
+      }
+    },
+    "NSXTManagerDataSource": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/SwitchDataSource"
+        }
+      ],
+      "example": {
+        "entity_type": "NSXTManagerDataSource",
+        "entity_id": "1000:904:12890123",
+        "ip": "192.168.10.1",
+        "fqdn": "go.nsxt.org",
+        "proxy_id": "1000:104:12313412",
+        "credentials": {
+          "username": "admin@vsphere.local",
+          "password": "thePassword"
+        },
+        "nickname": "my nickname",
+        "enabled": true,
+        "notes": "my notes"
+      }
     },
     "NSXControllerDataCollection": {
       "type": "object",
@@ -8825,6 +9800,23 @@
           },
           "required": [
             "vcenter_id",
+            "credentials"
+          ]
+        }
+      ]
+    },
+    "NSXTManagerDataSourceRequest": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseDataSourceRequest"
+        },
+        {
+          "properties": {
+            "credentials": {
+              "$ref": "#/definitions/PasswordCredentials"
+            }
+          },
+          "required": [
             "credentials"
           ]
         }
@@ -8940,6 +9932,30 @@
         },
         "entity_type": {
           "$ref": "#/definitions/DataSourceType"
+        }
+      }
+    },
+    "FetchRequest": {
+      "type": "object",
+      "properties": {
+        "entity_ids": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "entity_id": {
+                "type": "string",
+                "description": "Entity Identifier"
+              },
+              "entity_type": {
+                "$ref": "#/definitions/EntityType"
+              },
+              "time": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
         }
       }
     },
@@ -9590,10 +10606,6 @@
                 "$ref": "#/definitions/Reference"
               }
             },
-            "translated_vm_count": {
-              "type": "integer",
-              "format": "int32"
-            },
             "direct_source_rules": {
               "type": "array",
               "items": {
@@ -9747,9 +10759,6 @@
               "items": {
                 "$ref": "#/definitions/Reference"
               }
-            },
-            "translated_vm_count": {
-              "type": "integer"
             },
             "vendor_id": {
               "type": "string"
@@ -9982,6 +10991,9 @@
             },
             "nsx_manager": {
               "$ref": "#/definitions/Reference"
+            },
+            "vc_uuid": {
+              "type": "string"
             }
           }
         }
@@ -10585,6 +11597,23 @@
         }
       }
     },
+    "PagedApplicationListResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Application"
+          }
+        },
+        "cursor": {
+          "type": "string"
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      }
+    },
     "SimpleListResponse": {
       "type": "object",
       "properties": {
@@ -10698,7 +11727,9 @@
         "HPVCManagerDataSource",
         "HPOneViewDataSource",
         "PanFirewallDataSource",
-        "CheckpointFirewallDataSource"
+        "CheckpointFirewallDataSource",
+        "NSXTManagerDataSource",
+        "InfobloxManagerDataSource"
       ]
     },
     "NodeId": {
@@ -11153,6 +12184,136 @@
       "properties": {
         "api_version": {
           "type": "string"
+        }
+      }
+    },
+    "IpTag": {
+      "type": "object",
+      "properties": {
+        "tag_id": {
+          "type": "string"
+        },
+        "subnets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ip_address_ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IpAddressRange"
+          }
+        }
+      }
+    },
+    "IpTagIdList": {
+      "type": "object",
+      "properties": {
+        "tag_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EntityWithTime": {
+      "type": "object",
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "description": "Entity Identifier"
+        },
+        "entity_type": {
+          "$ref": "#/definitions/EntityType"
+        },
+        "entity": {
+          "$ref": "#/definitions/BaseEntity"
+        },
+        "time": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "BulkFetchResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EntityWithTime"
+          }
+        }
+      }
+    },
+    "EntityMetricsSchema": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetricSchema"
+          }
+        }
+      }
+    },
+    "MetricSchema": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "intervals": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "MetricResponse": {
+      "type": "object",
+      "properties": {
+        "metric": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "interval": {
+          "type": "integer"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "pointlist": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        },
+        "start": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "end": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     }

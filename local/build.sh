@@ -40,8 +40,8 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.0.0"
-export MILESTONE="rc3"
+export VER="1.0.1"
+export MILESTONE="rc1"
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
@@ -102,8 +102,8 @@ cp -f ${SCRIPT_DIR}/config.js .
 echo "staging local API content"
 python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  stage \
- --product_name="vRealize Network Insight;3.6.0" \
- --api_version="1.0.0" \
+ --product_name="vRealize Network Insight;3.8.0" \
+ --api_version="1.1.0" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir ${OUTPUT_DIR}/local/swagger \
  --html_root_dir ${OUTPUT_DIR} \
