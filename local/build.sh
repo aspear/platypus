@@ -77,7 +77,7 @@ fi
 
 # Clean the staging directory if it already exists
 rm -rf ${OUTPUT_DIR}/*
-mkdir -p ${OUTPUT_DIR}/local/swagger
+mkdir -p ${OUTPUT_DIR}
 
 pushd ${OUTPUT_DIR}
 
@@ -92,6 +92,7 @@ rm -fv ./assets/swagger-auth.json
 rm -fv ./assets/swagger-complete.json
 rm -fv ./assets/vra-auth.json
 rm -fv ./assets/vra-config.json
+rm -rfv ./local
 
 # these are the files we will overwrite
 rm -fv ./assets/dev-center-config.json
@@ -99,7 +100,7 @@ rm -fv ./assets/apis.json
 
 echo "Overwriting stock apix-config.json with custom config"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
-cp -fv ${SCRIPT_DIR}/apis.json ./
+cp -fv ${SCRIPT_DIR}/apis.json ./assets
 
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
