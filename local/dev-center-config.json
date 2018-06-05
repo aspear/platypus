@@ -1,7 +1,7 @@
 {
     "showProductsList" : false,
     "enableRemote" : true,
-    "base" : "",
+    "base" : "/",
     "host" : "",
     "basePath" : "",
     "title" : "VMware {code} Developer Center",

@@ -50,9 +50,11 @@ APIX_RELEASE_URL=https://code.vmware.com/fix/this/url/download/${VER}${MILESTONE
 OUTPUT_DIR=${BUILD_DIR}/staging
 TOOLS_DIR=${BUILD_DIR}/tools
 DOWNLOAD_DIR=${BUILD_DIR}/download
-WAR_DIR=${BUILD_DIR}/war
+PUBLISH_DIR=${BUILD_DIR}/publish
+WAR_OUTPUT_DIR=${BUILD_DIR}/staging-war
 
 mkdir -p ${DOWNLOAD_DIR}
+mkdir -p ${PUBLISH_DIR}
 
 # download zips of the distribution and tools if not cached locally
 if [ ! -f ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip ]; then
@@ -78,6 +80,9 @@ fi
 # Clean the staging directory if it already exists
 rm -rf ${OUTPUT_DIR}/*
 mkdir -p ${OUTPUT_DIR}
+
+rm -rf ${WAR_OUTPUT_DIR}/*
+mkdir -p ${WAR_OUTPUT_DIR}
 
 pushd ${OUTPUT_DIR}
 
@@ -118,5 +123,28 @@ cp -fv ${SCRIPT_DIR}/apis.json ./assets
 # --html_root_dir ${OUTPUT_DIR} \
 # --output_file ${OUTPUT_DIR}/local.json \
 # --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties
+WAR_FILE_NAME=dev-center.war
+pushd ${WAR_OUTPUT_DIR}
+echo "Staging war metadata"
+cp -Rv ${SCRIPT_DIR}/war-template/* ${WAR_OUTPUT_DIR}
+#mkdir -p ${WAR_OUTPUT_DIR}/web
+cp -Rv ${OUTPUT_DIR}/* ${WAR_OUTPUT_DIR}
+echo "Creating war file ${PUBLISH_DIR}/${WAR_FILE_NAME}"
+zip -r ${PUBLISH_DIR}/${WAR_FILE_NAME} *
+popd
+
+#echo "Creating war metadata"
+# now create a war file that is simply a wrapper on the image 
+
+#mkdir -p ${OUTPUT_DIR}/WEB-INF
+#cat > ${OUTPUT_DIR}/WEB-INF/web.xml <<- "EOF"
+#<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+#<display-name>VMware {code} Services Dev Center</display-name>
+#<welcome-file-list><welcome-file>index.html</welcome-file></welcome-file-list>
+#</web-app>
+#EOF
+#echo "Creating war file ${PUBLISH_DIR}/${WAR_FILE_NAME}"
+#rm -f ${PUBLISH_DIR}/${WAR_FILE_NAME}
+#zip -r ${PUBLISH_DIR}/${WAR_FILE_NAME} *
 
 popd

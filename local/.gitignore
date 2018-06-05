@@ -1,3 +1,5 @@
-war/
 staging/
 tools/
+publish/
+staging-war/
+
