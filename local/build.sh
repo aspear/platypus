@@ -127,8 +127,8 @@ WAR_FILE_NAME=dev-center.war
 pushd ${WAR_OUTPUT_DIR}
 echo "Staging war metadata"
 cp -Rv ${SCRIPT_DIR}/war-template/* ${WAR_OUTPUT_DIR}
-#mkdir -p ${WAR_OUTPUT_DIR}/web
-cp -Rv ${OUTPUT_DIR}/* ${WAR_OUTPUT_DIR}
+mkdir -p ${WAR_OUTPUT_DIR}/web
+cp -Rv ${OUTPUT_DIR}/* ${WAR_OUTPUT_DIR}/web
 echo "Creating war file ${PUBLISH_DIR}/${WAR_FILE_NAME}"
 zip -r ${PUBLISH_DIR}/${WAR_FILE_NAME} *
 popd
