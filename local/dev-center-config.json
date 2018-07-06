@@ -1,13 +1,18 @@
 {
     "showProductsList" : false,
-    "enableRemote" : true,
+    "enableRemote" : false,
     "base" : "/",
-    "host" : "",
-    "basePath" : "",
+    "defaultHost" : "",
+    "defaultBasePath" : "",
     "title" : "VMware {code} Developer Center",
-    "platform" : "VMware {code}",
-    "productId" : 129,
-    "releaseId" : 206,
+
+    "productRelease" : "VMware {code};1.0",
+    "sampleQuery" : "product=VMware {code},req_tag=VMware:VMC-Favorite",
+    
+    
+DELETE "productId" : 129,
+DELETE "releaseId" : "VMware {code};1.0",
+    
     "localApiUrl" : "/assets/apis.json",
     "overviewPath" : null,
     "samplePageOverview": "More samples can be found in the",
