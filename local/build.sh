@@ -40,12 +40,11 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.0.0"
-export MILESTONE=""
+export VER="0.1.0"
 
 # -----------------------------------------------------------------------------
-#FIXME THIS URL IS BAD
-APIX_RELEASE_URL=https://code.vmware.com/fix/this/url/download/${VER}${MILESTONE}
+ARTIFACTORY_URL=https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
+DEV_CENTER_APP_FILE=vcode-dev-center-app-${VER}.tgz
 
 OUTPUT_DIR=${BUILD_DIR}/staging
 TOOLS_DIR=${BUILD_DIR}/tools
@@ -57,12 +56,10 @@ mkdir -p ${DOWNLOAD_DIR}
 mkdir -p ${PUBLISH_DIR}
 
 # download zips of the distribution and tools if not cached locally
-if [ ! -f ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/dev-center-app-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip
-fi
-
-if [ ! -f ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/dev-center-app-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/${DEV_CENTER_APP_FILE} ]; then
+    wget --no-check-certificate ${ARTIFACTORY_URL}/${DEV_CENTER_APP_FILE} --output-document ${DOWNLOAD_DIR}/${DEV_CENTER_APP_FILE}
+    pushd ${DOWNLOAD_DIR}
+    tar xfz ${DEV_CENTER_APP_FILE}  #this creates ${DOWNLOAD_DIR}/package/dist and ${DOWNLOAD_DIR}/package/tools
     rm -rf ${TOOLS_DIR}  # if we downloaded new tools, wipe the old ones
 fi
 
@@ -73,7 +70,7 @@ else
     echo "Staging tools"
     mkdir -p ${TOOLS_DIR}
     pushd ${TOOLS_DIR}
-    unzip ${DOWNLOAD_DIR}/dev-center-app-tools-${VER}.zip
+    unzip ${DOWNLOAD_DIR}/package/tools/apixlocal.zip
     popd
 fi
 
@@ -87,7 +84,10 @@ mkdir -p ${WAR_OUTPUT_DIR}
 pushd ${OUTPUT_DIR}
 
 echo "Extracting dev-center distribution"
-unzip ${DOWNLOAD_DIR}/dev-center-app-dist-${VER}.zip
+cp -R ${DOWNLOAD_DIR}/package/dist/* .
+
+echo "FIXME exiting early"
+exit 0
 
 echo "Cleaning up unneeded files in distribution"
 rm -fv ./assets/apix-swagger.json
