@@ -1,27 +1,20 @@
 {
-    "showProductsList" : false,
-    "enableRemote" : false,
-    "base" : "/",
-    "defaultHost" : "",
-    "defaultBasePath" : "",
     "title" : "VMware {code} Developer Center",
-
-    "productRelease" : "VMware {code};1.0",
-    "sampleQuery" : "product=VMware {code},req_tag=VMware:VMC-Favorite",
-    
-    
-DELETE "productId" : 129,
-DELETE "releaseId" : "VMware {code};1.0",
-    
+    "base" : "/",
+    "productRelease" : "VMware {code};latest",
+    "sampleQuery" : "product=VMware {code}",    
+    "enableRemote" : false,
     "localApiUrl" : "/assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "More samples can be found in the",
+    "samplePageOverview": "Samples that use VMware {code} services",
     "sdkPageOverview": "Improve your development experience with our SDKs allowing you to develop and integrate with the product features.",
+    "defaultHost" : "",
+    "defaultBasePath" : "", 
     "auth": [
-    {   "id": "basic",
-        "swaggerAuthName": "BasicAuth",
-        "displayName": "MyVMware credential Basic Authentication",
-        "authUrl": "/rest/v1"
-    }
+        {   "id": "basic",
+            "swaggerAuthName": "BasicAuth",
+            "displayName": "MyVMware credential Basic Authentication",    
+            "authUrl": "/rest/v1"
+        }
     ]
 }
