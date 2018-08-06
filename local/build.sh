@@ -65,6 +65,7 @@ mkdir -p ${OUTPUT_DIR}
 pushd ${OUTPUT_DIR}
 
 echo "Extracting dev-center distribution"
+cp -R ${DOWNLOAD_DIR}/package/dist/.* .
 cp -R ${DOWNLOAD_DIR}/package/dist/* .
 
 echo "Cleaning up unneeded files in distribution"
