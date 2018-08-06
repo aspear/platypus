@@ -1,5 +1,4 @@
-{
-    "apis": [ 
+[ 
     {
         "api_uid": "api_vmware_code_apix", 
         "description": "REST APIS to search, download, and manage VMware API related resources.", 
@@ -28,5 +27,4 @@
         "languages" : ["Java","Python"]
 
     }    
-    ]
-}
+]
