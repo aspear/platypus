@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "Starting Platypus API Explorer"
+echo "Starting VMware in-product dev-center"
 nginx -g 'daemon off;'
