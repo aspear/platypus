@@ -1,5 +1,5 @@
 {
-    "title" : "VMware vRealize Automation Developer Center",
+    "title" : "vRealize Automation Developer Center",
     "productRelease" : "vRealize Automation;7.5",
     "sampleQuery" : "product=vRealize Automation",    
     "enableRemote" : false,
