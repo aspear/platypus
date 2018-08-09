@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "## Overview\n\nYou can use the REST API of container management service to manage the overall lifecycle of provisioned containers. The service also allows to define business policy based intelligent placement of containers across the clusters based on resource allocation, isolation requirements and availability requirements.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Container Service API"
   },
   "basePath" : "/container-service",
@@ -25,15 +25,29 @@
   }, {
     "name" : "container"
   }, {
+    "name" : "converter"
+  }, {
+    "name" : "data-collection"
+  }, {
     "name" : "deployment-policy"
   }, {
     "name" : "elastic-placement-zone"
   }, {
     "name" : "events"
   }, {
+    "name" : "favorite-image"
+  }, {
+    "name" : "favorite-images"
+  }, {
+    "name" : "kubeConfig"
+  }, {
+    "name" : "kubernetes"
+  }, {
     "name" : "log"
   }, {
     "name" : "notifications"
+  }, {
+    "name" : "pks"
   }, {
     "name" : "placements"
   }, {
@@ -141,6 +155,24 @@
         "responses" : {
           "204" : {
             "description" : "No content"
+          }
+        }
+      }
+    },
+    "/api/auth/session" : {
+      "get" : {
+        "summary" : "Retrieve authorities of the current user.",
+        "description" : "Solution users, System admins, Container admins and Container developers can list authorities.",
+        "operationId" : "AuthSessionController.get",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
           }
         }
       }
@@ -602,7 +634,7 @@
       "get" : {
         "tags" : [ "registry" ],
         "summary" : "Retrieves all RegistryStates.",
-        "description" : "Only Solution users, Container admins, and System admins can list RegistryStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list RegistryStates.",
         "operationId" : "listRegistryState",
         "parameters" : [ {
           "name" : "page",
@@ -682,7 +714,7 @@
       "get" : {
         "tags" : [ "registry" ],
         "summary" : "Retrieves a RegistryState.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve RegistryStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve RegistryStates.",
         "operationId" : "getRegistryState",
         "parameters" : [ {
           "name" : "id",
@@ -1766,7 +1798,7 @@
       "get" : {
         "tags" : [ "business-groups" ],
         "summary" : "Retrieves all Business Group and Tenant infos from the identity-service and transformed in group property.",
-        "description" : "Only Solution users, Container admins, and System admins can list Tenant info.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list Tenant info.",
         "operationId" : "GroupTenantController.list",
         "parameters" : [ {
           "name" : "tenantid",
@@ -1829,7 +1861,7 @@
       "get" : {
         "tags" : [ "business-groups" ],
         "summary" : "Retrieves the Business Group and Tenant info from the identity-service and transformed in group property.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve Tenant info.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve Tenant info.",
         "operationId" : "GroupTenantController.get",
         "parameters" : [ {
           "name" : "tenantLink",
@@ -1851,7 +1883,7 @@
       "get" : {
         "tags" : [ "request-status" ],
         "summary" : "Retrieves all ContainerRequestStatuss.",
-        "description" : "Only Solution users, Container admins, and System admins can list ContainerRequestStatuss.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list ContainerRequestStatuss.",
         "operationId" : "listContainerRequestStatus",
         "parameters" : [ {
           "name" : "page",
@@ -1979,7 +2011,7 @@
       "get" : {
         "tags" : [ "requests" ],
         "summary" : "Retrieves all RequestBrokerStates.",
-        "description" : "Only Solution users, Container admins, and System admins can list RequestBrokerStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list RequestBrokerStates.",
         "operationId" : "listRequestBrokerState",
         "parameters" : [ {
           "name" : "page",
@@ -2032,7 +2064,7 @@
       "post" : {
         "tags" : [ "requests" ],
         "summary" : "Creates a RequestBrokerState.",
-        "description" : "Only Solution users, Container admins, and System admins can create RequestBrokerStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can create RequestBrokerStates.",
         "operationId" : "createRequestBrokerState",
         "parameters" : [ {
           "in" : "body",
@@ -2059,7 +2091,7 @@
       "get" : {
         "tags" : [ "requests" ],
         "summary" : "Retrieves a RequestBrokerState.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve RequestBrokerStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve RequestBrokerStates.",
         "operationId" : "getRequestBrokerState",
         "parameters" : [ {
           "name" : "id",
@@ -2161,8 +2193,8 @@
     "/api/resources/closure-descriptions" : {
       "get" : {
         "tags" : [ "closures" ],
-        "summary" : "Retrieves all ClosureDescriptions.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ClosureDescriptions.",
+        "summary" : "Retrieves all ClosureDescriptions. list ClosureDescriptions.",
+        "description" : "",
         "operationId" : "listClosureDescription",
         "parameters" : [ {
           "name" : "page",
@@ -2242,7 +2274,7 @@
       "get" : {
         "tags" : [ "closures" ],
         "summary" : "Retrieves a ClosureDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ClosureDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ClosureDescription.",
         "operationId" : "getClosureDescription",
         "parameters" : [ {
           "name" : "id",
@@ -2297,7 +2329,7 @@
       "delete" : {
         "tags" : [ "closures" ],
         "summary" : "Deletes a ClosureDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ClosureDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ClosureDescriptions.",
         "operationId" : "deleteClosureDescription",
         "parameters" : [ {
           "name" : "id",
@@ -2345,7 +2377,7 @@
       "get" : {
         "tags" : [ "closures" ],
         "summary" : "Retrieves all ClosureStates.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ClosureStates.",
+        "description" : "Only Solution users, Container admins, and System admins can list ClosureStates.",
         "operationId" : "listClosureState",
         "parameters" : [ {
           "name" : "page",
@@ -2425,7 +2457,7 @@
       "get" : {
         "tags" : [ "closures" ],
         "summary" : "Retrieves a ClosureState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ClosureStates.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ClosureStates.",
         "operationId" : "getClosureState",
         "parameters" : [ {
           "name" : "id",
@@ -2450,7 +2482,7 @@
       "post" : {
         "tags" : [ "closures" ],
         "summary" : "Runs a Closure.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ClosureStates.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ClosureStates.",
         "operationId" : "runClosure",
         "parameters" : [ {
           "name" : "id",
@@ -2513,7 +2545,7 @@
       "delete" : {
         "tags" : [ "closures" ],
         "summary" : "Deletes a ClosureState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ClosureStates.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ClosureStates.",
         "operationId" : "deleteClosureState",
         "parameters" : [ {
           "name" : "id",
@@ -2561,9 +2593,20 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieves all clusters.",
-        "description" : "Retrieves all clusters. Operation is available for container admins, system admins and developers.",
+        "description" : "Retrieves all clusters. Operation is available for container admins and system admins.",
         "operationId" : "listAllClusters",
         "parameters" : [ {
+          "name" : "",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
+        }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page Number",
@@ -2614,7 +2657,7 @@
       "post" : {
         "tags" : [ "cluster" ],
         "summary" : "Creates a cluster.",
-        "description" : "Creates a cluster. Operation is available for container admins, system admins and developers.",
+        "description" : "Creates a cluster. Operation is available for container admins and system admins.",
         "operationId" : "createCluster",
         "parameters" : [ {
           "in" : "body",
@@ -2623,6 +2666,12 @@
           "schema" : {
             "$ref" : "#/definitions/ContainerHostSpec"
           }
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         } ],
         "responses" : {
           "200" : {
@@ -2638,7 +2687,7 @@
       "post" : {
         "tags" : [ "cluster" ],
         "summary" : "Add host to cluster.",
-        "description" : "Add host to cluster. Operation is available for container admins, system admins and developers.",
+        "description" : "Add host to cluster. Operation is available for container admins, system admins.",
         "operationId" : "addClusterHost",
         "parameters" : [ {
           "in" : "body",
@@ -2653,6 +2702,12 @@
           "description" : "The id of cluster where this host has to be added.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         } ],
         "responses" : {
           "200" : {
@@ -2668,7 +2723,7 @@
       "delete" : {
         "tags" : [ "cluster" ],
         "summary" : "Remove host from cluster.",
-        "description" : "Remove host from cluster. Operation is available for container admins, system admins and developers.",
+        "description" : "Remove host from cluster. Operation is available for container admins and system admins.",
         "operationId" : "removeClusterHost",
         "parameters" : [ {
           "name" : "",
@@ -2682,6 +2737,12 @@
           "description" : "The id of the host to remove.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         } ],
         "responses" : {
           "204" : {
@@ -2694,7 +2755,7 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieve a cluster.",
-        "description" : "Retrieve a cluster. Operation is available for container admins, system admins, developers and consumers.",
+        "description" : "Retrieve a cluster. Operation is available for container admins, system admins and consumers.",
         "operationId" : "retrieveCluster",
         "parameters" : [ {
           "name" : "",
@@ -2702,6 +2763,12 @@
           "description" : "The id of the cluster to retrieve.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         } ],
         "responses" : {
           "200" : {
@@ -2715,7 +2782,7 @@
       "delete" : {
         "tags" : [ "cluster" ],
         "summary" : "Delete a cluster.",
-        "description" : "Delete a cluster. Operation is available for container admins, system admins and developers.",
+        "description" : "Delete a cluster. Operation is available for container admins and system admins.",
         "operationId" : "deleteCluster",
         "parameters" : [ {
           "name" : "",
@@ -2723,6 +2790,12 @@
           "description" : "The id of the cluster to delete.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         } ],
         "responses" : {
           "204" : {
@@ -2733,7 +2806,7 @@
       "patch" : {
         "tags" : [ "cluster" ],
         "summary" : "Update a cluster.",
-        "description" : "Update a cluster. Operation is available for container admins, system admins and developers.",
+        "description" : "Update a cluster. Operation is available for container admins and system admins.",
         "operationId" : "patchCluster",
         "parameters" : [ {
           "name" : "",
@@ -2741,6 +2814,12 @@
           "description" : "The id of the cluster to update.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         }, {
           "in" : "body",
           "name" : "body",
@@ -2763,7 +2842,7 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieves all hosts for a given cluster.",
-        "description" : "Retrieves all hosts for a given cluster. Operation is available for container admins, system admins, developers and consumers.",
+        "description" : "Retrieves all hosts for a given cluster. Operation is available for container admins, system admins and consumers.",
         "operationId" : "listClusterHosts",
         "parameters" : [ {
           "name" : "",
@@ -2771,6 +2850,12 @@
           "description" : "The id of cluster which hosts need to be retrieved.",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "x-project",
+          "in" : "header",
+          "required" : true,
+          "type" : "string",
+          "default" : ""
         }, {
           "name" : "page",
           "in" : "query",
@@ -3007,7 +3092,7 @@
       "get" : {
         "tags" : [ "composite" ],
         "summary" : "Retrieves all CompositeDescriptions.",
-        "description" : "Only Solution users, Container admins, and System admins can list CompositeDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list CompositeDescriptions.",
         "operationId" : "listCompositeDescription",
         "parameters" : [ {
           "name" : "page",
@@ -3060,7 +3145,7 @@
       "post" : {
         "tags" : [ "composite" ],
         "summary" : "Creates a CompositeDescription.",
-        "description" : "Only Solution users, Container admins, and System admins can create CompositeDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can create CompositeDescriptions.",
         "operationId" : "createCompositeDescription",
         "parameters" : [ {
           "in" : "body",
@@ -3087,7 +3172,7 @@
       "post" : {
         "tags" : [ "composite" ],
         "summary" : "Creates a clone of the CompositeDescription.",
-        "description" : "Only Solution users, Container admins, and System admins can clone a CompositeDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can clone a CompositeDescriptions.",
         "operationId" : "cloneCompositeDescription",
         "parameters" : [ {
           "in" : "body",
@@ -3119,7 +3204,7 @@
       "get" : {
         "tags" : [ "composite" ],
         "summary" : "Retrieves a CompositeDescription or the images of it's descriptions as CompositeDescriptionImages.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve CompositeDescription.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve CompositeDescription.",
         "operationId" : "getCompositeDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3227,7 +3312,7 @@
       "get" : {
         "tags" : [ "composite" ],
         "summary" : "Exports the Composite Description in YAML format.",
-        "description" : "Solution users, System admins, Container admins, and Container architects can export a CompositeDescription.",
+        "description" : "Solution users, System admins, Container admins, Container developers and Container architects can export a CompositeDescription.",
         "operationId" : "exportCompositeDescription",
         "parameters" : [ {
           "name" : "selfLink",
@@ -3252,7 +3337,7 @@
       "post" : {
         "tags" : [ "composite" ],
         "summary" : "Imports the YAML content as a Composite Description.",
-        "description" : "Solution users, System admins, Container admins, and Container architects can import a CompositeDescription.",
+        "description" : "Solution users, System admins, Container admins, Container developers and Container architects can import a CompositeDescription.",
         "operationId" : "importCompositeDescription",
         "parameters" : [ {
           "in" : "body",
@@ -3360,7 +3445,7 @@
       "get" : {
         "tags" : [ "compute-management" ],
         "summary" : "Retrieves a ComputeState.",
-        "description" : "Solution users, System admins, Container admins, and Container architects can retrieve ComputeStates.",
+        "description" : "Solution users, System admins, Container admins and Container architects can retrieve ComputeStates.",
         "operationId" : "getComputeState",
         "parameters" : [ {
           "name" : "id",
@@ -3459,11 +3544,38 @@
         }
       }
     },
+    "/api/resources/container-description-to-kubernetes-description-converter" : {
+      "post" : {
+        "tags" : [ "converter" ],
+        "summary" : "Converts a ContainerDescription to KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, Container developers, and System admins can convert.",
+        "operationId" : "convertContainerDescriptionToKubernetesDescription",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ContainerDescription"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesDescription"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
     "/api/resources/container-descriptions" : {
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves all ContainerDescriptions.",
-        "description" : "Only Solution users, Container admins, and System admins can list ContainerDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list ContainerDescriptions.",
         "operationId" : "listContainerDescription",
         "parameters" : [ {
           "name" : "page",
@@ -3516,7 +3628,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Creates a ContainerDescription.",
-        "description" : "Only Solution users, Container admins, and System admins can create ContainerDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can create ContainerDescriptions.",
         "operationId" : "createContainerDescription",
         "parameters" : [ {
           "in" : "body",
@@ -3543,7 +3655,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves a ContainerDescription.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve ContainerDescriptions.",
+        "description" : "Only Solution users, Container admins and System admins can retrieve ContainerDescriptions.",
         "operationId" : "getContainerDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3568,7 +3680,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Publishes a container description to catalog.",
-        "description" : "Only Solution users, Container admins, and System admins can publush ContainerDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can publush ContainerDescriptions.",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -3589,7 +3701,7 @@
       "put" : {
         "tags" : [ "container" ],
         "summary" : "Updates a ContainerDescription.",
-        "description" : "Only Solution users, Container admins, and System admins can update ContainerDescriptions.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can update ContainerDescriptions.",
         "operationId" : "updateContainerDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3693,7 +3805,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves all ContainerNetworkDescriptions.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can list ContainerNetworkDescriptions.",
         "operationId" : "listContainerNetworkDescription",
         "parameters" : [ {
           "name" : "page",
@@ -3746,7 +3858,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Creates a ContainerNetworkDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can create ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can create ContainerNetworkDescriptions.",
         "operationId" : "createContainerNetworkDescription",
         "parameters" : [ {
           "in" : "body",
@@ -3773,7 +3885,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves a ContainerNetworkDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ContainerNetworkDescriptions.",
         "operationId" : "getContainerNetworkDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3798,7 +3910,7 @@
       "put" : {
         "tags" : [ "container" ],
         "summary" : "Updates a ContainerNetworkDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can update ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can update ContainerNetworkDescriptions.",
         "operationId" : "updateContainerNetworkDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3828,7 +3940,7 @@
       "delete" : {
         "tags" : [ "container" ],
         "summary" : "Deletes a ContainerNetworkDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ContainerNetworkDescriptions.",
         "operationId" : "deleteContainerNetworkDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3847,7 +3959,7 @@
       "patch" : {
         "tags" : [ "container" ],
         "summary" : "Patches a ContainerNetworkDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can patch ContainerNetworkDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can patch ContainerNetworkDescriptions.",
         "operationId" : "patchContainerNetworkDescription",
         "parameters" : [ {
           "name" : "id",
@@ -3876,7 +3988,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves all ContainerNetworkStates.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can list ContainerNetworkStates.",
         "operationId" : "listContainerNetworkState",
         "parameters" : [ {
           "name" : "page",
@@ -3929,7 +4041,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Creates a ContainerNetworkState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can create ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can create ContainerNetworkStates.",
         "operationId" : "createContainerNetworkState",
         "parameters" : [ {
           "in" : "body",
@@ -3956,7 +4068,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves a ContainerNetworkState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ContainerNetworkStates.",
         "operationId" : "getContainerNetworkState",
         "parameters" : [ {
           "name" : "id",
@@ -3981,7 +4093,7 @@
       "put" : {
         "tags" : [ "container" ],
         "summary" : "Updates a ContainerNetworkState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can update ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can update ContainerNetworkStates.",
         "operationId" : "updateContainerNetworkState",
         "parameters" : [ {
           "name" : "id",
@@ -4011,7 +4123,7 @@
       "delete" : {
         "tags" : [ "container" ],
         "summary" : "Deletes a ContainerNetworkState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ContainerNetworkStates.",
         "operationId" : "deleteContainerNetworkState",
         "parameters" : [ {
           "name" : "id",
@@ -4030,7 +4142,7 @@
       "patch" : {
         "tags" : [ "container" ],
         "summary" : "Patches a ContainerNetworkState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can patch ContainerNetworkStates.",
+        "description" : "Only Solution users, Container admins, and System admins can patch ContainerNetworkStates.",
         "operationId" : "patchContainerNetworkState",
         "parameters" : [ {
           "name" : "id",
@@ -4111,7 +4223,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves all ContainerVolumeDescriptions.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ContainerVolumeDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can list ContainerVolumeDescriptions.",
         "operationId" : "listContainerVolumeDescription",
         "parameters" : [ {
           "name" : "page",
@@ -4164,7 +4276,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Creates a ContainerVolumeDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can create ContainerVolumeDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can create ContainerVolumeDescriptions.",
         "operationId" : "createContainerVolumeDescription",
         "parameters" : [ {
           "in" : "body",
@@ -4191,7 +4303,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves a ContainerVolumeDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ContainerVolumeDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ContainerVolumeDescriptions.",
         "operationId" : "getContainerVolumeDescription",
         "parameters" : [ {
           "name" : "name",
@@ -4216,7 +4328,7 @@
       "put" : {
         "tags" : [ "container" ],
         "summary" : "Updates a ContainerVolumeDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can update ContainerVolumeDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can update ContainerVolumeDescription.",
         "operationId" : "updateContainerVolumeDescription",
         "parameters" : [ {
           "name" : "name",
@@ -4246,7 +4358,7 @@
       "delete" : {
         "tags" : [ "container" ],
         "summary" : "Deletes a ContainerVolumeDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ContainerVolumeDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ContainerVolumeDescription.",
         "operationId" : "deleteContainerVolumeDescription",
         "parameters" : [ {
           "name" : "name",
@@ -4265,7 +4377,7 @@
       "patch" : {
         "tags" : [ "container" ],
         "summary" : "Patches a ContainerVolumeDescription.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can patch ContainerVolumeDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can patch ContainerVolumeDescription.",
         "operationId" : "patchContainerVolumeDescription",
         "parameters" : [ {
           "name" : "name",
@@ -4294,7 +4406,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves all ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can list ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can list ContainerVolumeStates.",
         "operationId" : "listContainerVolumeState",
         "parameters" : [ {
           "name" : "page",
@@ -4347,7 +4459,7 @@
       "post" : {
         "tags" : [ "container" ],
         "summary" : "Creates a ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can create ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can create ContainerVolumeStates.",
         "operationId" : "createContainerVolumeState",
         "parameters" : [ {
           "in" : "body",
@@ -4400,7 +4512,7 @@
       "get" : {
         "tags" : [ "container" ],
         "summary" : "Retrieves a ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can retrieve ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve ContainerVolumeStates.",
         "operationId" : "getContainerVolumeState",
         "parameters" : [ {
           "name" : "name",
@@ -4425,7 +4537,7 @@
       "put" : {
         "tags" : [ "container" ],
         "summary" : "Updates a ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can update ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can update ContainerVolumeStates.",
         "operationId" : "updateContainerVolumeState",
         "parameters" : [ {
           "name" : "name",
@@ -4455,7 +4567,7 @@
       "delete" : {
         "tags" : [ "container" ],
         "summary" : "Deletes a ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can delete ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can delete ContainerVolumeStates.",
         "operationId" : "deleteContainerVolumeState",
         "parameters" : [ {
           "name" : "name",
@@ -4474,7 +4586,7 @@
       "patch" : {
         "tags" : [ "container" ],
         "summary" : "Patches a ContainerVolumeState.",
-        "description" : "Only Solution users, Container developers, Container admins, and System admins can patch ContainerVolumeStates.",
+        "description" : "Only Solution users, Container admins, and System admins can patch ContainerVolumeStates.",
         "operationId" : "patchContainerVolumeState",
         "parameters" : [ {
           "name" : "name",
@@ -5287,7 +5399,7 @@
       "get" : {
         "tags" : [ "events" ],
         "summary" : "Retrieves all EventLogStates.",
-        "description" : "Only Solution users, Container admins, and System admins can list EventLogStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can list EventLogStates.",
         "operationId" : "listEventLogState",
         "parameters" : [ {
           "name" : "page",
@@ -5340,7 +5452,7 @@
       "post" : {
         "tags" : [ "events" ],
         "summary" : "Creates a EventLogState.",
-        "description" : "Only Solution users, Container admins, and System admins can create EventLogStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can create EventLogStates.",
         "operationId" : "createEventLogState",
         "parameters" : [ {
           "in" : "body",
@@ -5367,7 +5479,7 @@
       "get" : {
         "tags" : [ "events" ],
         "summary" : "Retrieves a EventLogState.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve EventLogStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve EventLogStates.",
         "operationId" : "getEventLogState",
         "parameters" : [ {
           "name" : "id",
@@ -5392,7 +5504,7 @@
       "put" : {
         "tags" : [ "events" ],
         "summary" : "Updates a EventLogState.",
-        "description" : "Only Solution users, Container admins, and System admins can update EventLogStates.",
+        "description" : "Only Solution users, Container admins and System admins can update EventLogStates.",
         "operationId" : "updateEventLogState",
         "parameters" : [ {
           "name" : "id",
@@ -5422,7 +5534,7 @@
       "delete" : {
         "tags" : [ "events" ],
         "summary" : "Deletes a EventLogState.",
-        "description" : "Only Solution users, Container admins, and System admins can delete EventLogStates.",
+        "description" : "Only Solution users, Container admins and System admins can delete EventLogStates.",
         "operationId" : "deleteEventLogState",
         "parameters" : [ {
           "name" : "id",
@@ -5441,7 +5553,7 @@
       "patch" : {
         "tags" : [ "events" ],
         "summary" : "Patches a EventLogState.",
-        "description" : "Only Solution users, Container admins, and System admins can patch EventLogStates.",
+        "description" : "Only Solution users, Container admins and System admins can patch EventLogStates.",
         "operationId" : "patchEventLogState",
         "parameters" : [ {
           "name" : "id",
@@ -5461,6 +5573,107 @@
         } ],
         "responses" : {
           "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/favorite-images" : {
+      "get" : {
+        "tags" : [ "favorite-images" ],
+        "summary" : "Retrieve the favorite images.",
+        "description" : "Solution users, system admin and container architect can get the favorite images.",
+        "operationId" : "listFavoriteImages",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageFavoriteImage"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "favorite-images" ],
+        "summary" : "Adds an image to favorites.",
+        "description" : "Only container admin can add images to favorites.",
+        "operationId" : "addImageToFavorites",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/FavoriteImage"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/FavoriteImage"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/favorite-images/{id}" : {
+      "delete" : {
+        "tags" : [ "favorite-image" ],
+        "summary" : "Deletes a FavoriteImage",
+        "description" : "Only a container admin can delete FavoriteImages",
+        "operationId" : "deleteFavoriteImage",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a FavoriteImage",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
             "description" : ""
           }
         }
@@ -5680,11 +5893,999 @@
         }
       }
     },
+    "/api/resources/hosts-data-collections/{id}" : {
+      "patch" : {
+        "tags" : [ "data-collection" ],
+        "summary" : "Patches a ContainerHostDataCollectionState.",
+        "description" : "",
+        "operationId" : "patchContainerHostDataCollectionState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the ContainerHostDataCollectionState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the ContainerHostDataCollectionState",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ContainerHostDataCollectionState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/kube-config" : {
+      "get" : {
+        "tags" : [ "kubeConfig" ],
+        "summary" : "Exports KubeConfig file for a given Kubernetes host.",
+        "description" : "Solution users, System admins, Container admins, and Container architects can export KubeConfigs.",
+        "operationId" : "exportKubeConfig",
+        "parameters" : [ {
+          "name" : "",
+          "in" : "query",
+          "description" : "The id of the ComputeState",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when exporting the kubeConfig is successful"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-deployments" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves all KubernetesDeployments.",
+        "description" : "Only Solution users, Container developers, Container admins, and System admins can list KubernetesDeployments.",
+        "operationId" : "listKubernetesDeployment",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageKubernetesDeployment"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Creates a KubernetesDeployment.",
+        "description" : "Only Solution users, Container admins, and System admins can create KubernetesDeployments.",
+        "operationId" : "createKubernetesDeployment",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDeployment"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesDeployment"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-deployments/{id}" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves a KubernetesDeployment.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve KubernetesDeployments.",
+        "operationId" : "getKubernetesDeployment",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDeployment",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the KubernetesDeployment",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesDeployment"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no KubernetesDeployment with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Updates a KubernetesDeployment.",
+        "description" : "Only Solution users, Container admins, and System admins can update KubernetesDeployments.",
+        "operationId" : "updateKubernetesDeployment",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDeployment",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The KubernetesDeployment to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDeployment"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the KubernetesDeployment is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Deletes a KubernetesDeployment.",
+        "description" : "Only Solution users, Container admins, and System admins can delete KubernetesDeployment.",
+        "operationId" : "deleteKubernetesDeployment",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a KubernetesDeployment",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Patches a KubernetesDeployment.",
+        "description" : "Only Solution users, Container admins, and System admins can patch KubernetesDeployments.",
+        "operationId" : "patchKubernetesDeployment",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDeployment",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the KubernetesDeployment",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDeployment"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-descriptions" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves all KubernetesDescriptions.",
+        "description" : "Only Solution users, Container admins, and System admins can list KubernetesDescriptions.",
+        "operationId" : "listKubernetesDescription",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageKubernetesDescription"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Creates a KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can create KubernetesDescriptions.",
+        "operationId" : "createKubernetesDescription",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDescription"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesDescription"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-descriptions/{id}" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves a KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve KubernetesDescriptions.",
+        "operationId" : "getKubernetesDescription",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDescription",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the KubernetesDescription",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesDescription"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no KubernetesDescription with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Updates a KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can update KubernetesDescriptions.",
+        "operationId" : "updateKubernetesDescription",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDescription",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The KubernetesDescription to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDescription"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the KubernetesDescription is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Deletes a KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can delete KubernetesDescription.",
+        "operationId" : "deleteKubernetesDescription",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a KubernetesDescription",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Patches a KubernetesDescription.",
+        "description" : "Only Solution users, Container admins, and System admins can patch KubernetesDescriptions.",
+        "operationId" : "patchKubernetesDescription",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesDescription",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the KubernetesDescription",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesDescription"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-generic-entities" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves all GenericKubernetesEntityStates.",
+        "description" : "Only Solution users, Container admins, and System admins can list GenericKubernetesEntityStates.",
+        "operationId" : "listGenericKubernetesEntityStates",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageGenericKubernetesEntityState"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Creates a GenericKubernetesEntityState.",
+        "description" : "Only Solution users, Container admins, and System admins can create GenericKubernetesEntityStates.",
+        "operationId" : "createGenericKubernetesEntityState",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GenericKubernetesEntityState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/GenericKubernetesEntityState"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state. The actual created state is returned in the response body;"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-generic-entities/{id}" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves a GenericKubernetesEntityState.",
+        "description" : "Only Solution users, Container admins, and System admins can retrieve GenericKubernetesEntityStates.",
+        "operationId" : "getGenericKubernetesEntityState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the GenericKubernetesEntityState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the GenericKubernetesEntityState",
+            "schema" : {
+              "$ref" : "#/definitions/GenericKubernetesEntityState"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no GenericKubernetesEntityState with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Updates a GenericKubernetesEntityState.",
+        "description" : "Only Solution users, Container admins, and System admins can update GenericKubernetesEntityStates.",
+        "operationId" : "updateGenericKubernetesEntityState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the GenericKubernetesEntityState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The GenericKubernetesEntityState to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GenericKubernetesEntityState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the GenericKubernetesEntityState is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Deletes a GenericKubernetesEntityState.",
+        "description" : "Only Solution users, Container admins, and System admins can delete GenericKubernetesEntityStates.",
+        "operationId" : "deleteGenericKubernetesEntityState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a GenericKubernetesEntityState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Patches a GenericKubernetesEntityState.",
+        "description" : "Only Solution users, Container admins, and System admins can patch GenericKubernetesEntityStates.",
+        "operationId" : "patchGenericKubernetesEntityState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the GenericKubernetesEntityState",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the GenericKubernetesEntityState",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/GenericKubernetesEntityState"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-pod-logs" : {
+      "get" : {
+        "summary" : "Retrieve pod logs.",
+        "description" : "Solution users, System admins, Container admins, Container developers, and Container architects can retrieve logs.",
+        "operationId" : "KubernetesPodLogController.get",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "$ref" : "#/definitions/LogServiceState"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-pods" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves all KubernetesPods.",
+        "description" : "Only Solution users, Container developers, Container admins, and System admins can list KubernetesPods.",
+        "operationId" : "listKubernetesPod",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageKubernetesPod"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Creates a KubernetesPod.",
+        "description" : "Only Solution users, Container admins, and System admins can create KubernetesPods.",
+        "operationId" : "createKubernetesPod",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesPod"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesPod"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-pods/{id}" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves a KubernetesPod.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve KubernetesPods.",
+        "operationId" : "getKubernetesPod",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesPod",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the KubernetesPod",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesPod"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no KubernetesPod with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Updates a KubernetesPod.",
+        "description" : "Only Solution users, Container admins, and System admins can update KubernetesPods.",
+        "operationId" : "updateKubernetesPod",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesPod",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The KubernetesPod to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesPod"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the KubernetesDeployment is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Deletes a KubernetesPod.",
+        "description" : "Only Solution users, Container admins, and System admins can delete KubernetesPod.",
+        "operationId" : "deleteKubernetesPod",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a KubernetesPod",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Patches a KubernetesPod.",
+        "description" : "Only Solution users, Container admins, and System admins can patch KubernetesPods.",
+        "operationId" : "patchKubernetesPod",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesPod",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the KubernetesPod",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesPod"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-services" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves all KubernetesServices.",
+        "description" : "Only Solution users, Container developers, Container admins, and System admins can list KubernetesServices.",
+        "operationId" : "listKubernetesService",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageKubernetesService"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Creates a KubernetesService.",
+        "description" : "Only Solution users, Container admins, and System admins can create KubernetesServices.",
+        "operationId" : "createKubernetesService",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesService"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesService"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/kubernetes-services/{id}" : {
+      "get" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Retrieves a KubernetesService.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve KubernetesServices.",
+        "operationId" : "getKubernetesService",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesService",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the KubernetesService",
+            "schema" : {
+              "$ref" : "#/definitions/KubernetesService"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no KubernetesService with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Updates a KubernetesService.",
+        "description" : "Only Solution users, Container admins, and System admins can update KubernetesServices.",
+        "operationId" : "updateKubernetesService",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesService",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The KubernetesService to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesService"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the KubernetesService is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Deletes a KubernetesService.",
+        "description" : "Only Solution users, Container admins, and System admins can delete KubernetesService.",
+        "operationId" : "deleteKubernetesService",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a KubernetesService",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "kubernetes" ],
+        "summary" : "Patches a KubernetesService.",
+        "description" : "Only Solution users, Container admins, and System admins can patch KubernetesServices.",
+        "operationId" : "patchKubernetesService",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the KubernetesService",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the KubernetesService",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/KubernetesService"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      }
+    },
     "/api/resources/notifications" : {
       "get" : {
         "tags" : [ "notifications" ],
         "summary" : "Retrieves request and eventlog notifications.",
-        "description" : "Only Solution users, Container admins, and System admins can retrieve NotificationsStates.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve NotificationsStates.",
         "operationId" : "getNotifications",
         "parameters" : [ {
           "name" : "page",
@@ -5731,6 +6932,220 @@
             "schema" : {
               "$ref" : "#/definitions/NotificationsState"
             }
+          }
+        }
+      }
+    },
+    "/api/resources/pks/create-endpoint" : {
+      "put" : {
+        "tags" : [ "container" ],
+        "summary" : "Helper method for adding and validating PKS endpoint.",
+        "description" : "Only Solution users, Container admins, and System admins can add or validate PKS endpoint.",
+        "operationId" : "updatePKSEndpointSpec",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The state for the endpoint to be created or validated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PKSEndpointSpec"
+          }
+        }, {
+          "name" : "validate",
+          "in" : "query",
+          "description" : "Only validate endpoint.",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SslTrustCertificateState"
+            }
+          }
+        }
+      }
+    },
+    "/api/resources/pks/endpoints" : {
+      "get" : {
+        "tags" : [ "pks" ],
+        "summary" : "Retrieves all PksEndpoints.",
+        "description" : "Only Solution users, Container developers, Container admins, and System admins can list PksEndpoints.",
+        "operationId" : "listPksEndpoint",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PagePKSEndpoint"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "pks" ],
+        "summary" : "Creates a PksEndpoint.",
+        "description" : "Only Solution users, Container admins and System admins can create PksEndpoints.",
+        "operationId" : "createPksEndpoint",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PKSEndpoint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PKSEndpoint"
+            }
+          },
+          "201" : {
+            "description" : "'Created' is returned for the new state with the state url in the <code>location</code> header of the response;"
+          }
+        }
+      }
+    },
+    "/api/resources/pks/endpoints/{id}" : {
+      "get" : {
+        "tags" : [ "pks" ],
+        "summary" : "Retrieves a PksEndpoint.",
+        "description" : "Only Solution users, Container admins, Container developers and System admins can retrieve PksEndpoints.",
+        "operationId" : "getPksEndpoint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the PksEndpoint",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK with the PksEndpoint",
+            "schema" : {
+              "$ref" : "#/definitions/PKSEndpoint"
+            }
+          },
+          "404" : {
+            "description" : "'Not Found' if no PksEndpoint with provided <code>id</code>"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "pks" ],
+        "summary" : "Updates a PksEndpoint.",
+        "description" : "Only Solution users Container admins and System admins can update PksEndpoints.",
+        "operationId" : "updatePksEndpoint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the PksEndpoint",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The PksEndpoint to be updated.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PKSEndpoint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'OK' is returned when the PksEndpoint is updated.",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "pks" ],
+        "summary" : "Deletes a PksEndpoint.",
+        "description" : "Only Solution users, Container admins, and System admins can delete PksEndpoint.",
+        "operationId" : "deletePksEndpoint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of a PksEndpoint",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "pks" ],
+        "summary" : "Patches a PksEndpoint.",
+        "description" : "Only Solution users, Container admins, and System admins can patch PksEndpoints.",
+        "operationId" : "patchPksEndpoint",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The id of the PksEndpoint",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The patch of the PksEndpoint",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PKSEndpoint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
           }
         }
       }
@@ -6154,6 +7569,25 @@
     }
   },
   "definitions" : {
+    "AWSElasticBlockStoreVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "volumeID" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "partition" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
     "AndClause" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Evaluator"
@@ -6269,6 +7703,56 @@
         }
       }
     },
+    "AzureDiskVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "diskName" : {
+          "type" : "string"
+        },
+        "diskURI" : {
+          "type" : "string"
+        },
+        "cachingMode" : {
+          "type" : "object"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "AzureFileVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "secretName" : {
+          "type" : "string"
+        },
+        "shareName" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "BaseKubernetesObject" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/ObjectMeta"
+        }
+      }
+    },
     "Binding" : {
       "type" : "object",
       "properties" : {
@@ -6314,6 +7798,48 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "CephFSVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "monitors" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "user" : {
+          "type" : "string"
+        },
+        "secretFile" : {
+          "type" : "string"
+        },
+        "secretRef" : {
+          "$ref" : "#/definitions/LocalObjectReference"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "CinderVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "volumeID" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
     },
     "Clause" : {
       "type" : "object",
@@ -6556,13 +8082,16 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "DOCKER", "VCH" ]
+          "enum" : [ "DOCKER", "VCH", "KUBERNETES" ]
         },
         "status" : {
           "type" : "string",
           "enum" : [ "ON", "OFF", "DISABLED", "WARNING" ]
         },
         "address" : {
+          "type" : "string"
+        },
+        "publicAddress" : {
           "type" : "string"
         },
         "clusterCreationTimeMicros" : {
@@ -6573,6 +8102,10 @@
           "type" : "string"
         },
         "containerCount" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "systemContainersCount" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -6959,6 +8492,35 @@
         }
       }
     },
+    "ConfigMapKeySelector" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ConfigMapVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyToPath"
+          }
+        },
+        "defaultMode" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
     "ConfigurationState" : {
       "type" : "object",
       "properties" : {
@@ -7019,6 +8581,83 @@
       "properties" : {
         "value" : {
           "$ref" : "#/definitions/Evaluator"
+        }
+      }
+    },
+    "Container" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "image" : {
+          "type" : "string"
+        },
+        "command" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "args" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "workingDir" : {
+          "type" : "string"
+        },
+        "ports" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ContainerPort"
+          }
+        },
+        "env" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EnvVar"
+          }
+        },
+        "resources" : {
+          "$ref" : "#/definitions/ResourceRequirements"
+        },
+        "volumeMounts" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VolumeMount"
+          }
+        },
+        "livenessProbe" : {
+          "$ref" : "#/definitions/Probe"
+        },
+        "readinessProbe" : {
+          "$ref" : "#/definitions/Probe"
+        },
+        "lifecycle" : {
+          "$ref" : "#/definitions/Lifecycle"
+        },
+        "terminationMessagePath" : {
+          "type" : "string"
+        },
+        "imagePullPolicy" : {
+          "type" : "string"
+        },
+        "securityContext" : {
+          "$ref" : "#/definitions/SecurityContext"
+        },
+        "stdin" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "stdinOnce" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "tty" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -7114,11 +8753,11 @@
         },
         "memoryLimit" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "memorySwapLimit" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "cpuShares" : {
           "type" : "integer",
@@ -7256,6 +8895,61 @@
           "items" : {
             "type" : "string"
           }
+        }
+      }
+    },
+    "ContainerHostDataCollectionState" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "computeContainerHostLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "remove" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "lastRunTimeMicros" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "skipRunCount" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "createOrUpdateHost" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "noHostOperation" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -7478,6 +9172,28 @@
           "additionalProperties" : {
             "type" : "string"
           }
+        }
+      }
+    },
+    "ContainerPort" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "hostPort" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "containerPort" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "protocol" : {
+          "type" : "string"
+        },
+        "hostIP" : {
+          "type" : "string"
         }
       }
     },
@@ -7733,6 +9449,84 @@
           "items" : {
             "type" : "string"
           }
+        }
+      }
+    },
+    "ContainerStateRunning" : {
+      "type" : "object",
+      "properties" : {
+        "startedAt" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ContainerStateTerminated" : {
+      "type" : "object",
+      "properties" : {
+        "exitCode" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "signal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "reason" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "startedAt" : {
+          "type" : "string"
+        },
+        "finishedAt" : {
+          "type" : "string"
+        },
+        "containerID" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ContainerStateWaiting" : {
+      "type" : "object",
+      "properties" : {
+        "message" : {
+          "type" : "string"
+        },
+        "reason" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ContainerStatus" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "state" : {
+          "$ref" : "#/definitions/ContainerState"
+        },
+        "lastState" : {
+          "$ref" : "#/definitions/ContainerState"
+        },
+        "ready" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "restartCount" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "image" : {
+          "type" : "string"
+        },
+        "imageID" : {
+          "type" : "string"
+        },
+        "containerID" : {
+          "type" : "string"
         }
       }
     },
@@ -8071,6 +9865,50 @@
         "type" : "object"
       } ]
     },
+    "Deployment" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/ObjectMeta"
+        },
+        "spec" : {
+          "$ref" : "#/definitions/DeploymentSpec"
+        },
+        "status" : {
+          "$ref" : "#/definitions/DeploymentStatus"
+        }
+      }
+    },
+    "DeploymentCondition" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "Available", "Progressing", "ReplicaFailure" ]
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "lastUpdateTime" : {
+          "type" : "string"
+        },
+        "lastTransitionTime" : {
+          "type" : "string"
+        },
+        "reason" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
     "DeploymentPolicy" : {
       "type" : "object",
       "properties" : {
@@ -8106,12 +9944,129 @@
         }
       }
     },
+    "DeploymentSpec" : {
+      "type" : "object",
+      "properties" : {
+        "replicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "selector" : {
+          "$ref" : "#/definitions/LabelSelector"
+        },
+        "template" : {
+          "$ref" : "#/definitions/PodTemplateSpec"
+        },
+        "strategy" : {
+          "$ref" : "#/definitions/DeploymentStrategy"
+        },
+        "minReadySeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "revisionHistoryLimit" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "paused" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "rollbackTo" : {
+          "$ref" : "#/definitions/RollbackConfig"
+        },
+        "progressDeadlineSeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "DeploymentStatus" : {
+      "type" : "object",
+      "properties" : {
+        "observedGeneration" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "replicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "updatedReplicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "readyReplicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "availableReplicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "unavailableReplicas" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "conditions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DeploymentCondition"
+          }
+        }
+      }
+    },
+    "DeploymentStrategy" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "Recreate", "RollingUpdate" ]
+        },
+        "rollingUpdate" : {
+          "$ref" : "#/definitions/RollingUpdateDeployment"
+        }
+      }
+    },
     "DisplayTextBehavior" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Constraint"
       }, {
         "type" : "object"
       } ]
+    },
+    "DownwardAPIVolumeFile" : {
+      "type" : "object",
+      "properties" : {
+        "path" : {
+          "type" : "string"
+        },
+        "fieldRef" : {
+          "$ref" : "#/definitions/ObjectFieldSelector"
+        },
+        "resourceFieldRef" : {
+          "$ref" : "#/definitions/ResourceFieldSelector"
+        },
+        "mode" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "DownwardAPIVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DownwardAPIVolumeFile"
+          }
+        },
+        "defaultMode" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
     },
     "DynamicLayoutReference" : {
       "allOf" : [ {
@@ -8282,6 +10237,14 @@
         }
       }
     },
+    "EmptyDirVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "medium" : {
+          "type" : "string"
+        }
+      }
+    },
     "EncryptedBehavior" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Constraint"
@@ -8302,6 +10265,37 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "EnvVar" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "valueFrom" : {
+          "$ref" : "#/definitions/EnvVarSource"
+        }
+      }
+    },
+    "EnvVarSource" : {
+      "type" : "object",
+      "properties" : {
+        "fieldRef" : {
+          "$ref" : "#/definitions/ObjectFieldSelector"
+        },
+        "resourceFieldRef" : {
+          "$ref" : "#/definitions/ResourceFieldSelector"
+        },
+        "configMapKeyRef" : {
+          "$ref" : "#/definitions/ConfigMapKeySelector"
+        },
+        "secretKeyRef" : {
+          "$ref" : "#/definitions/SecretKeySelector"
+        }
+      }
     },
     "EqualsOperator" : {
       "allOf" : [ {
@@ -8354,6 +10348,17 @@
         "customProperties" : {
           "type" : "object",
           "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ExecAction" : {
+      "type" : "object",
+      "properties" : {
+        "command" : {
+          "type" : "array",
+          "items" : {
             "type" : "string"
           }
         }
@@ -8455,6 +10460,66 @@
         }
       } ]
     },
+    "FCVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "targetWWNs" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "lun" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "FavoriteImage" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "registry" : {
+          "type" : "string"
+        }
+      }
+    },
     "Field" : {
       "type" : "object",
       "properties" : {
@@ -8534,9 +10599,127 @@
         "type" : "object"
       } ]
     },
+    "FlexVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "driver" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "secretRef" : {
+          "$ref" : "#/definitions/LocalObjectReference"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "options" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
     "FormReference" : {
       "type" : "object",
       "discriminator" : "type"
+    },
+    "GCEPersistentDiskVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "pdName" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "partition" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "GenericKubernetesEntityState" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptionLink" : {
+          "type" : "string"
+        },
+        "compositeComponentLink" : {
+          "type" : "string"
+        },
+        "parentLink" : {
+          "type" : "string"
+        },
+        "kubernetesSelfLink" : {
+          "type" : "string"
+        },
+        "entity" : {
+          "$ref" : "#/definitions/BaseKubernetesObject"
+        }
+      }
     },
     "GenericTenantedServiceDocument" : {
       "type" : "object",
@@ -8570,6 +10753,35 @@
           "additionalProperties" : {
             "type" : "object"
           }
+        }
+      }
+    },
+    "GitRepoVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "repository" : {
+          "type" : "string"
+        },
+        "revision" : {
+          "type" : "string"
+        },
+        "directory" : {
+          "type" : "string"
+        }
+      }
+    },
+    "GlusterfsVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "endpoints" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -8680,6 +10892,37 @@
         }
       }
     },
+    "HTTPGetAction" : {
+      "type" : "object",
+      "properties" : {
+        "path" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "string"
+        },
+        "host" : {
+          "type" : "string"
+        },
+        "scheme" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Handler" : {
+      "type" : "object",
+      "properties" : {
+        "exec" : {
+          "$ref" : "#/definitions/ExecAction"
+        },
+        "httpGet" : {
+          "$ref" : "#/definitions/HTTPGetAction"
+        },
+        "tcpSocket" : {
+          "$ref" : "#/definitions/TCPSocketAction"
+        }
+      }
+    },
     "HealthConfig" : {
       "type" : "object",
       "properties" : {
@@ -8724,6 +10967,14 @@
         }
       }
     },
+    "HostPathVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "path" : {
+          "type" : "string"
+        }
+      }
+    },
     "HttpEntityString" : {
       "type" : "object",
       "properties" : {
@@ -8738,6 +10989,31 @@
         },
         "body" : {
           "type" : "string"
+        }
+      }
+    },
+    "ISCSIVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "targetPortal" : {
+          "type" : "string"
+        },
+        "iqn" : {
+          "type" : "string"
+        },
+        "lun" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "iscsiInterface" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -8803,6 +11079,21 @@
         "type" : "object"
       } ]
     },
+    "KeyToPath" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "mode" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
     "KeyValue" : {
       "type" : "object",
       "properties" : {
@@ -8811,6 +11102,331 @@
         },
         "value" : {
           "type" : "string"
+        }
+      }
+    },
+    "KubernetesDeployment" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptionLink" : {
+          "type" : "string"
+        },
+        "compositeComponentLink" : {
+          "type" : "string"
+        },
+        "parentLink" : {
+          "type" : "string"
+        },
+        "kubernetesSelfLink" : {
+          "type" : "string"
+        },
+        "deployment" : {
+          "$ref" : "#/definitions/Deployment"
+        }
+      }
+    },
+    "KubernetesDescription" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "kubernetesEntity" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KubernetesPod" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptionLink" : {
+          "type" : "string"
+        },
+        "compositeComponentLink" : {
+          "type" : "string"
+        },
+        "parentLink" : {
+          "type" : "string"
+        },
+        "kubernetesSelfLink" : {
+          "type" : "string"
+        },
+        "pod" : {
+          "$ref" : "#/definitions/Pod"
+        }
+      }
+    },
+    "KubernetesService" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "descriptionLink" : {
+          "type" : "string"
+        },
+        "compositeComponentLink" : {
+          "type" : "string"
+        },
+        "parentLink" : {
+          "type" : "string"
+        },
+        "kubernetesSelfLink" : {
+          "type" : "string"
+        },
+        "service" : {
+          "$ref" : "#/definitions/Service"
+        }
+      }
+    },
+    "LabelSelector" : {
+      "type" : "object",
+      "properties" : {
+        "matchLabels" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "matchExpressions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LabelSelectorRequirement"
+          }
+        }
+      }
+    },
+    "LabelSelectorRequirement" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "operator" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -9084,6 +11700,17 @@
         "type" : "object"
       } ]
     },
+    "Lifecycle" : {
+      "type" : "object",
+      "properties" : {
+        "podStart" : {
+          "$ref" : "#/definitions/Handler"
+        },
+        "preStop" : {
+          "$ref" : "#/definitions/Handler"
+        }
+      }
+    },
     "LiteralMapEntry" : {
       "type" : "object",
       "properties" : {
@@ -9098,6 +11725,17 @@
         }
       }
     },
+    "LoadBalancerIngress" : {
+      "type" : "object",
+      "properties" : {
+        "ip" : {
+          "type" : "string"
+        },
+        "hostname" : {
+          "type" : "string"
+        }
+      }
+    },
     "LoadBalancerPool" : {
       "allOf" : [ {
         "$ref" : "#/definitions/networkObject"
@@ -9108,6 +11746,17 @@
         }
       } ]
     },
+    "LoadBalancerStatus" : {
+      "type" : "object",
+      "properties" : {
+        "ingress" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LoadBalancerIngress"
+          }
+        }
+      }
+    },
     "LoadBalancerVirtualIp" : {
       "allOf" : [ {
         "$ref" : "#/definitions/networkObject"
@@ -9117,6 +11766,14 @@
           "name" : "loadBalancerVirtualIp"
         }
       } ]
+    },
+    "LocalObjectReference" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        }
+      }
     },
     "LogConfig" : {
       "type" : "object",
@@ -9313,6 +11970,21 @@
         }
       } ]
     },
+    "NFSVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "server" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
     "NotClause" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Evaluator"
@@ -9415,6 +12087,55 @@
         }
       } ]
     },
+    "ObjectFieldSelector" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "fieldPath" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ObjectMeta" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "generateName" : {
+          "type" : "string"
+        },
+        "namespace" : {
+          "type" : "string"
+        },
+        "selfLink" : {
+          "type" : "string"
+        },
+        "uid" : {
+          "type" : "string"
+        },
+        "labels" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "annotations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "creationTimestamp" : {
+          "type" : "string"
+        },
+        "clusterName" : {
+          "type" : "string"
+        }
+      }
+    },
     "OrClause" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Evaluator"
@@ -9432,6 +12153,104 @@
           }
         }
       } ]
+    },
+    "PKSEndpoint" : {
+      "type" : "object",
+      "properties" : {
+        "documentSelfLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentUpdateTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "documentExpirationTimeMicros" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "tenantLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "groupLinks" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "tagLinks" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "regionId" : {
+          "type" : "string"
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "uaaEndpoint" : {
+          "type" : "string"
+        },
+        "apiEndpoint" : {
+          "type" : "string"
+        },
+        "authCredentialsLink" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PKSEndpointSpec" : {
+      "type" : "object",
+      "properties" : {
+        "hostState" : {
+          "$ref" : "#/definitions/PKSEndpoint"
+        },
+        "acceptCertificate" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "acceptHostAddress" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "sslTrust" : {
+          "$ref" : "#/definitions/SslTrustCertificateState"
+        },
+        "isUpdateOperation" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "acceptCertificateForHost" : {
+          "type" : "string"
+        },
+        "endpoint" : {
+          "$ref" : "#/definitions/PKSEndpoint"
+        }
+      }
     },
     "PageAuthCredentialsServiceState" : {
       "type" : "object",
@@ -10273,6 +13092,90 @@
         }
       }
     },
+    "PageFavoriteImage" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FavoriteImage"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageGenericKubernetesEntityState" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/GenericKubernetesEntityState"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
     "PageGroupResourcePlacementState" : {
       "type" : "object",
       "properties" : {
@@ -10307,6 +13210,216 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/GroupResourcePlacementState"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageKubernetesDeployment" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KubernetesDeployment"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageKubernetesDescription" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KubernetesDescription"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageKubernetesPod" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KubernetesPod"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageKubernetesService" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KubernetesService"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PagePKSEndpoint" : {
+      "type" : "object",
+      "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PKSEndpoint"
           }
         },
         "number" : {
@@ -10651,6 +13764,203 @@
         }
       }
     },
+    "PersistentVolumeClaimVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "claimName" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PhotonPersistentDiskVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "pdID" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Pod" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/ObjectMeta"
+        },
+        "spec" : {
+          "$ref" : "#/definitions/PodSpec"
+        },
+        "status" : {
+          "$ref" : "#/definitions/PodStatus"
+        }
+      }
+    },
+    "PodCondition" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "lastProbeTime" : {
+          "type" : "string"
+        },
+        "lastTransitionTime" : {
+          "type" : "string"
+        },
+        "reason" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PodSecurityContext" : {
+      "type" : "object",
+      "properties" : {
+        "runAsUser" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "runAsNonRoot" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "supplementalGroups" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "fsGroup" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "PodSpec" : {
+      "type" : "object",
+      "properties" : {
+        "volumes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Volume"
+          }
+        },
+        "containers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Container"
+          }
+        },
+        "restartPolicy" : {
+          "type" : "string",
+          "enum" : [ "Always", "OnFailure", "Never" ]
+        },
+        "terminationGracePeriodSeconds" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "activeDeadlineSeconds" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "dnsPolicy" : {
+          "type" : "string",
+          "enum" : [ "ClusterFirst", "Default" ]
+        },
+        "nodeSelector" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "nodeName" : {
+          "type" : "string"
+        },
+        "hostNetwork" : {
+          "type" : "string"
+        },
+        "hostPID" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "hostIPC" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "securityContext" : {
+          "$ref" : "#/definitions/PodSecurityContext"
+        },
+        "hostname" : {
+          "type" : "string"
+        },
+        "subdomain" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PodStatus" : {
+      "type" : "object",
+      "properties" : {
+        "phase" : {
+          "type" : "string"
+        },
+        "conditions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PodCondition"
+          }
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "reason" : {
+          "type" : "string"
+        },
+        "hostIP" : {
+          "type" : "string"
+        },
+        "podIP" : {
+          "type" : "string"
+        },
+        "startTime" : {
+          "type" : "string"
+        },
+        "containerStatuses" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ContainerStatus"
+          }
+        }
+      }
+    },
+    "PodTemplateSpec" : {
+      "type" : "object",
+      "properties" : {
+        "metadata" : {
+          "$ref" : "#/definitions/ObjectMeta"
+        },
+        "spec" : {
+          "$ref" : "#/definitions/PodSpec"
+        }
+      }
+    },
     "PortBinding" : {
       "type" : "object",
       "properties" : {
@@ -10684,6 +13994,40 @@
         }
       } ]
     },
+    "Probe" : {
+      "type" : "object",
+      "properties" : {
+        "exec" : {
+          "$ref" : "#/definitions/ExecAction"
+        },
+        "httpGet" : {
+          "$ref" : "#/definitions/HTTPGetAction"
+        },
+        "tcpSocket" : {
+          "$ref" : "#/definitions/TCPSocketAction"
+        },
+        "initialDelaySeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "timeoutSeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "periodSeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "successThreshold" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "failureThreshold" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
     "ProviderBinding" : {
       "type" : "object",
       "properties" : {
@@ -10711,6 +14055,60 @@
         },
         "updatedData" : {
           "$ref" : "#/definitions/literalMap"
+        }
+      }
+    },
+    "QuobyteVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "registry" : {
+          "type" : "string"
+        },
+        "volume" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "user" : {
+          "type" : "string"
+        },
+        "group" : {
+          "type" : "string"
+        }
+      }
+    },
+    "RBDVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "monitors" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "image" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        },
+        "pool" : {
+          "type" : "string"
+        },
+        "user" : {
+          "type" : "string"
+        },
+        "keyring" : {
+          "type" : "string"
+        },
+        "sourceRef" : {
+          "$ref" : "#/definitions/LocalObjectReference"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -10932,6 +14330,20 @@
         }
       }
     },
+    "ResourceFieldSelector" : {
+      "type" : "object",
+      "properties" : {
+        "containerName" : {
+          "type" : "string"
+        },
+        "resource" : {
+          "type" : "string"
+        },
+        "divisor" : {
+          "type" : "string"
+        }
+      }
+    },
     "ResourceForms" : {
       "type" : "object",
       "properties" : {
@@ -11091,6 +14503,23 @@
         }
       }
     },
+    "ResourceRequirements" : {
+      "type" : "object",
+      "properties" : {
+        "limits" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        },
+        "requests" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
     "ResponseEntity" : {
       "type" : "object",
       "properties" : {
@@ -11112,6 +14541,26 @@
         }
       }
     },
+    "RollbackConfig" : {
+      "type" : "object",
+      "properties" : {
+        "revision" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "RollingUpdateDeployment" : {
+      "type" : "object",
+      "properties" : {
+        "maxUnavailable" : {
+          "type" : "object"
+        },
+        "maxSurge" : {
+          "type" : "object"
+        }
+      }
+    },
     "Schema" : {
       "type" : "object",
       "properties" : {
@@ -11130,6 +14579,76 @@
     "SchemaReference" : {
       "type" : "object",
       "discriminator" : "type"
+    },
+    "SecretKeySelector" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SecretVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "secretName" : {
+          "type" : "string"
+        },
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyToPath"
+          }
+        },
+        "defaultMode" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "SecurityContext" : {
+      "type" : "object",
+      "properties" : {
+        "privileged" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "runAsUser" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "runAsNonRoot" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "readOnlyRootFilesystem" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "Service" : {
+      "type" : "object",
+      "properties" : {
+        "apiVersion" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/ObjectMeta"
+        },
+        "spec" : {
+          "$ref" : "#/definitions/ServiceSpec"
+        },
+        "status" : {
+          "$ref" : "#/definitions/ServiceStatus"
+        }
+      }
     },
     "ServiceDocumentDeleteTaskState" : {
       "type" : "object",
@@ -11226,6 +14745,76 @@
         }
       }
     },
+    "ServicePort" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "protocol" : {
+          "type" : "string"
+        },
+        "port" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "targetPort" : {
+          "type" : "string"
+        },
+        "nodePort" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "ServiceSpec" : {
+      "type" : "object",
+      "properties" : {
+        "ports" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ServicePort"
+          }
+        },
+        "selector" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "clusterIP" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "ClusterIP", "NodePort", "LoadBalancer", "ExternalName" ]
+        },
+        "externalIPs" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "deprecatedPublicIPs" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "sessionAffinity" : {
+          "type" : "string"
+        },
+        "loadBalancerIP" : {
+          "type" : "string"
+        },
+        "loadBalancerSourceRanges" : {
+          "type" : "string"
+        },
+        "externalName" : {
+          "type" : "string"
+        }
+      }
+    },
     "ServiceStat" : {
       "type" : "object",
       "properties" : {
@@ -11307,6 +14896,14 @@
         },
         "extractedId" : {
           "type" : "string"
+        }
+      }
+    },
+    "ServiceStatus" : {
+      "type" : "object",
+      "properties" : {
+        "loadBalancer" : {
+          "$ref" : "#/definitions/LoadBalancerStatus"
         }
       }
     },
@@ -11396,6 +14993,9 @@
           "format" : "int64"
         },
         "subscriptionLink" : {
+          "type" : "string"
+        },
+        "origin" : {
           "type" : "string"
         }
       }
@@ -11551,6 +15151,14 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "TCPSocketAction" : {
+      "type" : "object",
+      "properties" : {
+        "port" : {
+          "type" : "string"
+        }
+      }
     },
     "TagAssignmentRequest" : {
       "type" : "object",
@@ -11747,6 +15355,109 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "Volume" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "hostPath" : {
+          "$ref" : "#/definitions/HostPathVolumeSource"
+        },
+        "emptyDir" : {
+          "$ref" : "#/definitions/EmptyDirVolumeSource"
+        },
+        "gcePersistentDisk" : {
+          "$ref" : "#/definitions/GCEPersistentDiskVolumeSource"
+        },
+        "awsElasticBlockStore" : {
+          "$ref" : "#/definitions/AWSElasticBlockStoreVolumeSource"
+        },
+        "gitRepo" : {
+          "$ref" : "#/definitions/GitRepoVolumeSource"
+        },
+        "secret" : {
+          "$ref" : "#/definitions/SecretVolumeSource"
+        },
+        "nfs" : {
+          "$ref" : "#/definitions/NFSVolumeSource"
+        },
+        "iscsi" : {
+          "$ref" : "#/definitions/ISCSIVolumeSource"
+        },
+        "glusterfs" : {
+          "$ref" : "#/definitions/GlusterfsVolumeSource"
+        },
+        "persistentVolumeClaim" : {
+          "$ref" : "#/definitions/PersistentVolumeClaimVolumeSource"
+        },
+        "rbd" : {
+          "$ref" : "#/definitions/RBDVolumeSource"
+        },
+        "flexVolume" : {
+          "$ref" : "#/definitions/FlexVolumeSource"
+        },
+        "cinder" : {
+          "$ref" : "#/definitions/CinderVolumeSource"
+        },
+        "cephfs" : {
+          "$ref" : "#/definitions/CephFSVolumeSource"
+        },
+        "downwardAPI" : {
+          "$ref" : "#/definitions/DownwardAPIVolumeSource"
+        },
+        "fc" : {
+          "$ref" : "#/definitions/FCVolumeSource"
+        },
+        "azureFile" : {
+          "$ref" : "#/definitions/AzureFileVolumeSource"
+        },
+        "configMap" : {
+          "$ref" : "#/definitions/ConfigMapVolumeSource"
+        },
+        "vsphereVolume" : {
+          "$ref" : "#/definitions/VsphereVirtualDiskVolumeSource"
+        },
+        "quobyte" : {
+          "$ref" : "#/definitions/QuobyteVolumeSource"
+        },
+        "azureDisk" : {
+          "$ref" : "#/definitions/AzureDiskVolumeSource"
+        },
+        "photonPersistentDisk" : {
+          "$ref" : "#/definitions/PhotonPersistentDiskVolumeSource"
+        }
+      }
+    },
+    "VolumeMount" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "readOnly" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "mountPath" : {
+          "type" : "string"
+        },
+        "subPath" : {
+          "type" : "string"
+        }
+      }
+    },
+    "VsphereVirtualDiskVolumeSource" : {
+      "type" : "object",
+      "properties" : {
+        "volumePath" : {
+          "type" : "string"
+        },
+        "fsType" : {
+          "type" : "string"
+        }
+      }
     },
     "WithinOperator" : {
       "allOf" : [ {
@@ -12451,6 +16162,9 @@
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
+        },
+        "externalId" : {
+          "type" : "string"
         },
         "id" : {
           "type" : "string",

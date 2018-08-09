@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Branding Service\n\nThis document describes how to use the Branding Service REST API.\n\n## What Is the Branding Service?\n\n\nThe Branding service enables the user to customize the VRA UI header and footer.  The configurable properties include logo image, company name, product name, background color, text color, copyright notice, privacy policy link, and contact link.\n\nThere are three levels of branding configuration -- default, system, and tenant.  The default branding is used when no system or tenant branding object has been created and enabled. \n\nThe system administrator or tenant administrator can create system-level and tenant-level brandings.  The effective branding is the branding that the user sees, and it is determined according the following precedence: tenant, system, default.\n\n## Typical Use Cases\n\nYou can use the Branding REST API to:\n\n * Create/update/delete a branding object.\n\n * Retrieve the default branding object.\n\n * Retrieve the system-level branding object as a system administrator.\n\n * Retrieve a tenant-level branding object as a tenant administrator.\n\n * Retrieve the effective branding object for a user. \n \n\n## Key Concepts\n\n### Branding object\n\nAn object that encapsulate all the branding properties, such as logo image, company name, product name, background color, text color, copyright notice, privacy policy link, and contact link.\n\n### Default Branding\n\nThe factory default branding object.  This branding is used if neither system branding nor tenant branding is enabled.\n\n### System Branding\n\nThe system-level branding object.  This branding is used when tenant branding is not enabled.\n\n### Tenant Branding\n\nThe tenant-level branding object.  This branding is used if it is enabled.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Branding Service API"
   },
   "basePath" : "/branding-service",
@@ -410,16 +410,13 @@
     "PageMsgBoardUrlWhiteListEntry" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -435,17 +432,20 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },

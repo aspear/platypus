@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# IPAM Service API Specification\n\n## What Is the IPAM Service?\n\nThe IP address management (IPAM) service  provides tenanted IPAM operations (static IP management) through registered IPAM providers. It allows retrieval of available IP address ranges for a single IPAM provider.  Once the address ranges have been imported into vRA, administrators can assign them to network profiles that are used for provisioning of VMs and machines.\n\nProvisioned VMs and machines then obtain their IP addresses, DNS configuration, and gateway information from the IPAM solution provider.\n\n## Typical Use Cases\n\nA system administrator, IaaS administrator, or fabric administrator creates a network profile.  During profile configuration, the administrator imports IP address ranges into vRA from a registered IPAM service provider.\n\n\n## Key Concepts\n\n### IPAM Solution Provider\n\nA service provider for which an IPAM endpoint is configured.\n\n### External Network Profile\n\nNetwork profile information identifies the external network properties and specifies settings for an existing network. An external network profile is a requirement of NAT and routed network profiles.\n\n### IP Address Range\n\nA range of static IP addresses for use in provisioning a network. An external network profile must have at least one static IP range for use with routed and NAT network profiles.\n\n## How the IPAM Service Works\n\nA user or application developer specifies an IPAM endpoint that enables communication with a IPAM solution provider application.\n\nAfter the endpoint is defined, the external IPAM service is accessible from the vRA user interface and administrators can choose IP address ranges from the external IPAM provider.\n\nThe APIs provided by the service allow users to:\n\n* Retrieve the list of available IP ranges for a single IPAM provider\n* Allocate a subrange of IPs\n* Deallocate a subrange of IPs\n\n## Additional Information\n\nFor more detailed information on using the the API, refer to the *vRA Programming Guide*.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "IPAM Service API"
   },
   "basePath" : "/ipam-service/",
@@ -2579,11 +2579,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -2885,6 +2885,9 @@
       "type" : "object",
       "required" : [ "formValues" ],
       "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        },
         "formValues" : {
           "$ref" : "#/definitions/literalMap"
         },

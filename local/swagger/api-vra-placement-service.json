@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "## Overview\n\nThe placement service allows vRealize Automation (vRA) to use an external metrics provider\nsuch as vRealize Operations Manager (vROps) to obtain placement recommendations for machine\nresources within deployments.\n\nThe public placement service REST API allows callers to manage their tenant-level placement\npolicy, which tells vRA whether it should obtain placement recommendations from the external\nmetrics provider or use its own placement algorithms.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Placement Service API"
   },
   "basePath" : "/placement-service",

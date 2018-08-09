@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# IaaS Proxy Service API Specification\n\n## What is the IaaS Proxy Service REST API?\n\n**Note**: The  IaaS proxy service APIs are deprecated. If you do use them it is at your own risk, as they will no longer be supported in the future.\n\nThe IaaS proxy provider service acts as a bridge between the service catalog and the IaaS provider. The IaaS proxy provide service calls:\n\n* The catalog service to register resource types, catalog item types,catalog items, and component icons.\n\n* The composition service to register a machine component type.\n\nIt then calls the catalog service to register resource actions. Subsequently, the Iaas proxy provider service calls:\n\n* The reservation service to register reservation type categories, reservation types, and reservation policy types.\n\n* The event broker service to register IaaS event types.\n\n### Downstream Provider Services\n\nThe IaaS proxy provider service interacts with the following downstream provider services:\n\n* IAAS\n* vRO\n\n### Downstream Services for IaaS Registration\n\nThe IaaS proxy provider services interacts with the following services to register IaaS:\n\n* Composition service\n* Catalog service\n* Network service\n* Reservation service\n* Event broker service",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "IaaS Proxy Provider Service API"
   },
   "basePath" : "/iaas-proxy-provider",
@@ -276,6 +276,12 @@
           "description" : "The business group id",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "reservationPolicyName",
+          "in" : "query",
+          "description" : "The reservation policy name.",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -287,7 +293,8 @@
               }
             }
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/api/business-groups/allocations" : {
@@ -3974,8 +3981,8 @@
       "get" : {
         "tags" : [ "security", "security-group" ],
         "summary" : "Returns a page of the SecurityGroup.",
-        "description" : "Returns a page of the SecurityGroup from the iaas provider.",
-        "operationId" : "listSecurityGroup",
+        "description" : "Returns a page of the SecurityGroup on endpoints within the current tenant from the iaas provider.",
+        "operationId" : "listSecurityGroupForTenant",
         "parameters" : [ {
           "name" : "serviceId",
           "in" : "path",
@@ -3986,6 +3993,14 @@
           "in" : "body",
           "name" : "body",
           "description" : "Endpoint name for filtering the security groups",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint type for filtering the security groups",
           "required" : false,
           "schema" : {
             "type" : "string"
@@ -4033,10 +4048,7 @@
           "200" : {
             "description" : "Successful operation.",
             "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/securityGroup"
-              }
+              "$ref" : "#/definitions/securityGroup"
             }
           }
         }
@@ -4170,18 +4182,34 @@
         }
       }
     },
-    "/api/services/{serviceId}/network/security-groups/tenant" : {
+    "/api/services/{serviceId}/network/security-groups/all" : {
       "get" : {
         "tags" : [ "security", "security-group" ],
         "summary" : "Returns a page of the SecurityGroup.",
-        "description" : "Returns a page of the SecurityGroup on endpoints within the current tenant from the iaas provider.",
-        "operationId" : "listSecurityGroupForTenant",
+        "description" : "Returns a page of the SecurityGroup from the iaas provider.",
+        "operationId" : "listSecurityGroup",
         "parameters" : [ {
           "name" : "serviceId",
           "in" : "path",
           "description" : "The ID of the IaaS service as registered in the Component Registry service.",
           "required" : true,
           "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint name for filtering the security groups",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Endpoint type for filtering the security groups. Valid values are endpoint types in the \"Network and Security\" category (managed by endpoint-configuration-service), e.g. \"NSX\" or \"NSXT\"",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
         }, {
           "name" : "page",
           "in" : "query",
@@ -4225,7 +4253,10 @@
           "200" : {
             "description" : "Successful operation.",
             "schema" : {
-              "$ref" : "#/definitions/securityGroup"
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/securityGroup"
+              }
             }
           }
         }
@@ -4340,7 +4371,7 @@
         }, {
           "in" : "body",
           "name" : "body",
-          "description" : "The list of virtualMachineIds to be assigned to the security group.",
+          "description" : "The list of external virtualMachineIds to be assigned to the security group. The collection of virtualMachineIds is interpreted by the network and security platform.For example, for NSX-v, this would be a collection of vSphere morefs and for NSX-T this is a collection of vSphere machine UUIDs",
           "required" : true,
           "schema" : {
             "type" : "array",
@@ -4394,6 +4425,102 @@
       }
     },
     "/api/services/{serviceId}/network/security-policies" : {
+      "get" : {
+        "tags" : [ "security", "security-policy" ],
+        "summary" : "Returns a page of SecurityPolicy entities.",
+        "description" : "Returns a page of SecurityPolicy entities on endpoints within the current tenant from the IaaS provider.",
+        "operationId" : "listSecurityPolicyForTenant",
+        "parameters" : [ {
+          "name" : "serviceId",
+          "in" : "path",
+          "description" : "The ID of the IaaS service as registered in the Component Registry service.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation.",
+            "schema" : {
+              "$ref" : "#/definitions/securityPolicy"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "security", "security-policy" ],
+        "summary" : "Create and save a SecurityPolicy",
+        "description" : "Create and save a SecurityPolicy upon validation on SecurityPolicy fields",
+        "operationId" : "createSecurityPolicy",
+        "parameters" : [ {
+          "name" : "serviceId",
+          "in" : "path",
+          "description" : "The ID of the IaaS service as registered in the Component Registry service.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The security policy object.",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/securityPolicy"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/securityPolicy"
+            }
+          },
+          "201" : {
+            "description" : "The security policy is created.",
+            "schema" : {
+              "$ref" : "#/definitions/securityPolicy"
+            }
+          }
+        }
+      }
+    },
+    "/api/services/{serviceId}/network/security-policies/all" : {
       "get" : {
         "tags" : [ "security", "security-policy" ],
         "summary" : "Returns a page of SecurityPolicy entities.",
@@ -4452,102 +4579,6 @@
               "items" : {
                 "$ref" : "#/definitions/securityPolicy"
               }
-            }
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "security", "security-policy" ],
-        "summary" : "Create and save a SecurityPolicy",
-        "description" : "Create and save a SecurityPolicy upon validation on SecurityPolicy fields",
-        "operationId" : "createSecurityPolicy",
-        "parameters" : [ {
-          "name" : "serviceId",
-          "in" : "path",
-          "description" : "The ID of the IaaS service as registered in the Component Registry service.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The security policy object.",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/securityPolicy"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/securityPolicy"
-            }
-          },
-          "201" : {
-            "description" : "The security policy is created.",
-            "schema" : {
-              "$ref" : "#/definitions/securityPolicy"
-            }
-          }
-        }
-      }
-    },
-    "/api/services/{serviceId}/network/security-policies/tenant" : {
-      "get" : {
-        "tags" : [ "security", "security-policy" ],
-        "summary" : "Returns a page of SecurityPolicy entities.",
-        "description" : "Returns a page of SecurityPolicy entities on endpoints within the current tenant from the IaaS provider.",
-        "operationId" : "listSecurityPolicyForTenant",
-        "parameters" : [ {
-          "name" : "serviceId",
-          "in" : "path",
-          "description" : "The ID of the IaaS service as registered in the Component Registry service.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page Number",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "description" : "Number of entries per page",
-          "required" : false,
-          "type" : "integer",
-          "default" : 20
-        }, {
-          "name" : "$orderby",
-          "in" : "query",
-          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "$top",
-          "in" : "query",
-          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$skip",
-          "in" : "query",
-          "description" : "Sets how many entries you would like to skip",
-          "required" : false,
-          "type" : "integer"
-        }, {
-          "name" : "$filter",
-          "in" : "query",
-          "description" : "Boolean expression for whether a particular entry should be included in the response",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Successful operation.",
-            "schema" : {
-              "$ref" : "#/definitions/securityPolicy"
             }
           }
         }
@@ -4694,8 +4725,8 @@
     "/api/services/{serviceId}/network/security-tags" : {
       "get" : {
         "tags" : [ "security", "security-tag" ],
-        "summary" : "Returns a page of the SecurityTag.",
-        "description" : "Returns a page of the SecurityTag from the IaaS provider.",
+        "summary" : "Returns a page of SecurityTags.",
+        "description" : "Returns a page of SecurityTags on endpoints within the current tenant from the IaaS provider.",
         "operationId" : "listSecurityTag",
         "parameters" : [ {
           "name" : "serviceId",
@@ -4855,48 +4886,11 @@
         }
       }
     },
-    "/api/services/{serviceId}/network/security-tags/applyToMachine/{machineId}" : {
-      "post" : {
-        "tags" : [ "security", "security-tag" ],
-        "summary" : "Add a list of security tags to a machine",
-        "description" : "Add a list of security tags to a machine",
-        "operationId" : "aApplySecurityTagsToMachine",
-        "parameters" : [ {
-          "name" : "serviceId",
-          "in" : "path",
-          "description" : "The ID of the IaaS service as registered in the component registry service.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "machineId",
-          "in" : "path",
-          "description" : "The id that identifies the machine to which to add the Security Tags.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "The list of Security Tags to be assigned to the machine.",
-          "required" : true,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "The security tags applied to the machine."
-          }
-        }
-      }
-    },
-    "/api/services/{serviceId}/network/security-tags/tenant" : {
+    "/api/services/{serviceId}/network/security-tags/all" : {
       "get" : {
         "tags" : [ "security", "security-tag" ],
-        "summary" : "Returns a page of SecurityTags.",
-        "description" : "Returns a page of SecurityTags on endpoints within the current tenant from the IaaS provider.",
+        "summary" : "Returns a page of the SecurityTag.",
+        "description" : "Returns a page of the SecurityTag from the IaaS provider.",
         "operationId" : "listSecurityTag",
         "parameters" : [ {
           "name" : "serviceId",
@@ -4960,6 +4954,43 @@
                 "$ref" : "#/definitions/securityTag"
               }
             }
+          }
+        }
+      }
+    },
+    "/api/services/{serviceId}/network/security-tags/applyToMachine/{machineId}" : {
+      "post" : {
+        "tags" : [ "security", "security-tag" ],
+        "summary" : "Add a list of security tags to a machine",
+        "description" : "Add a list of security tags to a machine",
+        "operationId" : "aApplySecurityTagsToMachine",
+        "parameters" : [ {
+          "name" : "serviceId",
+          "in" : "path",
+          "description" : "The ID of the IaaS service as registered in the component registry service.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "machineId",
+          "in" : "path",
+          "description" : "The id that identifies the machine to which to add the Security Tags.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The list of Security Tags to be assigned to the machine.",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "The security tags applied to the machine."
           }
         }
       }
@@ -6489,22 +6520,22 @@
     "CapacityUsageByBlueprintViewModel" : {
       "type" : "object",
       "properties" : {
-        "href" : {
-          "type" : "string"
-        },
         "groupName" : {
           "type" : "string"
         },
-        "blueprintName" : {
+        "href" : {
           "type" : "string"
+        },
+        "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "machineType" : {
           "type" : "string",
           "format" : "byte"
         },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
+        "blueprintName" : {
+          "type" : "string"
         },
         "machinesAllocated" : {
           "type" : "integer",
@@ -6533,45 +6564,17 @@
         "href" : {
           "type" : "string"
         },
-        "storageReservedPercent" : {
+        "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "memoryReservedMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "memoryAllocatedPercent" : {
+        "cpus" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "storageReservedGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "storageAllocatedPercent" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "memoryPhysicalMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "memoryReservedPercent" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "storagePhysicalGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
         },
         "machineType" : {
           "type" : "string",
           "format" : "byte"
-        },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "machinesAllocated" : {
           "type" : "integer",
@@ -6589,7 +6592,35 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "cpus" : {
+        "memoryReservedMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "memoryPhysicalMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "memoryReservedPercent" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "storagePhysicalGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageReservedPercent" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "memoryAllocatedPercent" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "storageReservedGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageAllocatedPercent" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -6598,11 +6629,35 @@
     "CapacityUsageByGroupViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
         "href" : {
           "type" : "string"
         },
-        "groupName" : {
-          "type" : "string"
+        "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "machinesAllocated" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "memoryAllocatedMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageAllocatedGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageUsedGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "machinesAllocatedPercent" : {
           "type" : "integer",
@@ -6623,52 +6678,28 @@
         "storageAllocatedPercent" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "machinesAllocated" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "memoryAllocatedMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "storageAllocatedGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "storageUsedGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
         }
       }
     },
     "CapacityUsageByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
-        "href" : {
-          "type" : "string"
-        },
         "groupName" : {
           "type" : "string"
         },
-        "machineOwner" : {
+        "href" : {
           "type" : "string"
+        },
+        "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "machineType" : {
           "type" : "string",
           "format" : "byte"
         },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
+        "machineOwner" : {
+          "type" : "string"
         },
         "machinesAllocated" : {
           "type" : "integer",
@@ -6727,10 +6758,6 @@
         "href" : {
           "type" : "string"
         },
-        "totalCost" : {
-          "type" : "number",
-          "format" : "double"
-        },
         "blueprintCost" : {
           "type" : "number",
           "format" : "double"
@@ -6759,13 +6786,14 @@
           "type" : "number",
           "format" : "double"
         },
+        "totalCost" : {
+          "type" : "number",
+          "format" : "double"
+        },
         "machineName" : {
           "type" : "string"
         },
         "machineTemplateName" : {
-          "type" : "string"
-        },
-        "tenantId" : {
           "type" : "string"
         },
         "groupId" : {
@@ -6775,30 +6803,33 @@
         "groupName" : {
           "type" : "string"
         },
-        "parentId" : {
-          "type" : "string",
-          "format" : "uuid"
-        },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "endDate" : {
           "type" : "string",
           "format" : "date-time"
         },
-        "machineType" : {
+        "parentId" : {
           "type" : "string",
-          "format" : "byte"
+          "format" : "uuid"
         },
         "parentName" : {
           "type" : "string"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "resultsPerPage" : {
           "type" : "integer",
           "format" : "int32"
         },
         "sortByColumn" : {
+          "type" : "string"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "tenantId" : {
           "type" : "string"
         },
         "startDate" : {
@@ -8569,16 +8600,13 @@
     "PageAmazonImage" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8594,33 +8622,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageAmazonRequestData" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8636,33 +8664,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageBusinessGroupAllocationsData" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8678,33 +8706,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCapacityUsageByBlueprintViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8720,33 +8748,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCapacityUsageByComputeResourceViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8762,33 +8790,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCapacityUsageByGroupViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8804,33 +8832,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCapacityUsageByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8846,33 +8874,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageChargebackByGroupViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8888,33 +8916,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageComputeResource" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8930,33 +8958,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCustomMachineAction" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -8972,33 +9000,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageFlavor" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9014,33 +9042,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageHardwareProfile" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9056,33 +9084,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageHostProperty" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9098,33 +9126,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageInstanceType" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9140,33 +9168,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageIso" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9182,33 +9210,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageKeyPair" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9224,33 +9252,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageLoadBalancer" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9266,33 +9294,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachine" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9308,33 +9336,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachinePrefix" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9350,33 +9378,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachineSnapshot" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9392,33 +9420,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageManagementEndpoint" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9434,33 +9462,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageNetwork" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9476,33 +9504,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageNetworkProfile" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9518,33 +9546,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageOpenstackImage" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9560,33 +9588,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageOpenstackSecurityGroup" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9602,33 +9630,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageProvisioningWorkflow" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9644,33 +9672,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReclamationSavingsByGroupViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9686,33 +9714,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReclamationSavingsByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9728,33 +9756,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReservation" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9770,33 +9798,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReservationPolicy" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9812,33 +9840,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityGroup" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9854,33 +9882,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityPolicy" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9896,33 +9924,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityTag" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9938,33 +9966,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageStaticIPv4Address" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -9980,33 +10008,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageStaticIPv4RangeSummary" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10022,33 +10050,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageTransportZone" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10064,33 +10092,33 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageVirtualHardDisk" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10106,17 +10134,20 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "first" : {
           "type" : "boolean",
           "default" : false
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
@@ -10254,29 +10285,29 @@
           "type" : "number",
           "format" : "double"
         },
-        "machinesReclaimedPercent" : {
+        "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "storageGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "memoryMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
         },
         "machinesReclaimed" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "machinesTotal" : {
+        "machinesReclaimedPercent" : {
           "type" : "integer",
           "format" : "int32"
         },
         "cpus" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "memoryMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "groupName" : {
           "type" : "string"
@@ -10294,39 +10325,39 @@
     "ReclamationSavingsByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
-        "href" : {
+        "groupName" : {
           "type" : "string"
         },
-        "groupName" : {
+        "href" : {
           "type" : "string"
         },
         "cost" : {
           "type" : "number",
           "format" : "double"
         },
-        "machinesReclaimedPercent" : {
+        "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "storageGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "memoryMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
         },
         "machinesReclaimed" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "machinesTotal" : {
+        "machinesReclaimedPercent" : {
           "type" : "integer",
           "format" : "int32"
         },
         "cpus" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "memoryMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "userName" : {
           "type" : "string"
@@ -10552,6 +10583,12 @@
         "virtualMachineName" : {
           "type" : "string"
         },
+        "externalReferenceId" : {
+          "type" : "string"
+        },
+        "externalReferenceName" : {
+          "type" : "string"
+        },
         "IPv4Address" : {
           "type" : "string"
         },
@@ -10755,6 +10792,10 @@
         },
         "managementEndpointName" : {
           "type" : "string"
+        },
+        "nsxEndpointType" : {
+          "type" : "string",
+          "enum" : [ "VSPHERE", "NSX", "NSXT", "VCA", "PROXY", "SCVMM", "VRO", "NETAPP", "OPENSTACK", "VCD", "AMAZON", "KVM", "VMC" ]
         }
       }
     },
@@ -11038,6 +11079,18 @@
           }
         },
         "toEndpointId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "fromEndpointType" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "toEndpointType" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
@@ -11639,7 +11692,7 @@
       "properties" : {
         "status" : {
           "type" : "string",
-          "enum" : [ "SUCCESS", "HOST_NOT_REACHABLE", "AGENT_NOT_FOUND", "UNKNOWN_FAILURE", "INVALID_CERTIFICATE", "INVALID_CREDENTIALS", "TIMEOUT" ]
+          "enum" : [ "SUCCESS", "HOST_NOT_REACHABLE", "AGENT_NOT_FOUND", "UNKNOWN_FAILURE", "INVALID_CERTIFICATE", "INVALID_CREDENTIALS", "NOT_FOUND", "TIMEOUT" ]
         },
         "message" : {
           "type" : "string"
@@ -11996,7 +12049,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "UNKNOWN", "COMPLETED", "IN_PROGRESS", "FAILED" ]
+            "enum" : [ "COMPLETED", "UNKNOWN", "FAILED", "IN_PROGRESS" ]
           },
           "errorCode" : {
             "type" : "string",
@@ -12111,7 +12164,7 @@
             "xml" : {
               "attribute" : true
             },
-            "enum" : [ "UNKNOWN", "COMPLETED", "IN_PROGRESS", "FAILED" ]
+            "enum" : [ "COMPLETED", "UNKNOWN", "FAILED", "IN_PROGRESS" ]
           },
           "errorCode" : {
             "type" : "string",
@@ -12213,14 +12266,14 @@
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "DEALLOCATE", "DELETE_IP_RANGES", "ALLOCATE", "CREATE_IP_RANGES" ]
+          "enum" : [ "ALLOCATE", "DEALLOCATE", "CREATE_IP_RANGES", "DELETE_IP_RANGES" ]
         },
         "requestState" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           },
-          "enum" : [ "UNKNOWN", "COMPLETED", "IN_PROGRESS", "FAILED" ]
+          "enum" : [ "COMPLETED", "UNKNOWN", "FAILED", "IN_PROGRESS" ]
         },
         "requestDetails" : {
           "type" : "string",
@@ -12330,6 +12383,9 @@
         },
         "extensionData" : {
           "$ref" : "#/definitions/literalMap"
+        },
+        "externalId" : {
+          "type" : "string"
         },
         "id" : {
           "type" : "string",
@@ -12653,7 +12709,7 @@
         },
         "order" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "action" : {
           "type" : "string"
@@ -13203,6 +13259,12 @@
           }
         },
         "machineId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalReferenceId" : {
           "type" : "string",
           "xml" : {
             "attribute" : true

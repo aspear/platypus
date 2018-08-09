@@ -106,8 +106,8 @@ python ${TOOLS_DIR}/apixlocal/apixlocal.py \
  --output_file=${OUTPUT_DIR}/local.json  \
  --abbreviate_description \
  --generate_overview_html \
- --product_name="vRealize Automation;7.4" \
- --api_version="(vRA 7.4)" \
+ --product_name="vRealize Automation;7.5" \
+ --api_version="(vRA 7.5)" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
  --swagger_output_dir=${OUTPUT_DIR}/local/swagger 
 

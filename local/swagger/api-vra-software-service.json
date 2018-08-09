@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Software Service API Specification\n\n## What Is the Software Service REST API?\n\nThe software service:\n\n* Triggers the execution lifecycle of software\ncomponents using the software agent.\n\n* Is responsible for registering all software\nagents for use with the software service.\n\n* Manages the creation, modification and deletion \nof software components.\n\n## Typical Use Cases\n\nYou can use the software service API to:\n\n* Automate adding software components to the system.\n\n* Create and trigger software components run by\n  the software agent independently of the blueprint.\n\nThe internal API is used to implement the software agent.  There are\nadditional prerequisites for implementing a software agent other than the\nAPI calls:  access to EBS and to the contents of the  `appd.properties` file.\n\n## Key Concepts\n\n### Software Agent\n\nSoftware components lifecycle task scripts are executed by the\nsoftware agent.  This agent is configured using the contents of the\n`appd.properties` file, which is delivered to the VM during \nprovisioning of the VM.  The properties required by each script are\ndelivered to the software agent and transformed for use by the\nscript.\n\n### Node\n\nAn internal type representing a machine before it is created.\nThe included metadata makes it possible for the contents of the\n`appd.properties file` for the software agent to be specified before the\nmachine is created.  When the software agent registers with the\nsoftware service, the node and the machine are associated.\n\n### ScriptType\n\nDescribes the kinds of scripts the software agent will execute.  The\ncomplexity of the information allows the software component script to\nbe written without knowing how input properties and computed\nproperties are provided and collected from the script execution\nenvironment.  The software agent uses this information in order to run\nthe software component script in the proper context.\n\n### SoftwareComponentType\n\nSpecifies the software component scripts for each supported lifecycle\ntask script.  It also specifies the properties, or schema, used and\ncomputed by the  the contained software component lifecycle task\nscripts.\n\n### SoftwareResource\n\nSoftware component lifecycle tasks can be collected into groups in\norder for each lifecycle task script to be run in sequence.  For\nexample, a provision request results in a single SoftwareResource for\neach software component.  Each provision request causes the combined\nINSTALL, CONFIGURE, START lifecycle tasks to be included in a single\nSoftwareResource.\n\n### TaskDescriptor\n\nDescribes the software component lifecycle tasks available to a\nsoftware component for eventual execution by the software agent.\n\n## Additional Information\n\nFor  more detailed information on using the API, refer to the  *vRA Programming Guide*.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Software Service API"
   },
   "basePath" : "/software-service",
@@ -2245,6 +2245,19 @@
       "type" : "object",
       "required" : [ "publishStatus" ],
       "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "publishStatus" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
         "createdDate" : {
           "type" : "string",
           "format" : "date-time",
@@ -2265,19 +2278,6 @@
           "xml" : {
             "attribute" : true
           }
-        },
-        "id" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "publishStatus" : {
-          "type" : "string",
-          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
         },
         "publishStatusName" : {
           "type" : "string"
@@ -2314,6 +2314,19 @@
       "required" : [ "publishStatus" ],
       "discriminator" : "@type",
       "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "publishStatus" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
+        },
         "createdDate" : {
           "type" : "string",
           "format" : "date-time",
@@ -2334,19 +2347,6 @@
           "xml" : {
             "attribute" : true
           }
-        },
-        "id" : {
-          "type" : "string"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "publishStatus" : {
-          "type" : "string",
-          "enum" : [ "DRAFT", "PUBLISHED", "RETIRED" ]
         },
         "publishStatusName" : {
           "type" : "string"
@@ -2655,6 +2655,9 @@
       "type" : "object",
       "required" : [ "formValues" ],
       "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        },
         "formValues" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -2746,7 +2749,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "REJECTED", "ABORTED" ]
+          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "CANCELLED", "CANCELLING", "REJECTED", "ABORTED" ]
         },
         "details" : {
           "type" : "array",
@@ -3140,7 +3143,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "REJECTED", "ABORTED" ]
+          "enum" : [ "INITIALIZED", "SUBMITTED", "IN_PROGRESS", "SUCCEEDED", "FAILED", "FAILING", "CANCELLED", "CANCELLING", "REJECTED", "ABORTED" ]
         },
         "log" : {
           "type" : "string"
