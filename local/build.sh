@@ -112,7 +112,7 @@ python ${TOOLS_DIR}/apixlocal.py \
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"/${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
-sed -i "s|VMware {code} Developer Center App|VMware vRealize Automation Developer Center|g" ./index.html
+sed -i 's|VMware {code} Developer Center App|VMware vRealize Automation Developer Center|g' ./index.html
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./.htaccess
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./server.rewrites
 
