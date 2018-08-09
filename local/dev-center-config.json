@@ -1,0 +1,20 @@
+{
+    "title" : "AirWatch Developer Center",
+    "productRelease" : "AirWatch;9.2",
+    "sampleQuery" : "product=AirWatch",    
+    "enableRemote" : false,
+    "localApiUrl" : "apis.json",
+    "overviewPath" : null,
+    "samplePageOverview": "AirWatch Samples",
+    "sdkPageOverview": "AirWatch SDKs",
+    "defaultHost" : "",
+    "defaultBasePath" : "", 
+    "auth": [
+        { 
+          "id": "basic",
+          "swaggerAuthName": "BasicAuth",
+          "displayName": "BasicAuth",
+          "authUrl": "/api/v1"
+        }
+    ]
+}
