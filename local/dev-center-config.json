@@ -1,0 +1,20 @@
+{
+    "title" : "VMware vRealize Automation Developer Center",
+    "productRelease" : "vRealize Automation;7.5",
+    "sampleQuery" : "product=vRealize Automation",    
+    "enableRemote" : false,
+    "localApiUrl" : "apis.json",
+    "overviewPath" : null,
+    "samplePageOverview": "vRealize Automation Samples",
+    "sdkPageOverview": "vRealize Automation SDKs",
+    "defaultHost" : "",
+    "defaultBasePath" : "", 
+    "auth": [
+        { 
+         "id": "vra_sso",
+         "swaggerAuthName": "ApiKeyAuth",
+         "displayName": "vRealize Automation SSO",
+         "authUrl": "/identity/api/tokens"
+        }
+    ]
+}
