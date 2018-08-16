@@ -105,11 +105,8 @@ python ${TOOLS_DIR}/apixlocal.py \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/apis.json  \
- --abbreviate_description \
- --generate_overview_html \
- --product_name="AirWatch;9.2" \
- --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir=${OUTPUT_DIR}/local/swagger 
+ --product_name="NSX-T;2.1.0" \
+ --swagger_url="name=NSX-T API,description=NSX-T API FROM vdc-download,version=2.1.0,url=https://vdc-download.vmware.com/vmwb-repository/dcr-public/d78d97e5-a2b0-45a4-97cd-c5b73fdc8b95/85fb0c30-3a55-477f-b70d-4386ed40bf15/nsx_api.json,product=NSX-T"
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html

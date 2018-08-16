@@ -1,12 +1,12 @@
 {
-    "title" : "AirWatch Developer Center",
-    "productRelease" : "AirWatch;9.2",
-    "sampleQuery" : "product=AirWatch",    
+    "title" : "NSX testing",
+    "productRelease" : "NSX-T;2.1.0",
+    "sampleQuery" : "product=NSX-T",    
     "enableRemote" : false,
     "localApiUrl" : "apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "AirWatch Samples",
-    "sdkPageOverview": "AirWatch SDKs",
+    "samplePageOverview": "NSX-T Samples",
+    "sdkPageOverview": "NSX-T SDKs",
     "defaultHost" : "",
     "defaultBasePath" : "", 
     "auth": [
