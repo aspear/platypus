@@ -14,6 +14,9 @@ echo "Downloading vRA Swagger files from host $VRA_HOST"
 # https://${VRA_HOST}/healthbroker-proxy-server/api/docs/swagger.json;healthbroker-proxy-server
 # https://${VRA_HOST}/config-management-service/api/docs/swagger.json;config-management-service
 
+# 8/24/2018 this is the new vRCS service
+#https://blr-v783-dhcp-79-175.eng.vmware.com/release-management-service/api/docs/swagger.json
+
 VALUES="
 https://${VRA_HOST}/advanced-designer-service/api/docs/swagger.json;advanced-designer-service
 https://${VRA_HOST}/approval-service/api/docs/swagger.json;approval-service
@@ -42,6 +45,7 @@ https://${VRA_HOST}/reservation-service/api/docs/swagger.json;reservation-servic
 https://${VRA_HOST}/software-service/api/docs/swagger.json;software-service
 https://${VRA_HOST}:443/vco/api/docs/swagger.json;vco
 https://${VRA_HOST}/workitem-service/api/docs/swagger.json;workitem-service
+https://${VRA_HOST}/release-management-service/api/docs/swagger.json;release-management-service
 ";
 
 OUTPUT_DIR=${SCRIPT_DIR}/swagger
