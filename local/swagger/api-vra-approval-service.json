@@ -2,12 +2,14 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Approval Service API Specification\n\n## What is the Approval Service REST API?\n\nThe approval service provides features for managing and tracking the human approval tasks associated with a service process/artifact in a provider realm. It also provides a record of the approval process when it completes.\n\nThe goal of the approval service is to provide a generic approval mechanism that any provider can use for any artifact, such as  as a service or  a resource action (which follows its own provider specified approval process).\n\nApproval is agnostic to the business artifact it is attached to. There is no representation of the artifact within the approval service. The provider (client of the approval service) stores an identifier of an approval to manage the approvals associated with their artifact.\n\n## Typical Use Cases\n\nYou can use the approval service REST API to implement approval policies for your service or resource action.  You can:\n\n* Define multiple approval levels in which actions must be approved.\n* Define approval policies that determine how an artifact is approved.\n* Query information about the state of specified approvals and the values of data fields in schemas associated with the service or resource action.\n\n## Key Concepts\n\n### Approval Level\n\nA level of approval that you define for your service.  For each level, you can specify approval criteria.\n\n### Approval Modes\n\nEach level supports two modes of approval:\n\n* **ANY** - If any ONE of the users approves, the approval step is complete and the process moves to the next step; for example, from Level 1 to Level 2. After one approver has approved, the remaining approvers are not allowed to approve that level.\n* **ALL** - All the approvers for the level need to approve. Each approver is assigned a workitem. The approval flow can only move on to the next step after ALL the approvers have approved.\n\n### Criteria\n\nApproval criteria are specified in a JSON string of a `com.vmware.vcac.platform.content.criteria.Clause` object:\n\n* Criteria should be set up based on the context that is defined by the corresponding `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getClassId()` and `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getTypeFilter()`.\n\n* The properties used in the criteria expression must be those of the client side object identified by the `classId` and `typeFilter`.\n\nThe `CatalogItemRequest` client object provides an example of how criteria are specified. A `CatalogItemRequest` has a criteria expression based on Request fields such as `RequestedBy`, `CatalogItem`, and so on, which are direct properties of the `CatalogItemRequest` class.\n\n## How the Approval Service Works\n\n### Overall High Level Flow\n\nThe approval process involves a simple chain of approval steps:\n\n1. Currently, the approval service supports only a single series of approval steps.\n2. Each step in the sequence can contain one or more users.\n3. Approval flows from level1 to level2 to level3, and so on. The approvers in level2 do not receive an  approval request until level1 is approved, and so on for other steps in the series.\n4. If approvers in ANY level reject the request, the whole approval is rejected. This essentially short circuits the approval process.\n5. When the final approval step is approved, the Approval instance goes into the APPROVED state.\n\n### Notes About Approval Level\n\n1. These are referred to as Level N Approval. Each step is activated in sequence, i.e., Level1 Approval is active first, and after it is done, Level2 Approval is active, and so on.\n2. The users in an approval step can be defined (during approval policy creation/definition) using three different methods, by referring to:\n  * One or more actual users (hard coding the user ID).\n  * One or more AD groups (static) and dynamic groups (composed of multiple AD groups and actual users).\n  * The users from contextual data such as $request.owner or $request.owner.manager, and so on.\n3. When a step is active, the users in that step are resolved, i.e., groups are expanded and contextual data expression is evaluated. The users in a step are not materialized until that step is active.\n4. All the users within the step are notified of the pending approval.\n5. If one of those users reject it, the Approval is short circuited and goes into the  REJECTED state.\n6. A level supports two modes of approval:\n  * **ANY** - if any ONE of the users approves, then after the approval step is complete, the the process moves to the next step; for example, from Level1 to Level2. After one approver has approved, the remaining approvers are not allowed to approve that level.\n  * **ALL** - All the approvers resolved in this level need to approve. Each approver is assigned a workitem. The approval flow can only move on to the next step after ALL the approvers have approved.\n\n### Notes About Criteria Associated with a Level\n\n1. Each level has its own criteria that triggers approval from that level.\n2. Criteria of every level will be evaluated in sequence.\n3. Criteria is essentially a JSON string of a `com.vmware.vcac.platform.content.criteria.Clause` object.\n4. Criteria should be set up based on the context which is defined by the corresponding `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getClassId()` and `com.vmware.vcac.core.approvals.domain.policy.ApprovalPolicyType#getTypeFilter()`\n5. The properties used in the criteria expression must be those of the client-side object identified by the `classId` and `typeFilter`. An example is the `CatalogItemRequest` client object, whose criteria expression is based on Request fields such as `RequestedBy`, `CatalogItem`, and so on, which are direct properties of the `CatalogItemRequest` class.\n6. The list of concrete Clauses are:\n  * `com.vmware.vcac.platform.content.criteria.AndClause`\n  * `com.vmware.vcac.platform.content.criteria.OrClause`\n  * `com.vmware.vcac.platform.content.criteria.NotClause`\n  * `com.vmware.vcac.platform.content.criteria.ConstantClause`\n  * `com.vmware.vcac.platform.content.criteria.Expression`\n  * `com.vmware.vcac.platform.content.criteria.WrapperClause`",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Approval Service API"
   },
   "basePath" : "/approval-service",
   "tags" : [ {
     "name" : "approvable-item"
+  }, {
+    "name" : "approval-cancel"
   }, {
     "name" : "approval-evaluation"
   }, {
@@ -643,11 +645,31 @@
         }
       }
     },
+    "/api/evaluations/{id}/cancel" : {
+      "post" : {
+        "tags" : [ "approval-cancel" ],
+        "summary" : "Cancel the approval",
+        "description" : "It will cleanup all the workitems associated with the given approval",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "The approval id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
     "/api/info/approvalrequests/{requestId}" : {
       "get" : {
         "tags" : [ "approval-info" ],
-        "summary" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer.",
-        "description" : "Retrieve information about a specific approval request by its unique identifier for version 7.0 or newer. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
+        "summary" : "Retrieve information about a specific approval request by its unique identifier.",
+        "description" : "Retrieve information about a specific approval request by its unique identifier. There is no method-level security on this method because no single permission gives usersaccess to approvals in general. However, there is a programmatic check to ascertain that theuser has a specific relationship to the approval that enables them to see it.",
         "parameters" : [ {
           "name" : "requestId",
           "in" : "path",
@@ -1580,6 +1602,10 @@
         },
         "tenantId" : {
           "type" : "string"
+        },
+        "cancelled" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -3535,16 +3561,13 @@
     "PageApprovableItem" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3559,6 +3582,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -3577,16 +3603,13 @@
     "PageApproval" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -3601,6 +3624,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -3675,10 +3701,10 @@
             "$ref" : "#/definitions/ApprovalLevel"
           }
         },
-        "description" : {
+        "name" : {
           "type" : "string"
         },
-        "name" : {
+        "description" : {
           "type" : "string"
         }
       },
@@ -3866,6 +3892,10 @@
           "type" : "string",
           "minLength" : 1,
           "maxLength" : 255
+        },
+        "cancelled" : {
+          "type" : "boolean",
+          "default" : false
         },
         "phaseNumber" : {
           "type" : "integer",
@@ -4234,6 +4264,9 @@
       "type" : "object",
       "required" : [ "formValues" ],
       "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        },
         "formValues" : {
           "$ref" : "#/definitions/literalMap"
         },

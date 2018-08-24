@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Event Broker API Specification\n\n## What is the Event Broker REST API?\n\nThe event broker REST API provides features for managing subscriptions, event topics, events, and messages. The event broker includes the EventLog service, which provides  a centralized location for events and a consistent way of recording events and querying for events in the vRA suite.\n\n## Typical Use Cases\n\n\n\nThe event broker service is used as follows:\n\n* Service providers register and manage event topics, event producers' ability to publish events, and event consumers' permissions to subscribe to events.\n\n* System administrators, or solution users register, update, or delete subscriptions to specified event topics.\n\n* Event consumers register to retrieve events that have given event topics.\n\nEvent producers publish events to the event broker service, and after receiving an event, the event broker service notifies event consumers that are subscribed to the event.\n\n## Key Concepts\n\n### Event Topic\n\nDescribes a set of events that have the same logical intent and the same structure. Every event is an instance of an event topic.\n\n### Event\n\nIndicates a change in the state in the producer or any of the entities managed by it. The event is the entity that records information about the event occurrence.\n\n### Message\n\nTransports information about the event between the various services and components. For example, from the producer to the event broker service, or from the event broker service to the subscribers.\n\n### Event Broker Service\n\nThe service that dispatches messages that are published by a producer to the subscribed consumers.\n\n### Payload\n\nThe event data.\n\n### Subscription\n\nIndicates that a subscriber is interested in being notified about an event by subscribing to an event topic and defining the criteria that triggers the notification.\n\n### Subscriber\n\nConsumes the events published to the event broker service based on the subscription definition. The subscriber might also be referred to as the consumer.\n\n### Provider\n\nRegisters event topics in the event broker service.\n\n### Producer\n\nPublishes events to the event broker service.\n\n## How the Event Broker Service Works\n\nThe event broker workflow works as follows:\n\n1. Service providers register and manage event topic producers and consumers.\n\n2. Solution users and system administrators manage subscriptions to event types by registering, updating or deleting subscriptions.\n\n3. Event consumers register to retrieve event types.\n\n4. Event topic producers publish events to the event broker service.\n\n5. The event broker service notifies subscribed event consumers when events having an event type that they have subscribed to occur.\n\n\n## Additional Information\n\nFor more detailed information on using the event broker API, refer to:\n\n* The *Workflow Subscriptions and Event Broker Terminology* topic in the VMWare vRealize Automation Information Center documentation.\n\n* The *vRA Programming Guide*.",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Event Broker Service API"
   },
   "basePath" : "/event-broker-service",
@@ -1582,6 +1582,12 @@
             "xml" : {
               "attribute" : true
             }
+          },
+          "schemaProviderServiceTypeId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
           }
         }
       } ]
@@ -2249,16 +2255,13 @@
     "PageEventTopic" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -2273,6 +2276,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -2291,16 +2297,13 @@
     "PageSubscription" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -2315,6 +2318,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -2742,6 +2748,9 @@
       "type" : "object",
       "required" : [ "formValues" ],
       "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        },
         "formValues" : {
           "$ref" : "#/definitions/literalMap"
         },

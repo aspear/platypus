@@ -1,0 +1,1542 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "vRealize Code Stream",
+    "version" : "7.5.0-SNAPSHOT",
+    "title" : "Release Management Service API"
+  },
+  "basePath" : "/release-management-service",
+  "tags" : [ {
+    "name" : "Cancel ReleasePipeline Execution"
+  }, {
+    "name" : "Delete ReleasePipeline"
+  }, {
+    "name" : "Delete ReleasePipeline Execution"
+  }, {
+    "name" : "Execute ReleasePipeline"
+  }, {
+    "name" : "Export ReleasePipeline"
+  }, {
+    "name" : "Get ReleasePipeline"
+  }, {
+    "name" : "Get Unique tags"
+  }, {
+    "name" : "Import-ReleasePipeline"
+  }, {
+    "name" : "Retrieve ReleasePipeline Executions"
+  }, {
+    "name" : "Retrieve ReleasePipeline Status"
+  }, {
+    "name" : "Retrieve ReleasePipelines"
+  }, {
+    "name" : "Update ReleasePipeline"
+  }, {
+    "name" : "create-endpoint"
+  }, {
+    "name" : "delete-endpoint"
+  }, {
+    "name" : "get endpoint details"
+  }, {
+    "name" : "update-endpoint"
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/api/endpoints" : {
+      "post" : {
+        "tags" : [ "create-endpoint" ],
+        "summary" : "Create an Endpoint (BETA)",
+        "description" : "Create a new endpoint instance.The optional offlineCreation query parameter can be used to skip endpoint validation",
+        "operationId" : "createEndpoint",
+        "produces" : [ "application/json; charset=utf-8" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "RequestBody as Endpoint type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Endpoint"
+          }
+        }, {
+          "name" : "offlineCreation",
+          "in" : "query",
+          "description" : "Boolean value offlineCreation, used to skip endpoint validation",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Creation of endpoint is successful",
+            "schema" : {
+              "$ref" : "#/definitions/Endpoint"
+            }
+          }
+        }
+      }
+    },
+    "/api/endpoints/{endpointType}/{endpointId}" : {
+      "get" : {
+        "tags" : [ "get endpoint details" ],
+        "summary" : "Fetches an endpoint's data (BETA)",
+        "description" : "Fetches the details of a specific endpoint",
+        "operationId" : "getEndpoint",
+        "produces" : [ "application/json; charset=utf-8" ],
+        "parameters" : [ {
+          "name" : "endpointType",
+          "in" : "path",
+          "description" : "Type of an endpoint",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointId",
+          "in" : "path",
+          "description" : "Endpoint id to fetch details",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Endpoint data is fetched successfully",
+            "schema" : {
+              "$ref" : "#/definitions/Endpoint"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "update-endpoint" ],
+        "summary" : "Updates the data of an existing endpoint instance (BETA)",
+        "description" : "Updates the data of an existing endpoint instance",
+        "operationId" : "updateEndpoint",
+        "produces" : [ "application/json; charset=utf-8" ],
+        "parameters" : [ {
+          "name" : "endpointType",
+          "in" : "path",
+          "description" : "Type of an endpoint",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointId",
+          "in" : "path",
+          "description" : "Endpoint id to update data",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Endpoint"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Updating an endpoint is successful",
+            "schema" : {
+              "$ref" : "#/definitions/Endpoint"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "delete-endpoint" ],
+        "summary" : "Deletes an existing endpoint instance (BETA)",
+        "description" : "Deletes an existing endpoint instance",
+        "operationId" : "deleteEndpoint",
+        "parameters" : [ {
+          "name" : "endpointType",
+          "in" : "path",
+          "description" : "Type of an endpoint",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "endpointId",
+          "in" : "path",
+          "description" : "Endpoint id to delete",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Deletion of endpoint is successful"
+          }
+        }
+      }
+    },
+    "/api/release-pipelines" : {
+      "get" : {
+        "tags" : [ "Retrieve ReleasePipelines" ],
+        "summary" : "Retrieve All Release Pipeline models by tags",
+        "description" : "Retrieve all pipelines using tags.",
+        "operationId" : "getPipelinesbyTag",
+        "parameters" : [ {
+          "name" : "tags",
+          "in" : "query",
+          "description" : "Comma separated list of tags Eg: ?tags=tag1,tag2",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "description" : "Name of pipeline",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "action",
+          "in" : "query",
+          "description" : "Action like Activate, Clone to perform on pipeline",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Paging and sorting criteria",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Retrieved pipelines by tag successfully",
+            "schema" : {
+              "$ref" : "#/definitions/PageReleasePipelineDetails"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Import-ReleasePipeline" ],
+        "summary" : "REST endpoint to Import a Release Pipeline Model.",
+        "description" : "The url to be used for importing a release pipeline is https://SERVER_URL/release-management-service/api/release-pipelines?action=import&overwrite={true/false}",
+        "operationId" : "importReleasePipeline",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "RequestBody as ReleasePipelineExportDetails type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/release-pipeline-export-details"
+          }
+        }, {
+          "name" : "overwrite",
+          "in" : "query",
+          "description" : "Boolean value to specify whether to overwrite an existing pipeline or not",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-import-response"
+            }
+          },
+          "201" : {
+            "description" : "Imported a release pipeline model successfully"
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/executions" : {
+      "get" : {
+        "tags" : [ "Retrieve ReleasePipeline Executions" ],
+        "summary" : "REST endpoint to Retrieve All or Filtered Release Pipeline Executions",
+        "description" : "Returns all or filtered release pipeline executions with/without a search request.",
+        "operationId" : "getExecutionList",
+        "parameters" : [ {
+          "name" : "filter",
+          "in" : "query",
+          "description" : "Search request to filter the executions listed",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Filtered pipeline executions are retrieved successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/PageReleasePipelineExecutionPartialInfo"
+            }
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/tags" : {
+      "get" : {
+        "tags" : [ "Get Unique tags" ],
+        "summary" : "REST endpoint to fetch unique tags for release pipeline model.",
+        "description" : "Return unique tags for release pipeline model, each tag has its name, id and value",
+        "operationId" : "getUniqueTags",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/tags"
+            }
+          },
+          "201" : {
+            "description" : "Unique tags fetched successfully"
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/{rpId}" : {
+      "get" : {
+        "tags" : [ "Get ReleasePipeline" ],
+        "summary" : "REST endpoint to fetch a Release Pipeline Model.",
+        "description" : "Fetches details of a release pipeline for a given release pipeline id",
+        "operationId" : "getReleasePipelineDetails",
+        "parameters" : [ {
+          "name" : "rpId",
+          "in" : "path",
+          "description" : "Pipeline id to get details",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returned release pipeline details successfully",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-details"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Update ReleasePipeline" ],
+        "summary" : "REST endpoint to update a release pipeline model",
+        "description" : "Returns pipeline details after updating the release pipeline",
+        "operationId" : "updateReleasePipeline",
+        "parameters" : [ {
+          "name" : "rpId",
+          "in" : "path",
+          "description" : "Pipeline id to update pipeline",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "RequestBody as ReleasePipelineDetails type object",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/release-pipeline-details"
+          }
+        }, {
+          "name" : "pluginValidation",
+          "in" : "query",
+          "description" : "Boolean value to specify whether to invoke plugin related validation or not",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Pipeline is updated successfully and its details are retrieved",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-details"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Delete ReleasePipeline" ],
+        "summary" : "REST endpoint to Delete a Release Pipeline Model.",
+        "description" : "Deletes a Release Pipeline - the deletion happens using passed pipeline id parameter",
+        "operationId" : "deleteReleasePipeline",
+        "parameters" : [ {
+          "name" : "rpId",
+          "in" : "path",
+          "description" : "Pipeline id to delete pipeline",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "On successful operation,the release pipeline is deleted"
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/{rpId}/executions" : {
+      "post" : {
+        "tags" : [ "Execute ReleasePipeline" ],
+        "summary" : "REST endpoint to Execute a Release Pipeline Model.",
+        "description" : "Executes a release pipeline for a given pipeline Id and returns the pipeline execution information",
+        "operationId" : "executeReleasePipeline",
+        "parameters" : [ {
+          "name" : "rpId",
+          "in" : "path",
+          "description" : "Pipeline id to execute pipeline",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Request body as ReleasePipelineExecutionInfo type object",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/release-pipeline-execution-info"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-execution-info"
+            }
+          },
+          "201" : {
+            "description" : "Pipeline is executed successfully and it's execution information is returned"
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/{rpName}" : {
+      "get" : {
+        "tags" : [ "Export ReleasePipeline" ],
+        "summary" : "REST endpoint to Export a Release Pipeline Model. ",
+        "description" : "The url to be used for exporting a release pipeline is: https://SERVER_URL/release-management-service/api/release-pipelines/{rpName}?action=export",
+        "operationId" : "exportReleasePipeline",
+        "parameters" : [ {
+          "name" : "rpName",
+          "in" : "path",
+          "description" : "Pipeline name to export",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Pipeline is exported successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-export-details"
+            }
+          }
+        }
+      }
+    },
+    "/api/release-pipelines/{rp_id}/executions/{exec_id}" : {
+      "get" : {
+        "tags" : [ "Retrieve ReleasePipeline Status" ],
+        "summary" : "REST endpoint to Retrieve Detailed Status of a Release Pipeline Execution",
+        "description" : "Returns execution details of a release pipeline with the associated execution id.",
+        "operationId" : "getExecution",
+        "parameters" : [ {
+          "name" : "rp_id",
+          "in" : "path",
+          "description" : "Pipeline id to fetch execution status",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "exec_id",
+          "in" : "path",
+          "description" : "Pipeline execution id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Detailed status of pipeline execution is fetched successfully",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-execution-info"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Cancel ReleasePipeline Execution" ],
+        "summary" : "REST endpoint to Cancel an Execution of Release Pipeline Model.",
+        "description" : "The url to be used for cancelling an ongoing pipeline execution is: https://SERVER_URL/release-management-service/api/release-pipelines/{rp_id}/executions/{exec_id}/?action=cancel",
+        "operationId" : "cancelPipelineExecution",
+        "parameters" : [ {
+          "name" : "rp_id",
+          "in" : "path",
+          "description" : "Pipeline id to cancel pipeline",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "exec_id",
+          "in" : "path",
+          "description" : "Pipeline execution id",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Execution of pipeline is canceled successfully.",
+            "schema" : {
+              "$ref" : "#/definitions/release-pipeline-execution-info"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Delete ReleasePipeline Execution" ],
+        "summary" : "REST endpoint to Delete Execution of a Release Pipeline Model.",
+        "description" : "Deletes execution of a release pipeline for a given pipeline id.",
+        "operationId" : "deletePipelineExecution",
+        "parameters" : [ {
+          "name" : "rp_id",
+          "in" : "path",
+          "description" : "Pipeline id to delete pipeline execution",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "exec_id",
+          "in" : "path",
+          "description" : "Pipeline execution id",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Pipeline execution is deleted successfully."
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "BoolCommonExpression" : {
+      "type" : "object"
+    },
+    "CommonExpression" : {
+      "type" : "object"
+    },
+    "Endpoint" : {
+      "type" : "object",
+      "required" : [ "data", "dataType", "dataTypeName", "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "dataType" : {
+          "type" : "string"
+        },
+        "dataTypeName" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "object"
+        },
+        "updateTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "updateUser" : {
+          "type" : "string"
+        }
+      }
+    },
+    "EntitySimpleProperty" : {
+      "type" : "object",
+      "properties" : {
+        "propertyName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ExportMetaData" : {
+      "type" : "object",
+      "required" : [ "pluginInstances" ],
+      "properties" : {
+        "pluginInstances" : {
+          "$ref" : "#/definitions/ExportedPluginInstances"
+        }
+      }
+    },
+    "ExportedEndpoint" : {
+      "type" : "object",
+      "required" : [ "category", "instanceId", "provider" ],
+      "properties" : {
+        "provider" : {
+          "type" : "string"
+        },
+        "category" : {
+          "type" : "string"
+        },
+        "instanceId" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "ExportedPluginInstances" : {
+      "type" : "object",
+      "properties" : {
+        "instance" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExportedPluginInstancesInfo"
+          }
+        }
+      }
+    },
+    "ExportedPluginInstancesInfo" : {
+      "type" : "object",
+      "required" : [ "name", "refId" ],
+      "properties" : {
+        "refId" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ExportedStage" : {
+      "type" : "object",
+      "required" : [ "name", "tasks" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "index" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tasks" : {
+          "$ref" : "#/definitions/ExportedTasks"
+        }
+      }
+    },
+    "ExportedStages" : {
+      "type" : "object",
+      "properties" : {
+        "stage" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExportedStage"
+          }
+        }
+      }
+    },
+    "ExportedTag" : {
+      "type" : "object",
+      "properties" : {
+        "tag" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ExportedTask" : {
+      "type" : "object",
+      "required" : [ "conditionalExpression", "inputProperties", "name", "outputProperties", "plugin" ],
+      "properties" : {
+        "index" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "plugin" : {
+          "$ref" : "#/definitions/ExportedEndpoint"
+        },
+        "inputProperties" : {
+          "$ref" : "#/definitions/Properties"
+        },
+        "outputProperties" : {
+          "$ref" : "#/definitions/Properties"
+        },
+        "conditionalExpression" : {
+          "type" : "string"
+        },
+        "continueOnFailure" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "dependsOn" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ExportedTasks" : {
+      "type" : "object",
+      "properties" : {
+        "task" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ExportedTask"
+          }
+        }
+      }
+    },
+    "LastExecutionInfo" : {
+      "type" : "object",
+      "required" : [ "currentStatus", "executedOn" ],
+      "properties" : {
+        "executedOn" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "currentStatus" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Message" : {
+      "type" : "object",
+      "required" : [ "message", "messageKey", "messageType", "property" ],
+      "properties" : {
+        "messageType" : {
+          "type" : "string",
+          "enum" : [ "INFO", "WARN", "ERROR", "FATAL" ]
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "messageKey" : {
+          "type" : "string"
+        },
+        "property" : {
+          "type" : "string"
+        }
+      }
+    },
+    "MetaInfo" : {
+      "type" : "object",
+      "properties" : {
+        "messages" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Message"
+          }
+        }
+      }
+    },
+    "OdataQueryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "inlineCount" : {
+          "type" : "string",
+          "enum" : [ "NONE", "ALLPAGES" ]
+        },
+        "top" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "skip" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "filter" : {
+          "$ref" : "#/definitions/BoolCommonExpression"
+        },
+        "orderBy" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderByExpression"
+          }
+        },
+        "skipToken" : {
+          "type" : "string"
+        },
+        "customOptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "expand" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "select" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "rawFilter" : {
+          "type" : "string"
+        },
+        "rawOrderBy" : {
+          "type" : "string"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        }
+      }
+    },
+    "OrderByExpression" : {
+      "type" : "object",
+      "properties" : {
+        "direction" : {
+          "type" : "string",
+          "enum" : [ "ASCENDING", "DESCENDING" ]
+        },
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        }
+      }
+    },
+    "PageAndSortRequest" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "queryInfo" : {
+          "$ref" : "#/definitions/OdataQueryInfo"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageReleasePipelineDetails" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/release-pipeline-details"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageReleasePipelineExecutionPartialInfo" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ReleasePipelineExecutionPartialInfo"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PluginEndpoint" : {
+      "type" : "object",
+      "required" : [ "displayName", "instance", "name", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "instance" : {
+          "$ref" : "#/definitions/PluginInstance"
+        }
+      }
+    },
+    "PluginInstance" : {
+      "type" : "object",
+      "required" : [ "className", "identifier", "vcoInstanceIdentifier" ],
+      "properties" : {
+        "identifier" : {
+          "type" : "string"
+        },
+        "className" : {
+          "type" : "string"
+        },
+        "vcoInstanceIdentifier" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Properties" : {
+      "type" : "object",
+      "properties" : {
+        "property" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        }
+      }
+    },
+    "Property" : {
+      "type" : "object",
+      "required" : [ "description", "name", "type", "value" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "additional" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "ReleasePipelineExecutionPartialInfo" : {
+      "type" : "object",
+      "required" : [ "createdBy", "currentStatusMessage", "description", "executionInfo", "id", "releasePipeline", "updatedAt" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "currentStatusMessage" : {
+          "type" : "string"
+        },
+        "pipelineParams" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        },
+        "executionInfo" : {
+          "$ref" : "#/definitions/execution-info"
+        },
+        "releasePipeline" : {
+          "$ref" : "#/definitions/release-pipeline-base"
+        },
+        "resumedExecution" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "updatedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "ReleasePipelineImportMessage" : {
+      "type" : "object",
+      "required" : [ "stageName", "taskName" ],
+      "properties" : {
+        "stageName" : {
+          "type" : "string"
+        },
+        "taskName" : {
+          "type" : "string"
+        },
+        "warnings" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Message"
+          }
+        }
+      }
+    },
+    "ReleasePipelineModel" : {
+      "type" : "object",
+      "required" : [ "description", "modelVersion", "name", "notificationList", "pipelineParams", "stages", "tags" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "modelVersion" : {
+          "type" : "string"
+        },
+        "notificationList" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tags" : {
+          "$ref" : "#/definitions/ExportedTag"
+        },
+        "pipelineParams" : {
+          "$ref" : "#/definitions/Properties"
+        },
+        "stages" : {
+          "$ref" : "#/definitions/ExportedStages"
+        },
+        "concurrentExecutionsSupported" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "users" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/User"
+          }
+        }
+      }
+    },
+    "Sort" : {
+      "type" : "object"
+    },
+    "Stage" : {
+      "type" : "object",
+      "required" : [ "id", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "index" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tasks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task"
+          }
+        }
+      }
+    },
+    "StageExecutionInfo" : {
+      "type" : "object",
+      "required" : [ "id", "name", "status" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "tasks" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskExecutionInfo"
+          }
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "STARTED", "COMPLETED", "FAILED", "NOT_STARTED", "IN_PROGRESS", "PAUSED", "DELETED", "CANCELED", "FAILED_CONTINUE", "SKIPPED" ]
+        }
+      }
+    },
+    "Tag" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Task" : {
+      "type" : "object",
+      "required" : [ "conditionalExpression", "endpoint", "id", "meta", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "index" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "endpoint" : {
+          "$ref" : "#/definitions/PluginEndpoint"
+        },
+        "inputParams" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        },
+        "outputParams" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        },
+        "meta" : {
+          "$ref" : "#/definitions/MetaInfo"
+        },
+        "moved" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "conditionalExpression" : {
+          "type" : "string"
+        },
+        "continueOnFailure" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "dependsOn" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "TaskExecutionInfo" : {
+      "type" : "object",
+      "required" : [ "executionInfo", "id", "inputParams", "messages", "outputParams", "resolvedExpression", "task" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "executionInfo" : {
+          "$ref" : "#/definitions/execution-info"
+        },
+        "outputParams" : {
+          "type" : "string"
+        },
+        "inputParams" : {
+          "type" : "string"
+        },
+        "messages" : {
+          "type" : "string"
+        },
+        "resolvedExpression" : {
+          "type" : "string"
+        },
+        "task" : {
+          "$ref" : "#/definitions/Task"
+        }
+      }
+    },
+    "User" : {
+      "type" : "object",
+      "required" : [ "name", "roleId" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "roleId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "execution-info" : {
+      "type" : "object",
+      "required" : [ "finishedAt", "id", "startedAt", "status" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "startedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "finishedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "STARTED", "COMPLETED", "FAILED", "NOT_STARTED", "IN_PROGRESS", "PAUSED", "DELETED", "CANCELED", "FAILED_CONTINUE", "SKIPPED" ]
+        },
+        "runtimeInMs" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      },
+      "xml" : {
+        "name" : "execution-info"
+      }
+    },
+    "release-pipeline-base" : {
+      "type" : "object",
+      "required" : [ "createdBy", "createdOn", "description", "groupId", "id", "name", "status" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "groupId" : {
+          "type" : "string"
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "createdOn" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "ACTIVATED", "DELETED", "ARCHIVED" ]
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Tag"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "release-pipeline-base"
+      }
+    },
+    "release-pipeline-details" : {
+      "type" : "object",
+      "required" : [ "createdBy", "createdOn", "description", "groupId", "id", "lastExecutionInfo", "modelVersion", "name", "notificationList", "socialcastWebhookEndpoint", "socialcastWebhookName", "status", "updatedBy", "updatedOn", "vcoWorkflowId" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "modelVersion" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "vcoWorkflowId" : {
+          "type" : "string"
+        },
+        "notificationList" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "groupId" : {
+          "type" : "string"
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "createdOn" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "updatedBy" : {
+          "type" : "string"
+        },
+        "updatedOn" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "DRAFT", "ACTIVATED", "DELETED", "ARCHIVED" ]
+        },
+        "tags" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Tag"
+          }
+        },
+        "lastExecutionInfo" : {
+          "$ref" : "#/definitions/LastExecutionInfo"
+        },
+        "pipelineParams" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        },
+        "stages" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Stage"
+          }
+        },
+        "concurrentExecutionsSupported" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "socialcastWebhookName" : {
+          "type" : "string"
+        },
+        "socialcastWebhookEndpoint" : {
+          "type" : "string"
+        },
+        "users" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/User"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "release-pipeline-details"
+      }
+    },
+    "release-pipeline-execution-info" : {
+      "type" : "object",
+      "required" : [ "createdBy", "currentStatusMessage", "description", "executionInfo", "id", "releasePipeline", "updatedAt", "vcoExecutionId" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "vcoExecutionId" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "currentStatusMessage" : {
+          "type" : "string"
+        },
+        "pipelineParams" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Property"
+          }
+        },
+        "executionInfo" : {
+          "$ref" : "#/definitions/execution-info"
+        },
+        "releasePipeline" : {
+          "$ref" : "#/definitions/release-pipeline-base"
+        },
+        "resumedExecution" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "stages" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/StageExecutionInfo"
+          }
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "updatedAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      },
+      "xml" : {
+        "name" : "release-pipeline-execution-info"
+      }
+    },
+    "release-pipeline-export-details" : {
+      "type" : "object",
+      "required" : [ "metadata", "model" ],
+      "properties" : {
+        "metadata" : {
+          "$ref" : "#/definitions/ExportMetaData"
+        },
+        "model" : {
+          "$ref" : "#/definitions/ReleasePipelineModel"
+        }
+      },
+      "xml" : {
+        "name" : "release-pipeline-export-details"
+      }
+    },
+    "release-pipeline-import-response" : {
+      "type" : "object",
+      "required" : [ "id", "status" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "releasePipelineImportMessage" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ReleasePipelineImportMessage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "release-pipeline-import-response"
+      }
+    },
+    "tags" : {
+      "type" : "object",
+      "properties" : {
+        "tag" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Tag"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "tags"
+      }
+    }
+  }
+}

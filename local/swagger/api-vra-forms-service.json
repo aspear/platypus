@@ -2,12 +2,14 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Forms Service API Specification\n\n## What Is the Forms Service?\n\nThe forms service is used internally by the vRealize Automation system to create, read, update and delete (perform CRUD operations on) request forms for XaaS components.\n\nA typical use case is creation, update, and deletion of a catalog item request form.\n\n## Key Concepts\n\n### Form\n\nA form used to configure vRealize Automation provisioning requests for XaaS components.\n\n### XaaS component\n\nA custom service that is created by a vRealize Automation tenant administrator or XaaS administrator.",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Forms Service API"
   },
   "basePath" : "/forms-service",
   "tags" : [ {
     "name" : "action"
+  }, {
+    "name" : "childrenValues"
   }, {
     "name" : "create"
   }, {
@@ -41,6 +43,35 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
+    "/api/externalvalues/children" : {
+      "post" : {
+        "tags" : [ "childrenValues" ],
+        "summary" : "Query for SDK objects like vRO inventory objects.",
+        "description" : "This operation can be used to search for child vRO inventory objects and returns a list of [id:value:label:type:properties] elements.",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/FormExtValueRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "'Success' with the child values",
+            "schema" : {
+              "$ref" : "#/definitions/RestEntity"
+            }
+          },
+          "400" : {
+            "description" : "Invalid request - bad data."
+          },
+          "403" : {
+            "description" : "Forbidden."
+          }
+        }
+      }
+    },
     "/api/externalvalues/data" : {
       "post" : {
         "tags" : [ "request-form-callback-operation" ],
@@ -663,6 +694,9 @@
         },
         "constraints" : {
           "$ref" : "#/definitions/Constraints"
+        },
+        "refresh" : {
+          "$ref" : "#/definitions/Refresh"
         },
         "id" : {
           "type" : "string"
@@ -1289,7 +1323,7 @@
         "type" : {
           "type" : "string",
           "readOnly" : true,
-          "enum" : [ "SCRIPT_ACTION", "INVENTORY" ]
+          "enum" : [ "SCRIPT_ACTION", "INVENTORY", "SYSTEM_ACTION" ]
         },
         "parameters" : {
           "type" : "array",
@@ -1462,6 +1496,12 @@
         "requestId" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "contextParameters" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -1485,6 +1525,17 @@
         "isMultiple" : {
           "type" : "boolean",
           "default" : false
+        }
+      }
+    },
+    "FormTypeData" : {
+      "type" : "object",
+      "properties" : {
+        "formData" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
         }
       }
     },
@@ -1785,16 +1836,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -1809,6 +1857,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -1888,6 +1939,14 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "Refresh" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string"
+        }
+      }
     },
     "RefreshOnChangeBehavior" : {
       "allOf" : [ {
@@ -2261,6 +2320,9 @@
         },
         "form" : {
           "$ref" : "#/definitions/blueprintForm"
+        },
+        "formTypeData" : {
+          "$ref" : "#/definitions/FormTypeData"
         }
       },
       "xml" : {

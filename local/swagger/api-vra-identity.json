@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Identity Overview\n\nThe Identity Service is composed of two components: authentication and authorization. Further details on these components can be found below.\n\n## Authentication Overview\n\nThe authentication component manages tenants, business groups (formerly named subtenants), groups (both Single-Sign-On and Custom groups), users and identity stores.\n\n### Tenancy\n\nA tenant is an organizational unit in a vRealize Automation deployment. A tenant can represent a business unit in an enterprise or a company that subscribes to cloud services from a service provider.\n\nEach tenant has its own dedicated configuration. Some system-level configuration is shared across tenants.\n\n### User and Group Management\n\nAll user authentication is handled through single sign-on. Each tenant has one or more identity stores, such as Active Directory servers, that provide authentication.\n\nThe system administrator performs the initial configuration of single sign-on and basic tenant setup, including designating at least one identity store and a tenant administrator for each tenant. Thereafter, a tenant administrator can configure additional identity stores and assign roles to users or groups from the identity stores.\n\nTenant administrators can also create custom groups within their own tenant and add users and groups defined in the identity store to custom groups. Custom groups, like identity store groups and users, can be assigned roles or designated as the approvers in an approval policy.\n\nTenant administrators can also create business groups within their tenant. A business group is a set of users, often corresponding to a line of business, department or other organizational unit, that can be associated with a set of catalog services and infrastructure resources. Users, identity store groups, and custom groups can be added to business groups.\n\n### Authentication API Examples\n\n#### Identifying and groups and users\n\nBoth groups (SSO and custom) and users use the same object for identification - the principal id. Principal id consists of name and domain and is serialized in the form of `name@domain.`\n\nExample usages include:\n\n*   Getting a group by principal id: `GET /tenants/vcac.local/groups/Administrators@vcac.local`\n*   Getting a user by principal id: `GET /tenants/vcac.local/principals/Administrator@vcac.local`\n*   Search all groups using criteria instead of principal id:\n`GET /tenants/vcac.local/groups?criteria=administrator`\n\n*   Creating a group: `POST /tenants/vcac.local/groups` \n\n```json \n{ \n  \"@type\": \"Group\", \n  \"groupType\": \"CUSTOM\", \n  \"name\": \"Developers\", \n  \"domain\": \"vcac.local\", \n  \"description\": \"Developer Group\",\n  \"principalId\": { \n    \"domain\": \"vcac.local\", \n    \"name\": \"DevGroup\"\n  }\n} \n```\n\n## Authorization Overview\n\nThe authorization component manages authorization configurations as a set of triples\n\n*   `Principal` - The user or group to whom access is granted\n    *   principals are externally definded in authentication service and merely referenced in the authorization service.\n*   `Permission` - Identifies the action or data the principal is granted access to.\n    *   Permissions can correspond to atomic actions (e.g. \"Power On VM\").\n    *   They can also act as an abstraction for an entire set of activities (e.g. \"VM Power Lifecycle\").\n*   `Scope` - Defines the context within which the access applies.\n    *   A scope can identify an object (or an object representing a set of objects) upon which the action identified by a permission can be performed. (i.e. To define an Access Control List (ACL).)\n    *   A scope can be used to represent a group and the permissions identify the roles of different users within the group. (i.e. To define business groups, aka: sub-tenants)\n    *   Scope is optional\n\nNOTE: Roles and Permissions are both a part of the PrincipalExtensionApi REST resource.\n\n### Role Management\n\nRoles consist of a set of privileges that can be associated with users to determine what tasks they can perform. Based on their responsibilities, individuals might have one or more roles associated with their user account.\n\nAll user roles are assigned within the context of a specific tenant. However, some roles in the default tenant can manage system-wide configuration that applies to multiple tenants.\n\nFor more high-level details, see the \"Foundations and Concepts\" documentation located on the [vRA public documentation site](https://www.vmware.com/support/pubs/vcac-pubs.html)\n\n### Authorization API Examples\n\n#### Getting a specific role by id\n\n`GET /authorization/roles/CSP_TENANT_ADMIN`\n\n#### Creating a new role (e.g: one for helpdesk personnel)\n\n`POST /authorization/roles` \n```json\n{ \n  \"@type\" : \"TenantRole\", \n  \"id\" : \"HELPDESK_TENANT_ROLE\", \n  \"name\" : \"Helpdesk Administrator Tenant Role\", \n  \"description\" : \"Role representing helpdesk personnel\" \n}\n```\n\n#### Adding a permission to a role (e.g.: adding permission to tenant administration GUI\n\n`PUT /authorization/roles/HELPDESK_TENANT_ROLE/permissions/assigned/GUI_MY_TENANT_MANAGEMENT`\n\nNOTE: For this PUT, there is an empty request body. \n```json\n{} \n```\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Identity Service API"
   },
   "basePath" : "/identity",
@@ -4316,7 +4316,7 @@
     "/api/tenants/{tenantId}/groups/{groupId}/advanced-membership" : {
       "get" : {
         "summary" : "Gets the group's advanced membership",
-        "description" : "The method can be used to obtain a specific custom group's advanced membership.\nThe method returns String, which holds the JSON value of the composition rules which are part of the passed custom group.",
+        "description" : "The method can be used to obtain a specific custom group's advanced membership.\n\rThe method returns String, which holds the JSON value of the composition rules which are part of the passed custom group.",
         "parameters" : [ {
           "name" : "tenantId",
           "in" : "path",
@@ -4341,7 +4341,7 @@
       },
       "post" : {
         "summary" : "Sets the group's advanced membership",
-        "description" : "The method can be used to set a specific custom group's advanced membership.\nThe method accepts String, which holds the JSON value of the composition rules which will be set to the passed custom group.",
+        "description" : "**NOTE:** This API is currently disabled due to high risk of data loss in group's membership.\n\rThe method can be used to set a specific custom group's advanced membership.\n\rThe method accepts String, which holds the JSON value of the composition rules which will be set to the passed custom group. The passed value will overwrite the group's current membership! As best practice you can first get the current Advanced Membership of the group, then do modifications and pass it back to this API. You will have to remove all escaping and new lines, though.",
         "parameters" : [ {
           "name" : "tenantId",
           "in" : "path",
@@ -4366,6 +4366,33 @@
         "responses" : {
           "200" : {
             "description" : ""
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/groups/{groupId}/exists" : {
+      "get" : {
+        "summary" : "Check if a group exists.",
+        "description" : "check if group exists by its id.",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the id of the tenant",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "groupId",
+          "in" : "path",
+          "description" : "the principal id of the group",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/groupstatus"
+            }
           }
         }
       }
@@ -4618,6 +4645,51 @@
         }
       }
     },
+    "/api/tenants/{tenantId}/passwordpolicy" : {
+      "get" : {
+        "summary" : "Get password policy for the passed tenant",
+        "description" : "Get the password policy of the passed tenant which is applied to all local users of that tenant",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The id of the tenant which password policy will be returned",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PasswordPolicy"
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update password policy for the passed tenant",
+        "description" : "Update the password policy of the passed tenant which is applied to all local users of that tenant",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "The id of the tenant which password policy will be updated",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "The password policy to be updated",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PasswordPolicy"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Update is successful"
+          }
+        }
+      }
+    },
     "/api/tenants/{tenantId}/principals" : {
       "get" : {
         "summary" : "FindsXXX regular users in one of the identity providers configured for the tenant.",
@@ -4778,6 +4850,36 @@
           },
           "404" : {
             "description" : "Partial result is returned Some directories could not be contacted."
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/principals/{principalId}/passwordstate" : {
+      "get" : {
+        "summary" : "Get password state of a local user",
+        "description" : "Get the password state of a local user. ",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the tenant id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "principalId",
+          "in" : "path",
+          "description" : "the principal id of the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operation is successful.",
+            "schema" : {
+              "type" : "object"
+            }
+          },
+          "404" : {
+            "description" : "When either user or user password state is not found."
           }
         }
       }
@@ -5101,6 +5203,66 @@
           },
           "201" : {
             "description" : "Business group successfully created."
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenantId}/subtenants/membership" : {
+      "get" : {
+        "summary" : "List all business groups, in which the user has any role",
+        "description" : "",
+        "operationId" : "getUserBusinessGroups",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "description" : "the id of the tenant",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
           }
         }
       }
@@ -6058,10 +6220,10 @@
     "AclEntry" : {
       "type" : "object",
       "properties" : {
-        "tenant" : {
+        "principalId" : {
           "type" : "string"
         },
-        "principalId" : {
+        "tenant" : {
           "type" : "string"
         },
         "resourceRefId" : {
@@ -6988,6 +7150,21 @@
         "type" : "object"
       } ]
     },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "format" : "uri"
+        },
+        "params" : {
+          "$ref" : "#/definitions/LinkParams"
+        }
+      }
+    },
+    "LinkParams" : {
+      "type" : "object"
+    },
     "LiteralMapEntry" : {
       "type" : "object",
       "properties" : {
@@ -7218,16 +7395,13 @@
     "PageAclEntry" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7242,6 +7416,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -7260,16 +7437,13 @@
     "PageIdentityStore" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7284,6 +7458,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -7302,16 +7479,13 @@
     "PagePrincipalData" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7326,6 +7500,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -7344,16 +7521,13 @@
     "PageSubtenant" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7368,6 +7542,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -7386,16 +7563,13 @@
     "PageSubtenantRole" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -7410,6 +7584,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -7451,6 +7628,74 @@
           "items" : {
             "$ref" : "#/definitions/ParameterMapping"
           }
+        }
+      }
+    },
+    "PasswordPolicy" : {
+      "type" : "object",
+      "properties" : {
+        "passwordPolicyTO" : {
+          "$ref" : "#/definitions/PasswordPolicyTO"
+        },
+        "_links" : {
+          "type" : "object",
+          "readOnly" : true,
+          "additionalProperties" : {
+            "$ref" : "#/definitions/Link"
+          }
+        }
+      }
+    },
+    "PasswordPolicyTO" : {
+      "type" : "object",
+      "properties" : {
+        "minLen" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minLower" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minUpper" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minDigit" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minSpecial" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "history" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tempPasswordTtl" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "maxConsecutiveIdenticalCharacters" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "passwordTtlInHours" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "notificationThreshold" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "notificationInterval" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "maxPreviousPasswordCharactersReused" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -8028,6 +8273,9 @@
       "type" : "object",
       "required" : [ "formValues" ],
       "properties" : {
+        "headers" : {
+          "$ref" : "#/definitions/literalMap"
+        },
         "formValues" : {
           "$ref" : "#/definitions/literalMap"
         },
@@ -8432,6 +8680,22 @@
       },
       "xml" : {
         "name" : "group"
+      }
+    },
+    "groupstatus" : {
+      "type" : "object",
+      "required" : [ "groupId" ],
+      "properties" : {
+        "groupId" : {
+          "type" : "string"
+        },
+        "exists" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      },
+      "xml" : {
+        "name" : "groupstatus"
       }
     },
     "integerLiteral" : {

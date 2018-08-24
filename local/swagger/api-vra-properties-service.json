@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Property Service API Specification\n\n## What Is the Property Service?\n\nThe property service provides APIs to manage property definitions and property groups.\n\n## Typical Use Cases\n\nYou can use the property service REST API to:\n\n* Create, update, and delete property definitions.\n* Retrieve permissible values for property definitions.\n* Create, update, and delete property groups.\n\n## Key Concepts\n\n### Custom Property\n\nA custom property is a string key-value pair that can be associated with some object types in vRealize Automation. Custom properties provide a mechanism to annotate objects with custom attributes and can be used to invoke custom behavior during provisioning.\n\nCustom properties have the following attributes:\n\n* Name - the identifier for this custom property. It is a user-provided string value and must be unique within the object on which the property is defined.\n* Value - the value to assign to this property. The value is optional.\n* Show in Request - a flag indicating whether this property should be shown on a request form. If true, the request form will present this property as an input for the requesting user.\n* Encrypted - a flag indicating whether the value of the property should be encrypted.\n\n### Property Definition\n\nA property definition provides request-time enhancement for custom properties. Without a corresponding property definition, a custom property that is displayed on a request form appears as a simple text input field.\n\n Property definitions allow you to customize the way a property appears to show a type-specific control. For example, by defining a property definition, you can configure a custom property that represents a true or false value to appear as a checkbox.\n\n### Property Groups\n\nA property group is a named collection of custom properties. Some vRealize Automation objects (for example, blueprints) allow linking property groups as well as individual custom properties. This allows properties to be grouped into logically dependent sets. For example, a property group might define a set of custom properties that configure a virtual machine to be deployed into a particular environment.\n\nCustom properties in property groups behave the same way as custom properties defined directly on any other type of vRealize Automation object.\n\n### Tenancy\n\nProperty groups and property definitions may be either tenanted or global:\n\n* Tenanted property groups and definitions are accessible only in the tenant they are defined in. Tenanted property groups and definitions may be created by tenant administrators.\n* Global property groups and definitions are accessible to any tenant. Global property groups and definitions may be created by fabric group administrators and system administrators.\n\nA user who is both a tenant administrator and a fabric group administrator or system administrator can create either global or tenanted property groups and definitions.\n\n### Unique Identifiers\n\nProperty groups and property definitions have user-specified unique identifiers. This supports referencing both types of object in blueprints as code. However, to maximize portability of both types of object across tenants and vRealize Automation systems, the tenant ID is not part of the reference. This requires that unique identifiers satisfy the following uniqueness constraint:\n\n* A tenanted property group cannot have the same ID as another global property group. It may, however, have the same ID as a property group in another tenant.\n* A global property group cannot have the same ID as another tenanted property group in any tenant.\n\nIn effect, a property group's identifier can be used by either:\n\n* Any number of tenanted property groups but no global ones.\n* A single global property group but no tenanted ones.\n\nThe same rules apply for property definitions.\n\n### Permissible Values\n\nA property definition may define a field as a dropdown. In this case, the definition must also define the values of that dropdown. It may do this in one of two ways:\n\n* A static list of values.\n* A list of values retrieved by executing a vRealize Orchestrator (vRO) script action.\n\nThe property service provides an API to retrieve the permissible values of a property definition. In the case of a static list, this is redundant, because the list is also provided as part of the property definition object itself. However, in the case where the list if populated by a vRO script action, the action is invoked every time the list must be rendered and so the values API must be called to retrieve these values.\n\n## How the Property Service Works\n\nThe property service works as follows:\n\n1. Tenant administrators and fabric administrators define property groups and property definitions as required.\n2. Blueprint authors link property groups to their blueprints and define other custom properties as required.\n3. At request time, references to property groups are resolved and properties from any linked property groups are unwrapped and set directly on the component to which the property group was attached.\n4. At request time, the request form queries the property dictionary for any property definitions matching custom properties that are to be displayed on the request form.\n5. The request form renders the custom properties according to their corresponding property definitions\n\n## API Usage Examples\n\n### Retrieve Dropdown Values for a Property Definition\n\nFirst, create a property definition. In this example, the property definition is for a property called \"costcenter\" that retrieves a set of cost centers from an external system via a vRO script action.\n\n    PUT /api/propertydefinitions/costcenter\n\n    {\n     \"id\" : \"costcenter\",\n     \"label\" : \"Cost Center\",\n     \"description\" : null,\n     \"dataType\" : {\n       \"type\" : \"primitive\",\n       \"typeId\" : \"STRING\"\n     },\n     \"isMultiValued\" : false,\n     \"displayAdvice\" : \"DROPDOWN\",\n     \"tenantId\" : \"tenant1\",\n     \"orderIndex\" : null,\n     \"permissibleValues\" : {\n       \"type\" : \"dynamic\",\n       \"customAllowed\" : false,\n       \"dependencies\" : [ ],\n       \"context\" : {\n         \"providerEntityId\" : \"org.example.accounts/getCostCenters\"\n       }\n     }\n    }\n\nNow, the values associated with this property definition can be retrieved by calling the API below:\n\n    POST /api/propertydefinitions/costcenter/values\n\n    {\n      \"tenantId\" : \"pepsi\",\n      \"dependencyValues\" : {\n        \"entries\" : [ ]\n      },\n      \"associateValue\" : null\n    }\n\nThe response from this call is the list of values:\n\n    {\n     \"values\": [\n       {\n         \"underlyingValue\": {\n           \"type\": \"string\",\n           \"value\": \"1003\"\n         },\n         \"label\": \"Research & Development\"\n       },\n       {\n         \"underlyingValue\": {\n           \"type\": \"string\",\n           \"value\": \"4896\"\n         },\n         \"label\": \"Human Resources\"\n       },\n       {\n         \"underlyingValue\": {\n           \"type\": \"string\",\n           \"value\": \"6783\"\n         },\n         \"label\": \"Manufacturing\"\n       }\n     ]\n    }\n\n## Additional Information\n\nFor more detailed information on using the property service API, refer to:\n\n* The *Custom Properties Reference* topic in the VMWare vRealize Automation Information Center documentation.\n\n* The *vRA Programming Guide*.\n\n* The *vRO User Guide*.\n",
-    "version" : "7.4.0-SNAPSHOT",
+    "version" : "7.5.0-SNAPSHOT",
     "title" : "Properties Service API"
   },
   "basePath" : "/properties-service",
@@ -1334,16 +1334,13 @@
     "PageContextPropertyDefinition" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -1358,6 +1355,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
@@ -1376,16 +1376,13 @@
     "PageContextPropertyGroup" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -1400,6 +1397,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
