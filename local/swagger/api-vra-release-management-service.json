@@ -7,43 +7,17 @@
   },
   "basePath" : "/release-management-service",
   "tags" : [ {
-    "name" : "Cancel ReleasePipeline Execution"
+    "name" : "Endpoint"
   }, {
-    "name" : "Delete ReleasePipeline"
+    "name" : "Release Pipeline"
   }, {
-    "name" : "Delete ReleasePipeline Execution"
-  }, {
-    "name" : "Execute ReleasePipeline"
-  }, {
-    "name" : "Export ReleasePipeline"
-  }, {
-    "name" : "Get ReleasePipeline"
-  }, {
-    "name" : "Get Unique tags"
-  }, {
-    "name" : "Import-ReleasePipeline"
-  }, {
-    "name" : "Retrieve ReleasePipeline Executions"
-  }, {
-    "name" : "Retrieve ReleasePipeline Status"
-  }, {
-    "name" : "Retrieve ReleasePipelines"
-  }, {
-    "name" : "Update ReleasePipeline"
-  }, {
-    "name" : "create-endpoint"
-  }, {
-    "name" : "delete-endpoint"
-  }, {
-    "name" : "get endpoint details"
-  }, {
-    "name" : "update-endpoint"
+    "name" : "Release Pipeline Execution"
   } ],
   "schemes" : [ "https" ],
   "paths" : {
     "/api/endpoints" : {
       "post" : {
-        "tags" : [ "create-endpoint" ],
+        "tags" : [ "Endpoint" ],
         "summary" : "Create an Endpoint (BETA)",
         "description" : "Create a new endpoint instance.The optional offlineCreation query parameter can be used to skip endpoint validation",
         "operationId" : "createEndpoint",
@@ -75,7 +49,7 @@
     },
     "/api/endpoints/{endpointType}/{endpointId}" : {
       "get" : {
-        "tags" : [ "get endpoint details" ],
+        "tags" : [ "Endpoint" ],
         "summary" : "Fetches an endpoint's data (BETA)",
         "description" : "Fetches the details of a specific endpoint",
         "operationId" : "getEndpoint",
@@ -103,7 +77,7 @@
         }
       },
       "put" : {
-        "tags" : [ "update-endpoint" ],
+        "tags" : [ "Endpoint" ],
         "summary" : "Updates the data of an existing endpoint instance (BETA)",
         "description" : "Updates the data of an existing endpoint instance",
         "operationId" : "updateEndpoint",
@@ -138,7 +112,7 @@
         }
       },
       "delete" : {
-        "tags" : [ "delete-endpoint" ],
+        "tags" : [ "Endpoint" ],
         "summary" : "Deletes an existing endpoint instance (BETA)",
         "description" : "Deletes an existing endpoint instance",
         "operationId" : "deleteEndpoint",
@@ -164,7 +138,7 @@
     },
     "/api/release-pipelines" : {
       "get" : {
-        "tags" : [ "Retrieve ReleasePipelines" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "Retrieve All Release Pipeline models by tags",
         "description" : "Retrieve all pipelines using tags.",
         "operationId" : "getPipelinesbyTag",
@@ -243,7 +217,7 @@
         }
       },
       "post" : {
-        "tags" : [ "Import-ReleasePipeline" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to Import a Release Pipeline Model.",
         "description" : "The url to be used for importing a release pipeline is https://SERVER_URL/release-management-service/api/release-pipelines?action=import&overwrite={true/false}",
         "operationId" : "importReleasePipeline",
@@ -277,7 +251,7 @@
     },
     "/api/release-pipelines/executions" : {
       "get" : {
-        "tags" : [ "Retrieve ReleasePipeline Executions" ],
+        "tags" : [ "Release Pipeline Execution" ],
         "summary" : "REST endpoint to Retrieve All or Filtered Release Pipeline Executions",
         "description" : "Returns all or filtered release pipeline executions with/without a search request.",
         "operationId" : "getExecutionList",
@@ -338,7 +312,7 @@
     },
     "/api/release-pipelines/tags" : {
       "get" : {
-        "tags" : [ "Get Unique tags" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to fetch unique tags for release pipeline model.",
         "description" : "Return unique tags for release pipeline model, each tag has its name, id and value",
         "operationId" : "getUniqueTags",
@@ -357,7 +331,7 @@
     },
     "/api/release-pipelines/{rpId}" : {
       "get" : {
-        "tags" : [ "Get ReleasePipeline" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to fetch a Release Pipeline Model.",
         "description" : "Fetches details of a release pipeline for a given release pipeline id",
         "operationId" : "getReleasePipelineDetails",
@@ -379,7 +353,7 @@
         }
       },
       "post" : {
-        "tags" : [ "Update ReleasePipeline" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to update a release pipeline model",
         "description" : "Returns pipeline details after updating the release pipeline",
         "operationId" : "updateReleasePipeline",
@@ -415,7 +389,7 @@
         }
       },
       "delete" : {
-        "tags" : [ "Delete ReleasePipeline" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to Delete a Release Pipeline Model.",
         "description" : "Deletes a Release Pipeline - the deletion happens using passed pipeline id parameter",
         "operationId" : "deleteReleasePipeline",
@@ -436,7 +410,7 @@
     },
     "/api/release-pipelines/{rpId}/executions" : {
       "post" : {
-        "tags" : [ "Execute ReleasePipeline" ],
+        "tags" : [ "Release Pipeline Execution" ],
         "summary" : "REST endpoint to Execute a Release Pipeline Model.",
         "description" : "Executes a release pipeline for a given pipeline Id and returns the pipeline execution information",
         "operationId" : "executeReleasePipeline",
@@ -470,7 +444,7 @@
     },
     "/api/release-pipelines/{rpName}" : {
       "get" : {
-        "tags" : [ "Export ReleasePipeline" ],
+        "tags" : [ "Release Pipeline" ],
         "summary" : "REST endpoint to Export a Release Pipeline Model. ",
         "description" : "The url to be used for exporting a release pipeline is: https://SERVER_URL/release-management-service/api/release-pipelines/{rpName}?action=export",
         "operationId" : "exportReleasePipeline",
@@ -493,7 +467,7 @@
     },
     "/api/release-pipelines/{rp_id}/executions/{exec_id}" : {
       "get" : {
-        "tags" : [ "Retrieve ReleasePipeline Status" ],
+        "tags" : [ "Release Pipeline Execution" ],
         "summary" : "REST endpoint to Retrieve Detailed Status of a Release Pipeline Execution",
         "description" : "Returns execution details of a release pipeline with the associated execution id.",
         "operationId" : "getExecution",
@@ -521,7 +495,7 @@
         }
       },
       "post" : {
-        "tags" : [ "Cancel ReleasePipeline Execution" ],
+        "tags" : [ "Release Pipeline Execution" ],
         "summary" : "REST endpoint to Cancel an Execution of Release Pipeline Model.",
         "description" : "The url to be used for cancelling an ongoing pipeline execution is: https://SERVER_URL/release-management-service/api/release-pipelines/{rp_id}/executions/{exec_id}/?action=cancel",
         "operationId" : "cancelPipelineExecution",
@@ -548,7 +522,7 @@
         }
       },
       "delete" : {
-        "tags" : [ "Delete ReleasePipeline Execution" ],
+        "tags" : [ "Release Pipeline Execution" ],
         "summary" : "REST endpoint to Delete Execution of a Release Pipeline Model.",
         "description" : "Deletes execution of a release pipeline for a given pipeline id.",
         "operationId" : "deletePipelineExecution",
@@ -893,10 +867,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -907,6 +877,10 @@
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -935,10 +909,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -949,6 +919,10 @@
         "last" : {
           "type" : "boolean",
           "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
