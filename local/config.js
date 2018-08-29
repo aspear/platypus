@@ -43,17 +43,15 @@
 
 
   // Remote APIs endpoint.
-  window.config.remoteSampleExchangeApiEndPoint = "https://vdc-repo.vmware.com/sampleExchange/v1";
-  window.config.remoteApiEndPoint = "https://vdc-repo.vmware.com/apix";
+  window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
+  window.config.remoteApiEndPoint = "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix";
 
-  //window.config.remoteSampleExchangeApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/sampleExchange/v1";
-  //window.config.remoteApiEndPoint = "https://dc-test-repo1.eng.vmware.com:8443/dcr/rest/apix";
-
-  //window.config.remoteSampleExchangeApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/sampleExchange/v1";
-  //window.config.remoteApiEndPoint = "https://vdc-stg-repo-vip.vmware.com:8443/dcr/rest/apix";
+  window.config.clientID = "apix,vRealize Automation,7.5";
+  window.config.clientUUID = null;
+  window.config.clientUserID = null;
 
   //vRA SSO
   window.config.ssoId = "vra_sso";
-  window.config.authApiEndPoint = "https://cava-p-14-062.eng.vmware.com/identity/api/tokens";
+  window.config.authApiEndPoint = "/identity/api/tokens";
 
 }(this));
