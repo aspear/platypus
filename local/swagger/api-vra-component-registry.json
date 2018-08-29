@@ -3325,14 +3325,14 @@
           "type" : "boolean",
           "default" : false
         },
-        "viewName" : {
-          "type" : "string"
-        },
         "modelMap" : {
           "type" : "object",
           "additionalProperties" : {
             "type" : "object"
           }
+        },
+        "viewName" : {
+          "type" : "string"
         }
       }
     },
@@ -3543,11 +3543,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }

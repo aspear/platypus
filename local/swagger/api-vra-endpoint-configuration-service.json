@@ -1326,13 +1326,13 @@
             "attribute" : true
           }
         },
-        "fromEndpointType" : {
+        "toEndpointType" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           }
         },
-        "toEndpointType" : {
+        "fromEndpointType" : {
           "type" : "string",
           "xml" : {
             "attribute" : true

@@ -45,8 +45,9 @@ https://${VRA_HOST}/reservation-service/api/docs/swagger.json;reservation-servic
 https://${VRA_HOST}/software-service/api/docs/swagger.json;software-service
 https://${VRA_HOST}:443/vco/api/docs/swagger.json;vco
 https://${VRA_HOST}/workitem-service/api/docs/swagger.json;workitem-service
-https://${VRA_HOST}/release-management-service/api/docs/swagger.json;
 ";
+# vRCS API commented out for now
+# https://${VRA_HOST}/release-management-service/api/docs/swagger.json;
 
 OUTPUT_DIR=${SCRIPT_DIR}/swagger
 

@@ -164,16 +164,13 @@
     "/api/auth/session" : {
       "get" : {
         "summary" : "Retrieve authorities of the current user.",
-        "description" : "Solution users, System admins, Container admins and Container developers can list authorities.",
+        "description" : "Solution users, System admins, Container admins and Container developers can perform the operation.",
         "operationId" : "AuthSessionController.get",
         "responses" : {
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "type" : "array",
-              "items" : {
-                "type" : "string"
-              }
+              "$ref" : "#/definitions/AuthSessionResponse"
             }
           }
         }
@@ -2725,7 +2722,7 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieves all clusters.",
-        "description" : "Retrieves all clusters. Operation is available for container admins and system admins.",
+        "description" : "Retrieves all clusters. Operation is available for container admins, system admins and container developers.",
         "operationId" : "listAllClusters",
         "parameters" : [ {
           "name" : "",
@@ -2869,7 +2866,7 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieve a cluster.",
-        "description" : "Retrieve a cluster. Operation is available for container admins and system admins.",
+        "description" : "Retrieve a cluster. Operation is available for container admins, system admins and container developers.",
         "operationId" : "retrieveCluster",
         "parameters" : [ {
           "name" : "",
@@ -2908,7 +2905,7 @@
       "patch" : {
         "tags" : [ "cluster" ],
         "summary" : "Update a cluster.",
-        "description" : "Update a cluster. Operation is available for container admins and system admins.",
+        "description" : "Update a cluster. Operation is available for container admins, developers and system admins.",
         "operationId" : "patchCluster",
         "parameters" : [ {
           "name" : "",
@@ -2938,7 +2935,7 @@
       "get" : {
         "tags" : [ "cluster" ],
         "summary" : "Retrieves all hosts for a given cluster.",
-        "description" : "Retrieves all hosts for a given cluster. Operation is available for container admins and system admins.",
+        "description" : "Retrieves all hosts for a given cluster. Operation is available for container admins, system admins and container developers.",
         "operationId" : "listClusterHosts",
         "parameters" : [ {
           "name" : "",
@@ -8107,6 +8104,20 @@
         }
       }
     },
+    "AuthSessionResponse" : {
+      "type" : "object",
+      "properties" : {
+        "user" : {
+          "type" : "string"
+        },
+        "roles" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
     "AzureDiskVolumeSource" : {
       "type" : "object",
       "properties" : {
@@ -8490,7 +8501,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "ON", "OFF", "DISABLED", "WARNING", "PROVISIONING", "RESIZING", "REMOVING", "UNREACHABLE" ]
+          "enum" : [ "ON", "OFF", "DISABLED", "WARNING", "PROVISIONING", "RESIZING", "DESTROYING", "UNREACHABLE" ]
         },
         "address" : {
           "type" : "string"

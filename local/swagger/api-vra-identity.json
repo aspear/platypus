@@ -6226,10 +6226,10 @@
         "tenant" : {
           "type" : "string"
         },
-        "resourceRefId" : {
+        "roleId" : {
           "type" : "string"
         },
-        "roleId" : {
+        "resourceRefId" : {
           "type" : "string"
         }
       }
