@@ -9682,6 +9682,12 @@
           "items" : {
             "type" : "string"
           }
+        },
+        "customProperties" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -10854,6 +10860,12 @@
         "type" : "object",
         "properties" : {
           "schemaId" : {
+            "type" : "string",
+            "xml" : {
+              "attribute" : true
+            }
+          },
+          "schemaProviderServiceTypeId" : {
             "type" : "string",
             "xml" : {
               "attribute" : true
@@ -16340,7 +16352,7 @@
         },
         "status" : {
           "type" : "string",
-          "enum" : [ "ACTIVE", "PENDING_APPROVAL", "REJECTED", "DELETED" ]
+          "enum" : [ "ACTIVE", "ACTIVE_PENDING_COMPLETION", "INITIALIZING", "REJECTED", "DELETED", "DELETED_PENDING_DISMISS" ]
         },
         "catalogItem" : {
           "$ref" : "#/definitions/labelledReference"
@@ -16945,6 +16957,9 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "memberProtocol" : {
+          "type" : "string"
+        },
         "monitorPort" : {
           "type" : "integer",
           "format" : "int32"
@@ -16991,6 +17006,12 @@
         "persistenceExpiration" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sslClientProfileName" : {
+          "type" : "string"
+        },
+        "sslDefaultCertificateName" : {
+          "type" : "string"
         },
         "monitorIds" : {
           "type" : "array",
@@ -17194,7 +17215,7 @@
         },
         "order" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "action" : {
           "type" : "string"

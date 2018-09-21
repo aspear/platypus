@@ -6549,7 +6549,21 @@
     "CapacityUsageByBlueprintViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
         "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -6561,26 +6575,12 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "blueprintName" : {
-          "type" : "string"
-        },
-        "machinesAllocated" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "storageUsedGBTotal" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "blueprintName" : {
+          "type" : "string"
         }
       }
     },
@@ -6590,11 +6590,34 @@
         "hostName" : {
           "type" : "string"
         },
+        "href" : {
+          "type" : "string"
+        },
         "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "cpus" : {
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "memoryPhysicalMBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "memoryReservedPercent" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "storagePhysicalGBTotal" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "storageReservedPercent" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -6606,24 +6629,13 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "machinesAllocated" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "memoryReservedPercent" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "storagePhysicalGBTotal" : {
+        "storageUsedGBTotal" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "cpus" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "memoryReservedMBTotal" : {
           "type" : "integer",
@@ -6640,25 +6652,27 @@
         "storageAllocatedPercent" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "memoryPhysicalMBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "storageUsedGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "storageReservedPercent" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
     "CapacityUsageByGroupViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
         "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -6670,19 +6684,9 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "machinesAllocated" : {
+        "storageUsedGBTotal" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "machinesAllocatedPercent" : {
           "type" : "integer",
@@ -6703,17 +6707,27 @@
         "storageAllocatedPercent" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "storageUsedGBTotal" : {
-          "type" : "integer",
-          "format" : "int64"
         }
       }
     },
     "CapacityUsageByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
         "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -6725,26 +6739,12 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "machinesAllocated" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "machineOwner" : {
-          "type" : "string"
-        },
         "storageUsedGBTotal" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "machineOwner" : {
+          "type" : "string"
         }
       }
     },
@@ -6787,6 +6787,16 @@
         "href" : {
           "type" : "string"
         },
+        "totalCost" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "machineName" : {
+          "type" : "string"
+        },
+        "machineTemplateName" : {
+          "type" : "string"
+        },
         "blueprintCost" : {
           "type" : "number",
           "format" : "double"
@@ -6815,54 +6825,44 @@
           "type" : "number",
           "format" : "double"
         },
-        "totalCost" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "machineName" : {
-          "type" : "string"
-        },
-        "machineTemplateName" : {
-          "type" : "string"
-        },
         "groupId" : {
           "type" : "string",
           "format" : "uuid"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
-        },
         "groupName" : {
           "type" : "string"
-        },
-        "startDate" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "tenantId" : {
-          "type" : "string"
-        },
-        "endDate" : {
-          "type" : "string",
-          "format" : "date-time"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "startDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "endDate" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "parentId" : {
           "type" : "string",
           "format" : "uuid"
+        },
+        "parentName" : {
+          "type" : "string"
         },
         "resultsPerPage" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "parentName" : {
+        "sortByColumn" : {
           "type" : "string"
         },
-        "sortByColumn" : {
+        "tenantId" : {
           "type" : "string"
         }
       }
@@ -10307,7 +10307,18 @@
     "ReclamationSavingsByGroupViewModel" : {
       "type" : "object",
       "properties" : {
+        "href" : {
+          "type" : "string"
+        },
+        "cost" : {
+          "type" : "number",
+          "format" : "double"
+        },
         "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "cpus" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -10319,10 +10330,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "cpus" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "memoryMBTotal" : {
           "type" : "integer",
           "format" : "int64"
@@ -10331,12 +10338,8 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "href" : {
+        "groupName" : {
           "type" : "string"
-        },
-        "cost" : {
-          "type" : "number",
-          "format" : "double"
         },
         "machineType" : {
           "type" : "string",
@@ -10345,16 +10348,27 @@
         "beginDate" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "groupName" : {
-          "type" : "string"
         }
       }
     },
     "ReclamationSavingsByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
+        "cost" : {
+          "type" : "number",
+          "format" : "double"
+        },
         "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "cpus" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -10366,10 +10380,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "cpus" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "memoryMBTotal" : {
           "type" : "integer",
           "format" : "int64"
@@ -10377,16 +10387,6 @@
         "storageGBTotal" : {
           "type" : "integer",
           "format" : "int64"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "cost" : {
-          "type" : "number",
-          "format" : "double"
         },
         "userName" : {
           "type" : "string"

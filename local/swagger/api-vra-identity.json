@@ -6223,13 +6223,13 @@
         "principalId" : {
           "type" : "string"
         },
-        "tenant" : {
+        "resourceRefId" : {
           "type" : "string"
         },
         "roleId" : {
           "type" : "string"
         },
-        "resourceRefId" : {
+        "tenant" : {
           "type" : "string"
         }
       }
