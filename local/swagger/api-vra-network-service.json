@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Network Service API Specification\n\n## What is the Network Service REST API?\n\nThe network service provides features that allow you to manage network and security settings. It acts as an abstraction layer over the networking and security features provided by the infrastructure (vSphere, NSX and VCNS).\n\nThe network service provides support for creating and configuring existing networks, on-demand NAT networks and on-demand routed networks, creating load balancers, and adding and configuring security groups and security tags for vSphere machines.\nIaaS is registered as a provider for all the networking domain objects.\n\nThere are five domain objects associated with the network service:\n\n1. Network\n2. Load Balancer\n3. Security Group\n4. Security Tag\n5. Security Policy\n\nEach object has its corresponding type.\nThe provider registers the a domain object type with the service.\n\n\n## Typical Use Cases\n\nYou can use the network service REST API to:\n\n * Allocate or deallocate a network or security component\n * Validate a network or security component at authoring time\n * Create, update, or delete load balancer types\n * Create or delete on-demand network objects\n * Request a network resource\n * Create, update, or delete network types\n * Return a list of on-demand networks\n * Return a list of existing security groups\n * Create, update or delete on-demand security groups\n * Assign a security group (on-demand or existing) to a machine\n * Create, update, or delete security group types\n * Return a list of existing security tags\n * Assign a security tag to a machine\n * Return a list of existing security policies\n * Create an on-demand security group with a list of selected security policies\n \nFor example, the composition service calls the network service for allocation, provisioning and day-2 operations, by using the converged blueprint format.\n\n## Key Concepts\n\n### Network\n\nA collection of nodes interconnected via physical or virtual paths/links.\n\n### Load Balancer\n\nA physical or logical device that distributes incoming requests evenly among multiple servers that can handle traffic so as to maximize throughput and avoid single points of failure. This allows cumulative network traffic to be split up into multiple paths before the traffic reaches the destination/target.\n\n### Security Group\nSecurity groups are a mechanism that enables the network administrator to dynamically associate and group workloads or objects that belong to one's vSphere inventory.\nUsers can assign machines to an existing security group or define an on-demand security group by selecting one or more existing security policies.\n\n### Security Tag\n\nA security tag is a qualifier object or categorizing entry that is used as a grouping mechanism. Using NSX, administrators define the criteria that an object must meet to be added to a security group to configure security tags.  Users can use the network component APIs to query and assign existing security tags to machines.\n\n### Security Policy\n\nA security policy is a re-usable set of specific rules spanning network and security services that can be applied to a security group. Users can define an on-demand security group by selecting one or more of the existing security policies.\n\n\n\n## Additional Information\n\nFor additional information about the VRealize Automation REST API, see the *VRealize Automation Programming Guide*  or the user documentation for VRealize Automation.\n",
-    "version" : "7.5.0-SNAPSHOT",
+    "version" : "7.5.1-SNAPSHOT",
     "title" : "Network Service API"
   },
   "basePath" : "/network-service/",
@@ -177,399 +177,6 @@
             "description" : "Provisioned request created",
             "schema" : {
               "$ref" : "#/definitions/ResponseEntity"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/data/{classId}/{id}" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get a set of data for the specified object",
-        "description" : "Get a set of data for the specified object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The identifier of the type of object to get data for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique id of the object to get data for. This should be sufficient to identify the object given classId.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/DynamicDataRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/DynamicDataResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/list/{classId}/default" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Retrieves the list of possible values for a given type of object",
-        "description" : "Retrieves the list of possible values for a given type of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/list/{classId}/types/{typeFilter}" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Retrieves the list of possible values for a given type of object",
-        "description" : "Retrieves the list of possible values for a given type of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object class",
-        "description" : "Get the schema for the specified object class.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object",
-        "description" : "This returns the schema of a particular type adjusted to the state of a specific instance..",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object type",
-        "description" : "This returns the schema of a particular type within a class of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
             }
           }
         }
@@ -2525,7 +2132,7 @@
     },
     "BooleanLiteral" : {
       "allOf" : [ {
-        "$ref" : "#/definitions/booleanLiteral"
+        "$ref" : "#/definitions/literal"
       }, {
         "type" : "object",
         "description" : "Wraps a boolean value.",
@@ -2746,36 +2353,6 @@
         "type" : "object"
       } ]
     },
-    "DynamicDataRequest" : {
-      "type" : "object",
-      "properties" : {
-        "tenantId" : {
-          "type" : "string"
-        },
-        "ignoreUnknownFields" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "ids" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "id"
-          },
-          "readOnly" : true,
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "DynamicDataResponse" : {
-      "type" : "object",
-      "properties" : {
-        "values" : {
-          "$ref" : "#/definitions/literalMap"
-        }
-      }
-    },
     "DynamicLayoutReference" : {
       "allOf" : [ {
         "$ref" : "#/definitions/LayoutReference"
@@ -2863,25 +2440,6 @@
           },
           "items" : {
             "$ref" : "#/definitions/Constraint"
-          }
-        }
-      }
-    },
-    "ElementValuesPagingInfo" : {
-      "type" : "object",
-      "properties" : {
-        "offset" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
           }
         }
       }
@@ -3006,35 +2564,6 @@
           }
         }
       } ]
-    },
-    "FacetValueMap" : {
-      "type" : "object",
-      "properties" : {
-        "facets" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "facet",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/FacetValueMapEntry"
-          }
-        }
-      }
-    },
-    "FacetValueMapEntry" : {
-      "type" : "object",
-      "properties" : {
-        "type" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "value" : {
-          "$ref" : "#/definitions/literal"
-        }
-      }
     },
     "Field" : {
       "type" : "object",
@@ -4492,11 +4021,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -4530,10 +4059,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4541,6 +4066,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4572,10 +4101,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4583,6 +4108,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4614,10 +4143,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4625,6 +4150,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4656,10 +4185,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4667,6 +4192,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4698,10 +4227,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4709,6 +4234,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4740,10 +4269,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4751,6 +4276,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4782,10 +4311,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4793,6 +4318,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4824,10 +4353,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4835,6 +4360,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4866,10 +4395,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4877,6 +4402,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -4908,10 +4437,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4919,6 +4444,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -5632,36 +5161,6 @@
         "name" : "allocationRequestCompletion"
       }
     },
-    "batchElementUpdateRequest" : {
-      "type" : "object",
-      "required" : [ "formValues" ],
-      "properties" : {
-        "headers" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "formValues" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "trigger" : {
-          "type" : "string"
-        },
-        "triggeredDetailsLayout" : {
-          "$ref" : "#/definitions/layout"
-        },
-        "affectedElements" : {
-          "type" : "array",
-          "xml" : {
-            "wrapped" : true
-          },
-          "items" : {
-            "type" : "string"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "batchElementUpdateRequest"
-      }
-    },
     "booleanLiteral" : {
       "allOf" : [ {
         "$ref" : "#/definitions/literal"
@@ -5887,53 +5386,6 @@
         }
       } ]
     },
-    "elementValues" : {
-      "type" : "object",
-      "properties" : {
-        "values" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "value",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/value"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "elementValues"
-      }
-    },
-    "elementValuesRequest" : {
-      "type" : "object",
-      "properties" : {
-        "text" : {
-          "type" : "string"
-        },
-        "tenantId" : {
-          "type" : "string"
-        },
-        "userId" : {
-          "type" : "string"
-        },
-        "dependencyValues" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "pagingInfo" : {
-          "$ref" : "#/definitions/ElementValuesPagingInfo"
-        },
-        "associateValue" : {
-          "$ref" : "#/definitions/literal"
-        },
-        "headers" : {
-          "$ref" : "#/definitions/literalMap"
-        }
-      },
-      "xml" : {
-        "name" : "elementValuesRequest"
-      }
-    },
     "entityRef" : {
       "allOf" : [ {
         "$ref" : "#/definitions/literal"
@@ -5987,24 +5439,6 @@
           "name" : "entityRefEx"
         }
       } ]
-    },
-    "formUpdateResponse" : {
-      "type" : "object",
-      "properties" : {
-        "elementUpdates" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "elementUpdate",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/updateElementEntry"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "formUpdateResponse"
-      }
     },
     "integerLiteral" : {
       "allOf" : [ {
@@ -6393,49 +5827,6 @@
       "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
       "xml" : {
         "name" : "timeSpan"
-      }
-    },
-    "updateElementEntry" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "detailLayout" : {
-          "$ref" : "#/definitions/layout"
-        },
-        "facetValues" : {
-          "$ref" : "#/definitions/FacetValueMap"
-        },
-        "extensionRendererContext" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "permissibleValues" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "value",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/value"
-          }
-        },
-        "errors" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "error",
-            "wrapped" : true
-          },
-          "items" : {
-            "type" : "string"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "updateElementEntry"
       }
     },
     "validationError" : {

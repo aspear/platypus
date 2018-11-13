@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Notification Service API Specification\n\n## What Is the Notification Service REST API?\n\nThe notification service supports configuring and sending notifications for several types of events, such as the successful completion of a catalog request or issuance of a catalog request that requires approval.\n\n## Typical Use Cases\n\nBy using the notification service:\n\n* System administrators can configure global email servers that process email notifications using the NotificationProvider resource.\n\n* Tenant administrators can override the system default servers, or add their own servers if no global servers are specified.\n\nTenant administrators select which events will cause notifications to be sent to users in their tenants using the NotificationScenarioConfiguration resource. Each component, such as the service catalog or IaaS, can define events that can trigger notifications. Notifications for all event are enabled by default.\n\nEach user can choose whether to receive notifications using the UserNotificationPreference resource. Users either receive all notifications configured by the tenant administrator or no notifications, they do not have fine-grained control over which notifications to receive.\n\nSome emails have links that users can use to respond to the notification. For example, a notification about a request that requires approval can have one link for approving the request and one for rejecting it. When a user clicks one of the links, a new email opens an automatically generated subject line. The user can send the email to complete the approval.\n\nSee the documentation for each REST resource for more details.\n\n## Key Concepts\n\n### Tenant Id\n\nBecause vRA supports multitenancy, some notification URIs must reference the `tenantId` that you are interested in. Exceptions include the system admin APIs,` which can be shared across tenants.\n\nUse the URL attribute of your tenant for all URIs requiring a `tenantId`. For example, if your \"Development\" tenant accesses vRA via the URL https://vcac.server/vcac/org/dev, then `dev` is what you should use when the API calls for a `tenantId`.\n\n### Notification Preferences\n\nEach user can choose whether to receive notifications using the UserNotificationPreference resource. Users either receive all notifications configured by the tenant administrator or no notifications, they do not have fine-grained control over which notifications to receive.\n\nIn addition to specifying a preference whether to receive email or not, users can specify the locale in which email should be sent to the user.\n\n## API Usage Examples\n\nThis section gives usage examples for requesting data for all tenant notification providers and for  creating a notification provider.\n\n### Requesting Data for All Notification Providers\n\n#### Example Request\n\n Be sure to replace ${tenantId} appropriately:\n\n    GET /api/notifications/tenants/{tenantId}/providers?offset=0&limit=10\n    Accept: application/json\n\n#### Example Response\n\n    HTTP/1.1 200 OK\n    Content-Type: application/json;charset=UTF-8\n\n    {\n      \"links\": [],\n      \"content\": [{\n        \"@type\": \"EmailNotificationProvider\",\n        \"id\": \"4bd085ca-09b1-47d5-8fce-695163e6cc08\",\n        \"version\": 0,\n        \"name\": \"vRA global, outbound email notification provider\",\n        \"description\": null,\n        \"type\": \"EMAIL_PROVIDER\",\n        \"providerDirection\": \"OUTBOUND\",\n        \"providerMode\": {\n          \"role\": \"GLOBAL\",\n          \"overriddenGlobalProviderId\": null\n        },\n        \"serverName\": \"smtp.example.com\",\n        \"protocol\": \"SMTP\",\n        \"port\": 25,\n        \"sslEnabled\": false,\n        \"username\": \"vcac\",\n        \"password\": null,\n        \"authenticationRequired\": true,\n        \"emailAddress\": \"vcac@example.com\",\n        \"deleteMessagesAfterRead\": false,\n        \"folder\": \"INBOX\",\n        \"selfSignedCertificateAccepted\": true\n      }],\n      \"metadata\": {\n        \"size\": 10,\n        \"totalElements\": 1,\n        \"totalPages\": 1,\n        \"number\": 1,\n        \"offset\": 0\n      }\n    }\n    \n### Creating a Notification Provider\n\n#### Example Request\n\nBe sure to replace ${tenantId} appropriately:\n\n    POST /api/notifications/tenants/{tenantId}/providers\n    Accept: application/json\n    Content-Type: application/json;charset=UTF-8\n\n    {\n      \"@type\": \"EmailNotificationProvider\",\n      \"name\": \"vRA global, outbound email notification provider\",\n      \"type\": \"EMAIL_PROVIDER\",\n      \"providerDirection\": \"OUTBOUND\",\n      \"providerMode\": {\n        \"role\": \"GLOBAL\"\n      },\n      \"serverName\": \"smtp.example.com\",\n      \"protocol\": \"SMTP\",\n      \"port\": 25,\n      \"sslEnabled\": false,\n      \"emailAddress\": \"vcac@example.com\",\n      \"selfSignedCertificateAccepted\": true,\n      \"username\": \"vcac\",\n      \"password\": \"password\"\n    }\n    \n#### Example Response\n\n    Response Headers\n    {\n    HTTP/1.1 201 Created\n               Date = Fri, 04 Apr 2014 17:04:10 GMT\n               ETag = \"0\"\n           Location = https://vcac.server.com/notification-service/api/notifications/global/providers/df29347f-6795-41c0-aab7-a1ca9f317ad9\n       Content-Type = application/json;charset=UTF-8\n     Content-Length = 0\n               Vary = Accept-Encoding,User-Agent\n         Keep-Alive = timeout=15, max=100\n         Connection = Keep-Alive\n    }\n",
-    "version" : "7.5.0-SNAPSHOT",
+    "version" : "7.5.1-SNAPSHOT",
     "title" : "Notification Service API"
   },
   "basePath" : "/notification-service",
@@ -2452,10 +2452,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2463,6 +2459,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2494,10 +2494,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2505,6 +2501,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2536,10 +2536,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2547,6 +2543,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2578,10 +2578,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2589,6 +2585,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2620,10 +2620,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2631,6 +2627,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2662,10 +2662,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2673,6 +2669,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },

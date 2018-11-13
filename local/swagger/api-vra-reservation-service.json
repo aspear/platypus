@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Reservation Service\n\nYou can use the Reservation Service to manage reservations.\n\nA reservation is a pool of resources for provisioning, consisting of several different types of resources. For example, a virtual reservation allocates a share of the memory, CPU and storage resources on a particular compute resource for a business group to use.\n\nA reservation must belong to a business group, and a business group could have multiple reservations on the same resources or different resources.\n\nYou can use this generic Reservation Service for any artifact from any provider. For example, a service which follows its own provider-specified behaviors. The Reservation Service is extensible and you can add new types of reservations from third-party providers by using the Reservation Provider component.\n\n## High Level View\n\nThe Reservation Service contains two parts following vRealize Automation's architecture:\n\n1.  Reservation Service\n2.  Reservation Provider\n\nReservation Service faces consumers directly to provide all reservation-related functionalities.\n\nReservation Provider registers the reservation and reservation policy types to Reservation Service, and handles all reservation-related requests. It is not exposed to consumers directly.\n\nThere might be one or more reservation providers and each reservation provider could register one or more reservation/reservation policy types to the Reservation Service.\n\n![](/reservation-service/api/docs/ReservationService.png)\n\nFollowing sections provide more details about Reservation Service and Reservation Provider.\n\n### Reservation Service\n\nThe Reservation Service is one typical component of vRealize Automation, which defines particular domain entities, registers Data and Schema Service endpoint, and provides corresponding API sets:\n\n1.  Domain Entities\n\n    1.  Reservation\n    2.  ReservationType\n    3.  ReservationPolicy\n    4.  ReservationPolicyType\n    5.  AlertPolicy\n    6.  Alert\n    7.  AlertType\n\n2.  Registered Endpoints\n\n    1.  Data and Schema Service\n\n3.  Defined Endpoints\n\n    1.  Reservation Callback\n\n4.  API Sets\n\n    1.  Reservation Type Management API\n    2.  Reservation Management API\n    3.  Reservation Policy Type Management API\n    4.  Reservation Policy Management API\n    5.  Data and Schema Service API\n\n#### Domain Entities\n\nHere is a diagram of reservation domain entities:\n\n![](/reservation-service/api/docs/ReservationDomainEntities.png)\n\nReservation Service defines only the basic fields for the _Reservation_ entity, and Reservation Providers define the _ReservationType_, _AlertType_ and _ReservationPolicyType_. The _ReservationType_s provided by Reservation Providers defines the extensions for the _Reservation_, all those extension data are put into _extensionData_ field in _Reservation_.\n\nYou can use Data and Schema Service API to get the schema for the _extensionData_ by reservation type ID, and query the permissible values for particular fields declared in the schema if the fields support permissible values through the Data and Schema Service API.\n\n### Reservation Provider\n\nReservation Providers are provided by Service Provider, and are used to handle all reservation-related requests, including:\n\n1.  Register Reservation Types.\n2.  Register Reservation Policy Types.\n3.  Provide Reservation Callback implementation to manage all types of Reservation/Reservation Policy that were registered by it.\n4.  Provide Data and Schema Callback implementation for schema and permissible value query.\n\n### Sample Flows\n\nHere is the simple sample flows about how to use Reservation Service, it lists only the API names needed for the flow rather than the full request/response, please refer to _vRealize Automation API Programming Guide_ for more details.\n\n#### Create a Reservation\n\n1.  Query available reservation types.\n\nThe following API call returns available reservation types:\n\n`GET /reservation-service/api/reservations/types`\n\n2.  Set value to the fields defined in the _Reservation_ entity (do not include _extensionData_ field).\n\nIt may to need to get the sub tenant ID by using the following API call:\n\n`GET /identity/api/tenants/$tenantId/subtenants`\n\n3.  Put the data into _extensionData_ field in _Reservation_ entity.\n\n    1.  Query the schema definition by reservation type ID.\n\nThe following API call returns the schema definition for the specified reservation type:\n\n`GET /reservation-service/api/data-service/schema/$reservationTypeId/default`\n\n    2.  Put the data into _extensionData_ field in _Reservation_ entity based on the schema retrieved in previous step.\n\nYou may need to call the Data and Schema service to get the permissible values for the fields defined in schema:\n\n`POST /reservation-service/api/data-service/schema/$reservationTypeIdOrSchemaId/default/$fieldId/values`\n\n4.  Create the _Reservation_.\n\nThe following API call is used to create the target _Reservation_\n\n`POST /reservation-service/api/reservations`\n\n#### Register a Reservation Type\n\n1.  Register the Reservation Provider to vRealize Automation.\n2.  Register the i18n properties file for target reservation type to vRealize Automation.\n3.  Register the Reservation Provider to the following endpoints:\n    1.  com.vmware.csp.core.cafe.data\n    2.  com.vmware.vcac.core.cafe.reservation-callback.provider\n4.  Construct and register the _ReservationType_:\n\n`POST /reservation-service/api/reservations/types`\n",
-    "version" : "7.5.0-SNAPSHOT",
+    "version" : "7.5.1-SNAPSHOT",
     "title" : "Reservation Service API"
   },
   "basePath" : "/reservation-service",
@@ -71,399 +71,6 @@
                 "type" : "string",
                 "format" : "byte"
               }
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/data/{classId}/{id}" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get a set of data for the specified object",
-        "description" : "Get a set of data for the specified object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The identifier of the type of object to get data for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique id of the object to get data for. This should be sufficient to identify the object given classId.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/DynamicDataRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/DynamicDataResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/list/{classId}/default" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Retrieves the list of possible values for a given type of object",
-        "description" : "Retrieves the list of possible values for a given type of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/list/{classId}/types/{typeFilter}" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Retrieves the list of possible values for a given type of object",
-        "description" : "Retrieves the list of possible values for a given type of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object class",
-        "description" : "Get the schema for the specified object class.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/default/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object",
-        "description" : "This returns the schema of a particular type adjusted to the state of a specific instance..",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/instances/{id}/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "description" : "The unique identifier of an instance of the object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}" : {
-      "get" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the schema for the specified object type",
-        "description" : "This returns the schema of a particular type within a class of object.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object to retrieve the schema for.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/Schema"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}/update" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the state of a field in the specified schema",
-        "description" : "Get the state of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/batchElementUpdateRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/formUpdateResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/data-service/schema/{classId}/types/{typeFilter}/{fieldId}/values" : {
-      "post" : {
-        "tags" : [ "schema", "data-service" ],
-        "summary" : "Get the permissible values of a field in the specified schema",
-        "description" : "Get the permissible values of a field in the specified schema.",
-        "parameters" : [ {
-          "name" : "classId",
-          "in" : "path",
-          "description" : "The class of object.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "typeFilter",
-          "in" : "path",
-          "description" : "A type filter defining the specific subtype that owns the field.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "fieldId",
-          "in" : "path",
-          "description" : "The id of a field on the schema of the specified object class.",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/elementValuesRequest"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "'Success' with the data",
-            "schema" : {
-              "$ref" : "#/definitions/elementValues"
             }
           }
         }
@@ -1165,410 +772,11 @@
         }
       }
     },
-    "AndClause" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "subClauses" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "clause"
-            },
-            "items" : {
-              "$ref" : "#/definitions/Clause"
-            }
-          }
-        }
-      } ]
-    },
     "BoolCommonExpression" : {
       "type" : "object"
     },
-    "BooleanLiteral" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/booleanLiteral"
-      }, {
-        "type" : "object",
-        "description" : "Wraps a boolean value.",
-        "xml" : {
-          "name" : "booleanLiteral"
-        }
-      } ]
-    },
-    "CallbackEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "Clause" : {
-      "type" : "object",
-      "discriminator" : "type"
-    },
-    "CoalesceEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "arguments" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "argument",
-              "wrapped" : true
-            },
-            "items" : {
-              "$ref" : "#/definitions/Evaluator"
-            }
-          }
-        }
-      } ]
-    },
     "CommonExpression" : {
       "type" : "object"
-    },
-    "ComplexDataType" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/DataType"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "schema" : {
-            "$ref" : "#/definitions/Schema"
-          }
-        }
-      } ]
-    },
-    "ComplexEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "componentTypeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "componentId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "classId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "typeFilter" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "values" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/definitions/Evaluator"
-            }
-          }
-        }
-      } ]
-    },
-    "ConditionalEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "cases" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "case"
-            },
-            "items" : {
-              "$ref" : "#/definitions/ConditionalEvaluatorCase"
-            }
-          },
-          "defaulValue" : {
-            "$ref" : "#/definitions/Evaluator"
-          }
-        }
-      } ]
-    },
-    "ConditionalEvaluatorCase" : {
-      "type" : "object",
-      "properties" : {
-        "condition" : {
-          "$ref" : "#/definitions/Clause"
-        },
-        "value" : {
-          "$ref" : "#/definitions/Evaluator"
-        }
-      }
-    },
-    "ConstantClause" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "$ref" : "#/definitions/booleanLiteral"
-          }
-        }
-      } ]
-    },
-    "ConstantValue" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "$ref" : "#/definitions/literal"
-          }
-        }
-      } ]
-    },
-    "Constraint" : {
-      "type" : "object",
-      "required" : [ "value" ],
-      "discriminator" : "type",
-      "properties" : {
-        "value" : {
-          "$ref" : "#/definitions/Evaluator"
-        }
-      }
-    },
-    "ContainsOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "ContextPermissibleValueList" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/PermissibleValueList"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "CriteriaOperator" : {
-      "type" : "object",
-      "discriminator" : "type"
-    },
-    "CustomPropertyDefinitionMetadata" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object",
-        "required" : [ "field" ],
-        "properties" : {
-          "field" : {
-            "$ref" : "#/definitions/Field"
-          }
-        }
-      } ]
-    },
-    "CustomValidationConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "DataType" : {
-      "type" : "object",
-      "discriminator" : "type",
-      "properties" : {
-        "typeId" : {
-          "type" : "string",
-          "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
-        }
-      }
-    },
-    "DefaultValueBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "DisplayTextBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "DynamicDataRequest" : {
-      "type" : "object",
-      "properties" : {
-        "tenantId" : {
-          "type" : "string"
-        },
-        "ignoreUnknownFields" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "ids" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "id"
-          },
-          "readOnly" : true,
-          "items" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
-    "DynamicDataResponse" : {
-      "type" : "object",
-      "properties" : {
-        "values" : {
-          "$ref" : "#/definitions/literalMap"
-        }
-      }
-    },
-    "DynamicLayoutReference" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutReference"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "dependencies" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "dependency",
-              "wrapped" : true
-            },
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          }
-        }
-      } ]
-    },
-    "DynamicPermissibleValueList" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/PermissibleValueList"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "context" : {
-            "$ref" : "#/definitions/DynamicValueContext"
-          },
-          "dependencies" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "dependency",
-              "wrapped" : true
-            },
-            "uniqueItems" : true,
-            "items" : {
-              "type" : "string"
-            }
-          }
-        }
-      } ]
-    },
-    "DynamicValueContext" : {
-      "type" : "object",
-      "required" : [ "parameterMappings" ],
-      "properties" : {
-        "providerEntityId" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "parameterMappings" : {
-          "$ref" : "#/definitions/ParameterMappingCollection"
-        }
-      }
-    },
-    "EditableBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "ElementState" : {
-      "type" : "object",
-      "properties" : {
-        "dependencies" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "dependency",
-            "wrapped" : true
-          },
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "string"
-          }
-        },
-        "facets" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "facet",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/Constraint"
-          }
-        }
-      }
-    },
-    "ElementValuesPagingInfo" : {
-      "type" : "object",
-      "properties" : {
-        "offset" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
-          }
-        }
-      }
-    },
-    "EncryptedBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "EndsWithOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "EntityReferenceDataType" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/DataType"
-      }, {
-        "type" : "object"
-      } ]
     },
     "EntitySimpleProperty" : {
       "type" : "object",
@@ -1577,482 +785,6 @@
           "type" : "string"
         }
       }
-    },
-    "EqualsOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "Evaluator" : {
-      "type" : "object",
-      "discriminator" : "type"
-    },
-    "Expression" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "operator" : {
-            "$ref" : "#/definitions/CriteriaOperator"
-          },
-          "leftOperand" : {
-            "$ref" : "#/definitions/Evaluator"
-          },
-          "rightOperand" : {
-            "$ref" : "#/definitions/Evaluator"
-          }
-        }
-      } ]
-    },
-    "ExtensionRendererContext" : {
-      "type" : "object",
-      "properties" : {
-        "extensionId" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "parameterMappings" : {
-          "$ref" : "#/definitions/ParameterMappingCollection"
-        }
-      }
-    },
-    "ExternalValue" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "required" : [ "dynamicValueProviderInfo" ],
-        "properties" : {
-          "dynamicValueProviderInfo" : {
-            "$ref" : "#/definitions/DynamicValueContext"
-          }
-        }
-      } ]
-    },
-    "FacetValueMap" : {
-      "type" : "object",
-      "properties" : {
-        "facets" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "facet",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/FacetValueMapEntry"
-          }
-        }
-      }
-    },
-    "FacetValueMapEntry" : {
-      "type" : "object",
-      "properties" : {
-        "type" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "value" : {
-          "$ref" : "#/definitions/literal"
-        }
-      }
-    },
-    "Field" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "label" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "dataType" : {
-          "$ref" : "#/definitions/DataType"
-        },
-        "displayAdvice" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          },
-          "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
-        },
-        "orderIndex" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "permissibleValues" : {
-          "$ref" : "#/definitions/PermissibleValueList"
-        },
-        "state" : {
-          "$ref" : "#/definitions/ElementState"
-        },
-        "isMultiValued" : {
-          "type" : "boolean",
-          "xml" : {
-            "attribute" : true
-          },
-          "default" : false
-        },
-        "columns" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "column",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/Field"
-          }
-        }
-      }
-    },
-    "FieldReference" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "path" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          }
-        }
-      } ]
-    },
-    "FixedValueConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "GreaterThanOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "GreaterThanOrEqualsOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "IaasPropertyNameBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "IncrementBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "InternalConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "IsDefinedOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "LayoutCell" : {
-      "type" : "object",
-      "discriminator" : "type",
-      "properties" : {
-        "size" : {
-          "type" : "integer",
-          "format" : "int32",
-          "xml" : {
-            "attribute" : true
-          }
-        }
-      }
-    },
-    "LayoutExtension" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutCell"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "extensionId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "extensionPointId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "fieldPrefix" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "state" : {
-            "$ref" : "#/definitions/ElementState"
-          }
-        }
-      } ]
-    },
-    "LayoutField" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutFlowElement"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "label" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "orderIndex" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "dataType" : {
-            "$ref" : "#/definitions/DataType"
-          },
-          "displayAdvice" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            },
-            "enum" : [ "TEXTBOX", "HYPERLINK", "EMAIL", "TEXTAREA", "DATE_TIME_PICKER", "CHECKBOX", "YES_NO", "CHECKBOX_GROUP", "DUAL_LIST", "RADIO_GROUP", "DROPDOWN", "LIST", "SEARCHER", "TREE", "FORM", "IMAGE", "SLIDER", "DATA_TABLE", "VALUE_PICKER", "CONFIRM_PASSWORD" ]
-          },
-          "permissibleValues" : {
-            "$ref" : "#/definitions/PermissibleValueList"
-          },
-          "state" : {
-            "$ref" : "#/definitions/ElementState"
-          },
-          "labelSize" : {
-            "type" : "integer",
-            "format" : "int32",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "detailLayout" : {
-            "$ref" : "#/definitions/LayoutReference"
-          },
-          "extensionRendererContext" : {
-            "$ref" : "#/definitions/ExtensionRendererContext"
-          },
-          "isMultiValued" : {
-            "type" : "boolean",
-            "xml" : {
-              "attribute" : true
-            },
-            "default" : false
-          },
-          "columns" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "column",
-              "wrapped" : true
-            },
-            "items" : {
-              "$ref" : "#/definitions/LayoutField"
-            }
-          }
-        }
-      } ]
-    },
-    "LayoutFlow" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutCell"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "state" : {
-            "$ref" : "#/definitions/ElementState"
-          },
-          "parts" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "part",
-              "wrapped" : true
-            },
-            "items" : {
-              "$ref" : "#/definitions/LayoutFlowElement"
-            }
-          }
-        }
-      } ]
-    },
-    "LayoutFlowElement" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutCell"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "LayoutPage" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "label" : {
-          "type" : "string"
-        },
-        "state" : {
-          "$ref" : "#/definitions/ElementState"
-        },
-        "sections" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "section",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/LayoutSection"
-          }
-        }
-      }
-    },
-    "LayoutPlaceholderCell" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutCell"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "LayoutReference" : {
-      "type" : "object",
-      "discriminator" : "type"
-    },
-    "LayoutRow" : {
-      "type" : "object",
-      "properties" : {
-        "items" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "item",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/LayoutCell"
-          }
-        }
-      }
-    },
-    "LayoutSection" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "label" : {
-          "type" : "string"
-        },
-        "state" : {
-          "$ref" : "#/definitions/ElementState"
-        },
-        "rows" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "row",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/LayoutRow"
-          }
-        }
-      }
-    },
-    "LayoutText" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutFlowElement"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "value" : {
-            "type" : "string"
-          },
-          "state" : {
-            "$ref" : "#/definitions/ElementState"
-          }
-        }
-      } ]
-    },
-    "LessThanOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "LessThanOrEqualsOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
     },
     "LiteralMapEntry" : {
       "type" : "object",
@@ -2067,93 +799,6 @@
           "$ref" : "#/definitions/literal"
         }
       }
-    },
-    "MandatoryConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MaxCardinalityConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MaxLengthConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MaxValueConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MaximumValueEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "arguments" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "argument",
-              "wrapped" : true
-            },
-            "items" : {
-              "$ref" : "#/definitions/Evaluator"
-            }
-          }
-        }
-      } ]
-    },
-    "MinCardinalityConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MinLengthConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MinValueConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "MinimumValueEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "arguments" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "argument",
-              "wrapped" : true
-            },
-            "items" : {
-              "$ref" : "#/definitions/Evaluator"
-            }
-          }
-        }
-      } ]
     },
     "MonetaryValue" : {
       "allOf" : [ {
@@ -2172,94 +817,6 @@
         "description" : "Base type for representing monetary values, encapsulating both some kind of quantity and a currency.",
         "xml" : {
           "name" : "literal"
-        }
-      } ]
-    },
-    "MultipleEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "required" : [ "items" ],
-        "properties" : {
-          "elementTypeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            },
-            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
-          },
-          "items" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Evaluator"
-            }
-          }
-        }
-      } ]
-    },
-    "NotClause" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "subClause" : {
-            "$ref" : "#/definitions/Clause"
-          }
-        }
-      } ]
-    },
-    "NotEqualsOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "NullDisplayTextBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "ObjectDataType" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/DataType"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "componentTypeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "componentId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "classId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "typeFilter" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          },
-          "label" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            }
-          }
         }
       } ]
     },
@@ -2319,24 +876,6 @@
         }
       }
     },
-    "OrClause" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "subClauses" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "clause"
-            },
-            "items" : {
-              "$ref" : "#/definitions/Clause"
-            }
-          }
-        }
-      } ]
-    },
     "OrderByExpression" : {
       "type" : "object",
       "properties" : {
@@ -2377,10 +916,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2388,6 +923,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2404,11 +943,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -2442,10 +981,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2453,6 +988,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2484,10 +1023,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2495,6 +1030,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2526,10 +1065,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2537,6 +1072,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
         }
       }
     },
@@ -2568,10 +1107,6 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
-        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2579,66 +1114,12 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        }
-      }
-    },
-    "ParameterMapping" : {
-      "type" : "object",
-      "properties" : {
-        "key" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
         },
-        "value" : {
-          "$ref" : "#/definitions/Evaluator"
-        }
-      }
-    },
-    "ParameterMappingCollection" : {
-      "type" : "object",
-      "properties" : {
-        "params" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "param",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/ParameterMapping"
-          }
-        }
-      }
-    },
-    "PermissibleValueList" : {
-      "type" : "object",
-      "discriminator" : "type",
-      "properties" : {
-        "customAllowed" : {
+        "first" : {
           "type" : "boolean",
-          "xml" : {
-            "attribute" : true
-          },
           "default" : false
         }
       }
-    },
-    "PrimitiveDataType" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/DataType"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "typeId" : {
-            "type" : "string",
-            "xml" : {
-              "attribute" : true
-            },
-            "enum" : [ "STRING", "INTEGER", "DECIMAL", "MONEY", "MONEY_RANGE", "MONEY_TIME_RATE", "BOOLEAN", "ENTITY_REFERENCE", "DATE_TIME", "TIME_SPAN", "SECURE_STRING", "COMPLEX" ]
-          }
-        }
-      } ]
     },
     "ProviderPreferences" : {
       "type" : "object",
@@ -2657,32 +1138,6 @@
           "$ref" : "#/definitions/literalMap"
         }
       }
-    },
-    "ReadOnlyConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "RefreshOnChangeBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "RegexpConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "errorMessage" : {
-            "type" : "string"
-          }
-        }
-      } ]
     },
     "Reservation" : {
       "type" : "object",
@@ -2837,89 +1292,8 @@
         }
       }
     },
-    "ResetValueBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "Schema" : {
-      "type" : "object",
-      "properties" : {
-        "fields" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "field"
-          },
-          "uniqueItems" : true,
-          "items" : {
-            "$ref" : "#/definitions/Field"
-          }
-        }
-      }
-    },
-    "SkipExportBehavior" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
     "Sort" : {
       "type" : "object"
-    },
-    "StartsWithOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "StaticLayout" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/LayoutReference"
-      }, {
-        "type" : "object",
-        "required" : [ "layout" ],
-        "properties" : {
-          "layout" : {
-            "$ref" : "#/definitions/layout"
-          }
-        }
-      } ]
-    },
-    "StaticPermissibleValueList" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/PermissibleValueList"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "values" : {
-            "type" : "array",
-            "xml" : {
-              "name" : "value"
-            },
-            "items" : {
-              "$ref" : "#/definitions/value"
-            }
-          }
-        }
-      } ]
-    },
-    "SubsetOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "SupersetOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
     },
     "TimeSpan" : {
       "allOf" : [ {
@@ -2932,90 +1306,23 @@
         }
       } ]
     },
-    "UniqueConstraint" : {
+    "booleanLiteral" : {
       "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "UnspecifiedEvaluator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "VisibilityConstraint" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Constraint"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "WithinOperator" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/CriteriaOperator"
-      }, {
-        "type" : "object"
-      } ]
-    },
-    "WrapperClause" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Evaluator"
+        "$ref" : "#/definitions/literal"
       }, {
         "type" : "object",
         "properties" : {
           "value" : {
-            "$ref" : "#/definitions/Evaluator"
+            "type" : "boolean",
+            "description" : "The boolean value.",
+            "default" : false
           }
+        },
+        "description" : "Wraps a boolean value.",
+        "xml" : {
+          "name" : "booleanLiteral"
         }
       } ]
-    },
-    "batchElementUpdateRequest" : {
-      "type" : "object",
-      "required" : [ "formValues" ],
-      "properties" : {
-        "headers" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "formValues" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "trigger" : {
-          "type" : "string"
-        },
-        "triggeredDetailsLayout" : {
-          "$ref" : "#/definitions/layout"
-        },
-        "affectedElements" : {
-          "type" : "array",
-          "xml" : {
-            "wrapped" : true
-          },
-          "items" : {
-            "type" : "string"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "batchElementUpdateRequest"
-      }
-    },
-    "booleanLiteral" : {
-      "type" : "object",
-      "discriminator" : "type",
-      "properties" : {
-        "value" : {
-          "type" : "boolean",
-          "description" : "The boolean value.",
-          "default" : false
-        }
-      },
-      "description" : "Wraps a boolean value.",
-      "xml" : {
-        "name" : "booleanLiteral"
-      }
     },
     "complexLiteral" : {
       "allOf" : [ {
@@ -3098,53 +1405,6 @@
         }
       } ]
     },
-    "elementValues" : {
-      "type" : "object",
-      "properties" : {
-        "values" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "value",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/value"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "elementValues"
-      }
-    },
-    "elementValuesRequest" : {
-      "type" : "object",
-      "properties" : {
-        "text" : {
-          "type" : "string"
-        },
-        "tenantId" : {
-          "type" : "string"
-        },
-        "userId" : {
-          "type" : "string"
-        },
-        "dependencyValues" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "pagingInfo" : {
-          "$ref" : "#/definitions/ElementValuesPagingInfo"
-        },
-        "associateValue" : {
-          "$ref" : "#/definitions/literal"
-        },
-        "headers" : {
-          "$ref" : "#/definitions/literalMap"
-        }
-      },
-      "xml" : {
-        "name" : "elementValuesRequest"
-      }
-    },
     "entityRef" : {
       "allOf" : [ {
         "$ref" : "#/definitions/literal"
@@ -3198,24 +1458,6 @@
           "name" : "entityRefEx"
         }
       } ]
-    },
-    "formUpdateResponse" : {
-      "type" : "object",
-      "properties" : {
-        "elementUpdates" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "elementUpdate",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/updateElementEntry"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "formUpdateResponse"
-      }
     },
     "importRequest" : {
       "type" : "object",
@@ -3290,24 +1532,6 @@
       },
       "xml" : {
         "name" : "labelledReference"
-      }
-    },
-    "layout" : {
-      "type" : "object",
-      "properties" : {
-        "pages" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "page",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/LayoutPage"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "layout"
       }
     },
     "literal" : {
@@ -3650,63 +1874,6 @@
       "description" : "A literal defining period of time. This period is represented some integral number of a specified timeUnit.e.g. 6 days.",
       "xml" : {
         "name" : "timeSpan"
-      }
-    },
-    "updateElementEntry" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "detailLayout" : {
-          "$ref" : "#/definitions/layout"
-        },
-        "facetValues" : {
-          "$ref" : "#/definitions/FacetValueMap"
-        },
-        "extensionRendererContext" : {
-          "$ref" : "#/definitions/literalMap"
-        },
-        "permissibleValues" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "value",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/value"
-          }
-        },
-        "errors" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "error",
-            "wrapped" : true
-          },
-          "items" : {
-            "type" : "string"
-          }
-        }
-      },
-      "xml" : {
-        "name" : "updateElementEntry"
-      }
-    },
-    "value" : {
-      "type" : "object",
-      "properties" : {
-        "underlyingValue" : {
-          "$ref" : "#/definitions/literal"
-        },
-        "label" : {
-          "type" : "string"
-        }
-      },
-      "xml" : {
-        "name" : "value"
       }
     }
   }

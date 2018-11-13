@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Reclamation Service API Specification\n\n## What Is the Reclamation Service?\n\nYou can use the reclamation service to query the VMs in an installation for non-usage and, if they are not in use, mark them as eligible for reclamation. \n\nUsage statistics data for the VMs is retrieved from IaaS. If vRealize Operations Manager (vROps)  is attached to the vRA instance, then usage data for the the VMs is extracted from the vROps, but only for vSphere machines.\n\nFor other platform types, IaaS is used for statistics metrics.\n\n## Typical Use Cases\n\nTenant administrators view metrics for the VMs in the installation, and can initiate a reclamation request for VMs whose lease they want to reclaim.\n\nAll VMs that  have been accepted for reclamation from their owners are put on a new lease, which expires immediately.  After that, after expiration of a specified time, the VMs are deleted from the underlying services. If the time period for owner response has elapsed, the machines are put on a new lease, which is defined in the reclamation request.\n\n## Key Concepts\n\n### Metrics\n\nTenant administrators can choose to use basic metrics or metrics from vROps.\n\nTenant administrators can use metrics such as low CPU use, low memory use, or low hard disk use to reclaim leases for VMs.  \n\nUsing the REST API calls for performance endpoints, you can request overall performance metrics or metrics for a specified VM.\n\n### Metrics Provider Management Endpoint\n\nThe management endpoint used by the vRA installation.  You can query the management endoint using the `GET /api/management/endpoint/{tenantId}` REST API.  If the default metrics provider is being used, the response body is empty.  If a vROps management endpoint is being used, the vROps management endpoint is returned.\n\nYou can also create a metrics provider management endpoint, update it,or delete it.\n\n### Endpoint Certificate\n\nThe certificate associated with a management endpoint.\n\n\n## Additional Information\n\nFor additional information, see the *vRA Programming Guide*.\n                                                       \n",
-    "version" : "7.5.0-SNAPSHOT",
+    "version" : "7.5.1-SNAPSHOT",
     "title" : "Reclamation Service API"
   },
   "basePath" : "/management-service",
@@ -858,11 +858,11 @@
         "queryInfo" : {
           "$ref" : "#/definitions/OdataQueryInfo"
         },
-        "pageNumber" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageSize" : {
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
