@@ -26,77 +26,104 @@
 ###############################################################################
 
 set -x  # fail the script if any command fails
-
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
-OUTPUT_DIR=${SCRIPT_DIR}/staging
-TOOLS_DIR=${SCRIPT_DIR}/tools
+
+# -----------------------------------------------------------------------------
+# VARIABLES YOU CAN SET
+
+# you can supply an overridden build directory via BUILD_DIR variable if you 
+# wish.  If not provided, all output is created in this (the script) directory.
+BUILD_DIR=${BUILD_DIR:-${SCRIPT_DIR}}
 
 APIX_SERVER=https://vdc-repo.vmware.com
 
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.0.0"
-export MILESTONE="rc3"
+# these were the airwatch values export VER="1.0.0"
+#export MILESTONE="rc3"
+export VER="1.1.1"
+export MILESTONE="rc2"
+
+# -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
 
+OUTPUT_DIR=${BUILD_DIR}/staging
+TOOLS_DIR=${BUILD_DIR}/tools
+DOWNLOAD_DIR=${BUILD_DIR}/download
+
+mkdir -p ${DOWNLOAD_DIR}
+
 # download zips of the distribution and tools if not cached locally
-if [ ! -f api-explorer-dist-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-dist-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
 fi
 
-if [ ! -f api-explorer-tools-${VER}.zip ]; then
-    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip
-    rm -rf ${SCRIPT_DIR}/tools  # if we downloaded new tools, wipe the old ones
+if [ ! -f ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip ]; then
+    wget --no-check-certificate ${APIX_RELEASE_URL}/api-explorer-tools-${VER}.zip --output-document ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
+    rm -rf ${TOOLS_DIR}  # if we downloaded new tools, wipe the old ones
 fi
 
 # only stage the tools once
-if [ -d "${SCRIPT_DIR}/tools" ]; then
+if [ -d "${TOOLS_DIR}" ]; then
     echo "Already staged tools"
 else
     echo "Staging tools"
-    mkdir -p ${SCRIPT_DIR}/tools
-    pushd ${SCRIPT_DIR}/tools
-	
-    unzip ${SCRIPT_DIR}/api-explorer-tools-${VER}.zip
-
+    mkdir -p ${TOOLS_DIR}
+    pushd ${TOOLS_DIR}
+    unzip ${DOWNLOAD_DIR}/api-explorer-tools-${VER}.zip
     popd
 fi
 
 # Clean the staging directory if it already exists
 rm -rf ${OUTPUT_DIR}/*
-mkdir -p ${OUTPUT_DIR}/local/swagger
+mkdir -p ${OUTPUT_DIR}/docs
+mkdir -p ${OUTPUT_DIR}/api/system/help
 
 pushd ${OUTPUT_DIR}
 
 echo "Extracting APIX distribution"
-unzip ${SCRIPT_DIR}/api-explorer-dist-${VER}.zip
+unzip ${DOWNLOAD_DIR}/api-explorer-dist-${VER}.zip
+
+# remove stock local.json as we do not use it and we move to a different location
+rm local.json config.js
+
+echo "Staging doc files"
+cp -Rvf ${SCRIPT_DIR}/additional-content/* .
+
+echo "staging local.json as ${OUTPUT_DIR}/api/system/help/localjson"
+cp -vf ${SCRIPT_DIR}/override-content/local.json ${OUTPUT_DIR}/api/system/help/localjson
 
 echo "Overwriting stock config with local config"
-cp -f ${SCRIPT_DIR}/config.js .
+cp -vf ${SCRIPT_DIR}/override-content/config.js .
 
-# run the tool to stage the swagger json files from the 
-# ${SCRIPT_DIR}/swagger directory to the local/swagger
-# directory abbreviating the descriptions and then also 
-# generating overview HTML next to the json files.  when it does
-# this it generates an "overview" resource in the local.json file
-# that has all of the configuration in it
+cp -vf ${SCRIPT_DIR}/override-content/favicon.ico .
 
-echo "Staging local API content"
-python ${TOOLS_DIR}/apixlocal/apixlocal.py \
- stage \
- --server=${APIX_SERVER} \
- --html_root_dir=${OUTPUT_DIR} \
- --output_file=${OUTPUT_DIR}/local.json  \
- --abbreviate_description \
- --generate_overview_html \
- --product_name="AirWatch;9.2" \
- --swagger_glob=${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
- --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties \
+echo "staging swagger files"
+cp -vf ${SCRIPT_DIR}/swagger/* ${OUTPUT_DIR}/api/system/help/
+
+# the commented lines below run a tool which generates the local.json file 
+# from a given set of swagger files.  this is not used currently and instead
+# we are using a statically defined local.json (localjson) that has hard coded
+# links in it.
+
+#echo "Staging local API content"
+#python ${TOOLS_DIR}/apixlocal/apixlocal.py \
+# stage \
+# --server=${APIX_SERVER} \
+# --html_root_dir=${OUTPUT_DIR} \
+# --abbreviate_description \
+# --generate_overview_html \
+# --output_file=${OUTPUT_DIR}/api/system/help/localjson  \
+# --product_name="VMware Workspace ONE UEM;9.3" \
+# --api_version="9.3" \
+# --swagger_glob=${SCRIPT_DIR}/new-swagger/* \
+# --swagger_output_dir=${OUTPUT_DIR}/local/swagger \
+# --file_name_to_api_uid_properties_file_path=${SCRIPT_DIR}/api-uid-mappings.properties
+
 
 
 # inline replace title on the API Explorer index.html file to reflect our product branding
-sed -i 's/API Explorer/VMware AirWatch API Explorer/' ${OUTPUT_DIR}/index.html
+sed -i 's/API Explorer/VMware Workspace ONE UEM API Explorer/' ${OUTPUT_DIR}/index.html
 
 popd

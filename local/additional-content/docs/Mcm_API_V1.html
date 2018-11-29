@@ -1,0 +1,63 @@
+﻿<section>
+    <h2>
+        Mobile Content Management
+    </h2>
+    <div>
+        Workspace ONE UEM REST APIs provide the ability to access and manage Personal Content. Features include adding, moving, sharing, and deleting Files and Folders.
+        <br />
+        <br />
+        <div class="gray-background">
+            <span class="font-weight-bold">Important Note: </span>Personal Content APIs only support Basic Authentication. For more information, refer to the API Authentication section on the main Overview tab.
+        </div>
+    </div>
+	<div>
+		Personal Content APIs are divided into three parts:
+		<ul>
+            <li><b>Contents</b> – Personal Content  APIs perform operations to obtain information about the files and folder structure within Workspace ONE UEM Personal Content.</li>
+			<li><b>Files</b> – Personal Content Files APIs perform operations to obtain information about the files and to perform actions on them.</li>
+			<li><b>Folders</b> – Personal Content Folder APIs perform operations to obtain information about the folders and to perform actions on them.</li>
+		</ul>
+	</div>
+	<h3>
+		Enabling Personal Content API Access
+	</h3>
+	<div>
+	Workspace ONE UEM REST APIs enable your end-users to manage their Personal Content with features such as adding, moving, sharing, and deleting Files and Folders. Follow the below steps to make the most of this functionality:
+		<ol>
+            <li>From the Workspace ONE UEM main menu, navigate to <b>Groups</b> &amp; <b>Settings</b> &gt; <b>All Settings</b> &gt; <b>System</b> &gt; <b>Advanced</b> &gt; <b>API</b> &gt; <b>REST API</b>.</li>
+			<li> On the <b>General</b> tab, configure the following settings.</li>
+            <br />
+			<div>
+				<table style="width:100%" class="Permissions">
+					<tr>
+						<th align="left" width="20%"><b>Settings</b></th>
+						<th align="left"><b>Description</b></th>                 
+					</tr>
+					<!-- Enable API Access -->
+					<tr>
+						<td><b>Enable API Access</b></td>
+						<td>Select this check box to automatically generate the API key for the Organization Group</td>
+					 </tr>
+					 <!-- Add -->
+					<tr>
+						<td><b>Add</b></td>
+						<td>Select <b>Add</b> to add/or generate multiple API keys.
+							<ul>
+								<li><b>Service</b> – Enter one or multiple service(s) and generate their own independent API keys.</li>
+								<li><b>Account Type</b> – Select the type of the account. To access Personal Content APIs (MCM APIs), select the Account type as <b>Enrollment User</b>.</li>
+								<li><b>Description</b> – Enter short description for the service and generated API key.</li>
+                                <li><b>Whitelisted Domains</b> – Enter domains  that can interact with Workspace ONE UEM APIs via API key.</li>
+							</ul>
+						</td>
+					 </tr>
+				</table>
+			</div>
+			<br />
+			<li>Navigate to <b>Groups and Settings &gt; All Settings &gt; Content &gt; Personal Content</b>. Set <b>Personal Content</b> to <b>Enabled</b> to enable Personal Content at your organization group.</li>
+			<li>Enable applicable <b>Shared Links</b> settings to use sharing file link functionality.</li>
+			<li>Enable applicable <b>Shared Folder</b> settings to use sharing folders functionality.</li>
+		</ol>
+        <p>For more information on Enabling and Configuring Personal Content, please refer to the Mobile Content Management Guide in Workspace ONE UEM Resources.</p>
+	<br />
+	</div>
+</section>

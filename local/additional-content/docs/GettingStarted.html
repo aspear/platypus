@@ -1,0 +1,638 @@
+<!--
+<copyright file="GettingStarted.html" company="VMWare">
+Copyright © 2017 VMWare, LLC. All rights reserved. 
+</copyright>
+-->
+<div class="api-overview-html">
+	<h2>Getting Started with the Workspace ONE UEM API</h2>
+	<p>
+	    Workspace ONE UEM provides a collection of RESTful APIs that allow external programs to use the core product functionality by integrating the APIs with existing IT infrastructures and third-party applications. Leveraging the simplified REST style of software architecture, Workspace ONE UEM REST APIs currently support a multitude of functionalities, including organization group, console administration, mobile application, mobile device, email, enrollment user, profile, smart group, and user group management.
+	</p>
+    <p>
+        Leveraging REST-based APIs provide several benefits to enterprises, including eliminated cost and time spent developing applications in-house. Workspace ONE UEM REST APIs are fully able and ready to integrate with enterprise servers, programs, and processes. Additionally, Workspace ONE UEM REST APIs are more efficient, can run smoothly and can be easily branded with enterprises. These APIs are intended for application developers, and this guide provides an understanding of design and architecture of Workspace ONE UEM's API library to facilitate custom development and integration with Workspace ONE UEM.
+    </p>
+	<p>
+		To begin leveraging the APIs, REST API access must be enabled in the Workspace ONE UEM. For help setting up the console, please see our <a id="InitialSetup" href="InitialSetup.html">Initial Setup</a> page. Client applications can then request a service document located at the API application entry point, e.g. <a id="SystemInfo" href="#/api/system/help/endpoints/GET-info">https://{host}/api/system/info</a>. Dereferencing this URL will yield a root service document describing which resources are available to the caller.
+	</p>
+	
+	<h3>Using the VMware Workspace ONE UEM API Explorer</h3>
+	<p>
+		For help navigating the API explorer tool, please see the <a id="HowToUse" href="https://support.air-watch.com/articles/115012518507">How to Use VMware Workspace ONE UEM API Explorer</a> page on MyAirWatch.
+	</p>
+	
+	<h3>Breaking changes</h3>
+    <p>
+        (Workspace ONE UEM 9.2) Error responses - The JSON error response model has been modified to conform with the standard of camel casing. The "ErrorCode" and "Message" properties now begin with a lower-case character.
+        Error respones will now look similar to the below JSON:<br />
+<pre>
+<code>
+	{
+	   "errorCode": 1003,
+	   "message": "The authorization header is empty or the scheme is not basic",
+	   "activityId": "d329d710-4b93-4ef6-80c3-2411fdde5e78"
+	}
+</code>
+</pre>
+    </p>
+	
+	<h3>New APIs</h3>
+    <p>
+        APIs added in the latest version of Workspace ONE UEM will have their description prepended with "New -". An example is shown below.<br />
+        <img src="images/NewApi.PNG" alt="New API">
+    </p>
+	
+	<h3>Known Issues</h3>
+    <p>
+		<ul style="text-indent: -1.5em;margin-left: 1.5em;">
+        <li>(Workspace ONE UEM 9.2) When using the "Try it out!" function to download a file from an API, the downloaded file may be corrupted. Accessing the API using a REST client or browser will allow the file to download correctly.</li>
+        <li>(Workspace ONE UEM 9.2) The CURL request shown under the "Try it out!" section may not append the API version to the end of the Accept header. When using the CURL request to access an API with a version other than 1, make sure to append the version to the Accept header. For more information on versioning, see the "Version Remotion" section.</li>
+        <li>(Workspace ONE UEM 9.2) When authorizing an API for "Try it out!" by using the red exclamation mark button, the "Available authorizations" window may open in the middle of the page instead of in the current view.</li>
+        <li>(Workspace ONE UEM 8.3) When sending an API request with a JSON payload, if an integer property if prefixed with a zero(ex. 017) it will be converted to octal. This is expected behavior as per JSON standards.</li>
+		</ul>
+	</p>
+	
+    <h3>Deprecated APIs</h3>
+    <p>
+        Deprecated endpoints are marked with a strikethrough.   
+    </p>
+    <p> <span class="font-weight-bold">Important Note: </span> At this time, there is no specific date to share when the old formats will be deprecated. When deprecation is determined, official communication will be sent out.</p>
+	
+	<h3>Version Remotion</h3>
+    <p>
+        Workspace ONE UEM has modified the look of the API URLs by removing the version specification from them. For example: <span style="font-weight:bold"> Assign Smart Group to a Public Application</span>
+    </p>
+	<p class="font-weight-bold">Old API URI: </p> https://host/api/v1/mam/apps/public/{applicationid}/addsmartgroup/{smartgroupid}
+	<p class="font-weight-bold">New API URI: </p> https://host/api/mam/apps/public/{applicationid}/smartgroup/{smartgroupid}   
+    <p>
+        Different API versions can be fetched by adding the version details in the <span class="font-weight-bold"> Accept header</span>. A single API URL serves the purpose of retrieving multiple versions based on the version details in the Accept header. Below is an example of the Accept header to fetch version 2 of an API. 
+    </p>
+   
+    <p class="font-weight-bold">
+        Accept=application/json;version=2 <br /> OR <br /> Accept=application/xml;version=2
+    </p>
+	<p>
+	    Workspace ONE UEM will also return the API version used as well as a list of all the supported versions of the API in the response headers. The 'x-api-version' header specifies which version of the API was used, and the 'api-supported-version' header lists the supported versions of the API.
+		For example, if version 1 of an API was requested, but the API supports both version 1 and 2, the response headers will be:
+	</p>
+	<p>
+		<span class="font-weight-bold">x-api-version: v1<br />api-supported-version: 1,2</span>
+	</p>
+	<p>
+		<span class="font-weight-bold">Important Note:</span> If no version is sent in the Accept header, version 1 of the API will be returned by default. If a version higher than the maximum supported version is requested, the latest version of the API will be used.
+	</p>
+
+	<h3>API Rate Limits</h3>
+	<p>
+	    Workspace ONE UEM limits the number of API requests that can be made during certain time periods. Rate limiting is done per Organization Group (OG) based on the API key used in the request. There are two different rate limits:
+		<p>
+		<span class="font-weight-bold">Server Throttling</span> - The limit imposed on an OG for a 1 minute interval. <br />
+		<span class="font-weight-bold">Daily Quota</span> - The limit imposed on an OG for a 24-hour interval. <br />
+		<p>
+		Each additional API key created at an OG will aggregate to the total Server Throttling and Daily Quota set for that OG.
+	</p>
+	<p>
+		The response headers from an API call contain information about the rate limits set on the APIs. Below are examples of the headers and an explanation of what they represent.
+		<p>
+		<span class="font-weight-bold">x-ratelimit-limit: 50000</span> - The total number of API calls that can be made in a 24 hour period <br />
+		<span class="font-weight-bold">x-ratelimit-remaining: 48505</span> - The remaining number of API calls that can be made in the 24 hour period<br />
+		<span class="font-weight-bold">x-ratelimit-reset: 1503683551</span> - The exact time when the rate limit will reset. The value is in epoch time format.
+		<p>
+	</p>
+    <h2>
+        Important API Considerations
+    </h2>
+    
+	<h3>Authentication</h3>
+	<p>
+	    Workspace ONE UEM supports multiple types of authentication for APIs. The authentication credentials are sent in the "Authorization" HTTP request header.
+	</p>
+	
+	<ul>
+		<li>Basic Authentication - Base64-encoded username and password. </li>
+		<li>Certificate Authentication - Signature of either the request message or URL, signed with an admin certificate generated in the Workspace ONE UEM.</li>
+		<li>OAuth Authentication - Bearer token aquired from an identity provider, such as VMware Identity Manager.</li>
+	</ul>
+	
+	<p>
+	    Workspace ONE UEM APIs also require an API key to be sent for additional authorization. This key is sent in the "aw-tenant-code" request header. The key can be found on the REST API settings page of the Workspace ONE UEM.
+	</p>
+	<p>
+		<span class="font-weight-bold">aw-tenant-code</span>: (The key value is available in the system settings when REST API access is enabled.)
+	</p>
+
+	<h3>Endpoint URIs</h3>
+	<p>
+		Client applications <b>MUST NOT</b> make any assumptions about resource URI layouts, structure or hierarchy as these are controlled by the server and can change over time.
+	</p>
+    
+	<h3>SSL only</h3>
+    <p>Workspace ONE UEM requires all requests to be made over SSL.</p>
+    
+	<h3>Device Identifier Formats</h3>
+	<p>
+	Workspace ONE UEM supports five types of device identifiers:
+	</p>
+	<ul>
+		<li>MAC address</li>
+		<li>Serial Number</li>
+		<li>UDID</li>
+		<li>Device Id</li>
+		<li>EAS Id</li>
+	</ul>
+     
+	<h3>Media Types</h3>
+	<p>
+		Request/response bodies and resource representations are encoded as either XML or JSON. Each type of resource has its own media type, or MIME type, which matches the pattern<span class="highlight-text"> application/http://www.air-watch.com/{resourcetype}+{format} </span>where <span class="highlight-text">{resourcetype}</span> represents a unique representation of a resource (e.g. a device) and <span class="highlight-text">{format}</span> is either xml or json (<span class="highlight-text">text/xml</span> or <span class="highlight-text">application/json</span>).
+	</p>
+	<p> <span class="font-weight-bold">Important Note: </span> The API must provide a representation of all resource available as either XML or JSON. The API must allow client applications to use<span class="highlight-text"> application/xml or application/json </span> as a synonym for the default representation at a given resource URL.</p>
+    
+    
+    <h2>Examples</h2>
+    <div>
+        A GET request to an API application entry point...
+    </div>
+    <div>
+	<div class="sampleCodeBackground">
+		GET https://host/api/HTTP/1.1<br />
+		Authentication: [Credentials]<br />
+		aw-tenant-code: [API Key]<br />
+		Accept: application/json<br />
+	</div>
+	<br />
+	<div>
+		...will yield a response with a service document similar to:
+	</div>
+	<div class="sampleCodeBackground">
+	<pre>
+	<code>
+	HTTP/1.1 200 OK
+	Cache-Control: no-cache
+	Pragma: no-cache
+	Content-Length: 114
+	Content-Type: application/json; charset=utf-8
+	Expires: -1
+	X-RateLimit-Limit: 80
+	X-RateLimit-Remaining: 78
+	X-RateLimit-Reset: 1453268941
+	{
+		"SendMessage": 3000,
+		"EnterpriseWipe": 10,
+		"DeleteDevice": 400,
+		"GPS": 500,
+		"LockDevice": 3000
+	}
+	</code>
+	</pre>
+	</div>
+    </div>
+
+    <h2>
+        References
+    </h2>
+    
+	<h3>Request Headers</h3>
+	<div>
+	Requests made to an Platform API can specify the following HTTP headers.
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<th class="auth_col" nowrap>Header Name</th>
+				<th class="other_col">Values</th>
+				<th class="other_col">Description</th>
+				<th class="other_col">Required</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- Authorization -->
+			<tr>
+				<td>Authorization</td>
+				<td>See Authentication for details</td>
+				<td>Identifies who is making the request</td>
+				<td>Always</td>
+			</tr>
+
+			<!-- Accept -->
+			<tr>
+				<td>Accept</td>
+				<td>Comma separated list of media types</td>
+				<td>Informs the API what media types the client can process</td>
+				<td>Recommended for requests that yield a response body. If not specified, application/xml is assumed</td>
+			</tr>
+
+			<!-- Content-Length -->
+			<tr>
+				<td>Content-Length</td>
+				<td>Length of the request body in bytes</td>
+				<td>Specifies the size of the message body</td>
+				<td>Required for requests that include a message body</td>
+			</tr>
+
+			<!-- Content-Type -->
+			<tr>
+				<td>Content-Type</td>
+				<td>Media type describing the request message body</td>
+				<td>Describes what representation the API must use to interpret the message body</td>
+				<td>Required for requests that include a message body</td>
+			</tr>
+
+			<!-- Host -->
+			<tr>
+				<td>Host</td>
+				<td>Specifies the Internet host and port number of the origin host receiving the message</td>
+				<td>Allows support for multiple origin servers using the same IP address</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- Date -->
+			<tr>
+				<td>Date</td>
+				<td>Date/time in HTTP date format</td>
+				<td>The date and time at which the message was originated</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- aw-tenant-code -->
+			<tr>
+				<td>aw-tenant-code</td>
+				<td>Value is available in system settings when REST API access is enabled</td>
+                <td>A unique code entered by the client. To be recognized by Workspace ONE UEM, it needs to be appended in the URL</td>
+				<td>Always</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h3>Response Headers</h3>
+	 <table>
+		<thead>
+			<tr>
+				<th class="auth_col" nowrap>Header Name</th>
+				<th class="other_col">Values</th>
+				<th class="other_col">Description</th>
+				<th class="other_col">Required</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- Content-Length -->
+			<tr>
+				<td>Content-Length</td>
+				<td>Length of the response body in bytes</td>
+				<td>Specifies the size of the message body</td>
+				<td>Required on responses that include a message body</td>
+			</tr>
+
+			<!-- Content-Type -->
+			<tr>
+				<td>Content-Type</td>
+				<td>Media type describing the request message body</td>
+				<td>Describes the representation of the response message body</td>
+				<td>Required on responses that include a message body</td>
+			</tr>
+
+			<!-- Location -->
+			<tr>
+				<td>Location</td>
+				<td>The URL of newly created resources</td>
+				<td>Returns a URL that can be used to request the newly created resource	</td>
+				<td>Required on responses to requests that create new resources</td>
+			</tr>
+
+			<!-- Date -->
+			<tr>
+				<td>Date</td>
+				<td>Date/time in HTTP date format</td>
+				<td>The date and time at which the response message was originated</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- Rate Limit  -->
+			<tr>
+				<td>x-ratelimit-limit</td>
+				<td>Rate limit for a 24 hour period</td>
+				<td>The total number of API calls that can be made in a 24 hour period</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- Rate limit remaining -->
+			<tr>
+				<td>x-ratelimit-remaining</td>
+				<td>Remaining rate limit for a 24 hour period</td>
+				<td>The remaining number of API calls that can be made in the 24 hour period</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- Rate limit reset -->
+			<tr>
+				<td>x-ratelimit-reset</td>
+				<td>Timestamp when the rate limit resets</td>
+				<td>The exact time when the rate limit will reset in epoch time format</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- API version -->
+			<tr>
+				<td>x-api-version</td>
+				<td>Version used for an API request</td>
+				<td>The version of the API that was used to execute the request</td>
+				<td>Always</td>
+			</tr>
+			
+			<!-- API supported versions -->
+			<tr>
+				<td>api-supported-version</td>
+				<td>Supported versions of the API</td>
+				<td>A comma-separated list of all the supported versions of the API requested</td>
+				<td>Always</td>
+			</tr>
+	   </tbody>
+	</table>
+
+	<div>
+		<h3>Http Status Codes</h3>
+        <span>Workspace ONE UEM API clients MUST be ready to accept HTTP status codes as defined in the following list:</span>
+        <div>
+            <h4>1xx:Informational - Communicates transfer protocol-level information<span></span></h4>
+            <div>
+                <div class="http_code">100 "Continue"</div>
+                <div class="http_desc">
+                    This indicates that the client can continue with its request.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">101 "Switching Protocols"</div>
+                <div class="http_desc">
+                    This indicates that the protocol version or protocol is being changed.
+                </div>
+                <div class="http_clearfix"></div>
+            </div>
+            <h4>2xx:Success - Indicates that the client request was accepted successfully<span></span></h4>
+            <div>
+                <div class="http_code">200 "OK"</div>
+                <div class="http_desc">
+                    This indicates nonspecific success. In most cases, 200 is the code the client hopes to see. It indicates that the Workspace ONE UEM API successfully carried out the requested action,
+                    and that no other status code in the 2xx series is appropriate. Unlike the 204 status code, a 200 response should include a response body. 200 ("OK") is not used to communicate errors
+                    in the response body.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">201 "Created"</div>
+                <div class="http_desc">
+                    This indicates successful resource creation. The Workspace ONE UEM API responds with the 201 status code whenever a collection creates a new resource.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">202 "Accepted"</div>
+                <div class="http_desc">
+                    This indicates successful start of an asynchronous action. A 202 response indicates that a request will be handled asynchronously. This response status code indicates
+                    that the request appears valid, but it may still have problems after being processed. A 202 response is typically used for actions that take a long while to complete.
+                    Controller resources may send 202 responses, but other resource types should not.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">203 "Non Authoritative Information"</div>
+                <div class="http_desc">
+                    This indicates that the returned meta information is from a cached copy instead of the origin server and therefore may be incorrect.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">204 "No Content"</div>
+                <div class="http_desc">
+                    Used to indicate that the response body is intentionally empty. The 204 status code is usually sent in response to a PUT, POST, or DELETE request when the Workspace ONE UEM API declines
+                    to send back any status message or representation in the response message body. The API may also send 204 in conjunction with a GET request to indicate that the requested resource exists,
+                    but has no state representation to include in the body.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">205 "Reset Content"</div>
+                <div class="http_desc">
+                    This indicates that the client should reset (not reload) the current resource.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">206 "Partial Content"</div>
+                <div class="http_desc">
+                    This indicates that the response is a partial response as requested by a GET request that includes a byte range.
+                </div>
+                <div class="http_clearfix"></div>
+            </div>
+            <h4>3xx:Redirection - Indicates that the client must take additional action to complete its request<span></span></h4>
+            <div>
+                <div class="http_code">300 "Multiple Choices"</div>
+                <div class="http_desc">
+                    This indicates that the requested information has multiple representations. The default action is to treat this status as a redirect
+                    and follow the contents of the Location header associated with this response.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">300 "Ambiguous"</div>
+                <div class="http_desc">
+                    This indicates that the requested information has multiple representations. The default action is to treat this status as a redirect
+                    and follow the contents of the Location header associated with this response.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">301 "Moved Permanently"</div>
+                <div class="http_desc">
+                    This indicates that a resource has been relocated. The 301 status code indicates that the Workspace ONE UEM API's resource model has been significantly redesigned and a new permanent URI
+                    has been assigned to the requested resource. The Workspace ONE UEM API should specify the new URI in the response's Location header.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">301 "Moved"</div>
+                <div class="http_desc">
+                    This indicates that the requested information has been moved to the URI specified in the Location header. The default action when this status is received is to follow the Location header
+                    associated with the response. When the original request method was POST,the redirected request will use the GET method.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">302 "Found"</div>
+                <div class="http_desc">
+                    This indicates that the requested information is located at the URI specified in the Location header. The default action when this status is received is to follow the Location header
+                    associated with the response. When the original request method was POST, the redirected request will use the GET method.
+                </div>
+                <div class="http_code">302 "Redirect"</div>
+                <div class="http_desc">
+                    This indicates that the requested information is located at the URI specified in the Location header. The default action when this status is received is to follow the Location header
+                    associated with the response. When the original request method was POST, the redirected request will use the GET method.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">303 "See Other"</div>
+                <div class="http_desc">
+                    This is used to refer the client to a different URI. A 303 response indicates that a controller resource has finished its work, but instead of returning a potentially unwanted response body,
+                    it returns the URI of a response resource. This can be the URI of a temporary status message or to a more permanent existing resource. Generally speaking, the 303 status code allows the
+                    Workspace ONE UEM API to send a reference to a resource without forcing the client to download its state. Instead, a GET request may be sent to the value of the Location header.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">303 "Redirect Method"</div>
+                <div class="http_desc">
+                    This automatically redirects the client to the URI specified in the Location header as the result of a POST. The request to the resource specified by the Location header will be made with a GET.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">304 "Not Modified"</div>
+                <div class="http_desc">
+                    This is used to preserve bandwidth. This status code is similar to 204 ("No Content") in that the response body must be empty. The key distinction is that 204 is used when there is nothing to
+                    send, whereas 304 is used when there is state information associated with a resource but the client already has the most recent version of the representation. This status code is used
+                    in conjunction with conditional HTTP requests, e.g. If-Modified header.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">305 "Use Proxy"</div>
+                <div class="http_desc">
+                    This indicates that the request should use the proxy server at the URI specified in the Location header.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">306 "Unused"</div>
+                <div class="http_desc">
+                    This is a proposed extension to the HTTP/1.1 specification that is not fully specified.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">307 "Temporary Redirect"</div>
+                <div class="http_desc">
+                    This indicates that the request must be resubmited to another URI. HTTP/1.1 introduced the 307 status code to reiterate the originally intended semantics of the 302 ("Found") status code.
+                    A 307 response indicates that the Workspace ONE UEM API will not process the request. Instead, the request should be resubmitted to the URI specified by the response's Location header.
+                    The Workspace ONE UEM API may use this status code to assign a temporary URI to a requested resource. For example, a 307 response can be used to shift a request over to another host.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">307 "Redirect Keep Verb"</div>
+                <div class="http_desc">
+                    This indicates that the request information is located at the URI specified in the Location header. The default action when this status is received is to follow the Location
+                    header associated with the response. When the original request method was POST, the redirected request will also use the POST method.
+                </div>
+                <div class="http_clearfix"></div>
+            </div>
+            <h4>4xx:Client Error - Indicates that there was a problem on the client side<span></span></h4>
+            <div>
+				<b>NOTE:</b> For errors in the 4xx category, the response body may contain a document describing the error (unless the request method was "HEAD").
+                <div class="http_code">400 "Bad Request"</div>
+                <div class="http_desc">
+                    This indicates nonspecific failure. 400 is the generic client-side error status, used when no other 4xx error code is appropriate.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">401: "Unauthorized"</div>
+                <div class="http_desc">
+                    This is used when there is a problem with the client's credentials. A 401 error response indicates that the client tried to operate on a protected resource without providing proper authorization.
+                    It may have provided the wrong credentials or none at all.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">402: "Payment Required"</div>
+                <div class="http_desc">
+                    PaymentRequired is reserved for future use.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">403: "Forbidden"</div>
+                <div class="http_desc">
+                    This is used to forbid access regardless of authorization state. A 403 error response indicates that the request is formed correctly, but the Workspace ONE UEM API refuses to honor it. A 403 response is not a case of insufficient client
+                    credentials (which would be 401 ("Unauthorized")). The Workspace ONE UEM API uses 403 to enforce application-level permissions. e.g. a client may be authorized to interact with some, but not all, Workspace ONE UEM API resources.
+                    If the client attempts a resource interaction outside of its permitted scope, a 403 will be returned.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">404 "Not Found"</div>
+                <div class="http_desc">
+                    This is used when the requested URI cannot be mapped to a resource. The 404 error response indicates that the Workspace ONE UEM API can't map the requested URI to a resource.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">405 "Method Not Allowed"</div>
+                <div class="http_desc">
+                    This is used when the HTTP method is not supported. A 405 error response indicates that a request used an HTTP method that the resource does not allow. For instance, a read-only resource might support only GET and HEAD,
+                    while a controller resource might allow GET and POST, but not PUT or DELETE. A 405 response must include the Allow header, which lists supported HTTP methods.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">406 "Not Acceptable"</div>
+                <div class="http_desc">
+                    This is used when the requested media type cannot be served. A 406 error response indicates that the API is not able to generate any of the preferred media types as indicated by the Accept request header.
+                    e.g. a request for data formatted as txt/csv will receive a 406 response if the API is only willing to format the data as application/json.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">407 "Proxy Authentication Required"</div>
+                <div class="http_desc">
+                    This indicates that the requested proxy requires authentication. The Proxy-authenticate header contains the details of how to perform the authentication.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">408 "Request Timeout"</div>
+                <div class="http_desc">
+                    This indicates that the client did not send a request within the time the server was expecting the request.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">409 "Conflict"</div>
+                <div class="http_desc">
+                    This is used to indicate a violation of resource state. A 409 error response indicates that the client tried to put Workspace ONE UEM API resources into an impossible or inconsistent state.
+                    e.g. The API may return this status code when a client tries to delete a non-empty store resource.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">410 "Gone"</div>
+                <div class="http_desc">
+                    This indicates that the requested resource is no longer available.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">411 "Length Required"</div>
+                <div class="http_desc">
+                    This indicates that the required Content-length header is missing.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">412 "Precondition Failed"</div>
+                <div class="http_desc">
+                    This is used to support conditional operations. Clients may specify one or more preconditions in its request headers, effectively telling the API to process the request only if certain conditions were met.
+                    A 412 response indicates that those conditions were not met.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">413 "Request Entity Too Large"</div>
+                <div class="http_desc">
+                    This indicates that the request is too large for the server to process.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">414 "Request Uri Too Long"</div>
+                <div class="http_desc">
+                    This indicates that the URI is too long.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">415 "Unsupported Media Type"</div>
+                <div class="http_desc">
+                    This is used when a request's media type payload cannot be processed. A 415 error response indicates that the API is unable to process the supplied media type, as indicated by the Content-Type request header.
+                    e.g. a client request including data formatted as txt/html will receive a 415 response if the API is only willing to process data formatted as application/json.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">416 "Requested Range Not Satisfiable"</div>
+                <div class="http_desc">
+                    This indicates that the range of data requested from the resource cannot be returned, either because the beginning of the range is before the beginning of the resource, or the end of the range is after the end of the resource.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">417 "Expectation Failed"</div>
+                <div class="http_desc">
+                    This indicates that an expectation given in an Expect header could not be met by the server.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">426 "Upgrade Required"</div>
+                <div class="http_desc">
+                    This indicates that the client should switch to a different protocol such as TLS/1.0.
+                </div>
+                <div class="http_clearfix"></div>
+            </div>
+            <h4>5xx:Server Error - Indicates that there was a problem on the server side<span></span></h4>
+            <div>
+                <div class="http_code">500 "Internal Server Error"</div>
+                <div class="http_desc">
+                    This indicates an error with the API. A 500 error response is the generic API error response that is returned whenever it encounters an exception.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">501 "Not Implemented"</div>
+                <div class="http_desc">
+                    This indicates the service does not currently support the requested functionality.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">502 "Bad Gateway"</div>
+                <div class="http_desc">
+                    This indicates that an intermediate proxy server received a bad response from another proxy or the origin server.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">503 "Service Unavailable"</div>
+                <div class="http_desc">
+                    This indicates the server is unable to handle the request due to temporary overload, or to maintenance.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">504 "Gateway Timeout"</div>
+                <div class="http_desc">
+                    This indicates that an intermediate proxy server timed out while waiting for a response from another proxy or the origin server.
+                </div>
+                <div class="http_clearfix"></div>
+                <div class="http_code">505 "Http Version Not Supported"</div>
+                <div class="http_desc">
+                    This indicates that the requested HTTP version is not supported by the server.
+                </div>
+                <div class="http_clearfix"></div>
+            </div>
+        </div>
+    </div>
+	<hr>
+    <h2>AirWatch Terms of Use</h2>
+    <p>
+        The AirWatch, LLC (“AirWatch”) hereby grants you (“Licensee”) a limited, non-exclusive, revocable, non-transferable, world-wide, non-sublicensable license to use the application program interfaces (“APIs”) referenced herein. The license granted herein includes only the APIs delivered to Licensee, as well as the documentation contained herein (“Documentation”). Licensee may not disclose the APIs or Documentation to any third party nor may Licensee use the APIs or Documentation for the benefit of any third party, save as may be expressly permitted in this agreement or agreed to by the prior written consent of AirWatch. Licensee shall not (i) alter, modify, port, or create derivative works, in whole or in part, of the APIs or Documentation; (ii) reverse-engineer, decompile, disassemble, reverse compile, reverse assemble, create derivative works of, or attempt to derive the source code of the APIs and/or the Documentation; (iii) sublicense, lease, rent, assign, distribute, market, repackage, rebrand, or otherwise transfer or disclose the APIs (or any portion thereof) or any Documentation, to any third party without AirWatch’s prior written consent, save as may be expressly permitted hereunder; (iv) cause, assist, or permit any third party (including any end-user) to do any of the foregoing; or (v) use the APIs and/or Documentation for the benefit of any third parties, save as expressly permitted under this Agreement. No right, license or privilege under this Agreement is granted to any person or entity other than Licensee.
+    </p>
+</div>

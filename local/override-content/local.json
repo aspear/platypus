@@ -1,0 +1,181 @@
+{
+  "overview": "docs/GettingStarted.html",
+  "apis": [
+    {
+      "api_uid": "api_airwatch_mam_v1",
+      "description": "VMware Workspace ONE UEM Mobile Application Management REST API V1",
+      "name": "MAM (Mobile Application Management) REST API V1",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mam_API_V1.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mam_API_V1.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/mamv1",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_mam_v2",
+      "description": "VMware Workspace ONE UEM Mobile Application Management REST API V2",
+      "name": "MAM (Mobile Application Management) REST API V2",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mam_API_V2.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mam_API_V2.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/mamv2",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_mdm_v1",
+      "description": "VMware Workspace ONE UEM Mobile Device Management REST API V1",
+      "name": "MDM (Mobile Device Management) REST API V1",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mdm_API_V1.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mdm_API_V1.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/mdmv1",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_mdm_v2",
+      "description": "VMware Workspace ONE UEM Mobile Device Management REST API V2",
+      "name": "MDM (Mobile Device Management) REST API V2",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mdm_API_V2.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mdm_API_V2.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/mdmv2",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_mcm_v1",
+      "description": "VMware Workspace ONE UEM Mobile Content Management REST API V1",
+      "name": "MCM (Mobile Content Management) REST API V1",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mcm_API_V1.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mcm_API_V1.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/mcmv1",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_mem_v1",
+      "description": "VMware Workspace ONE UEM Mobile Email Management REST API V1",
+      "name": "MEM (Mobile Email Management) REST API V1",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/Mem_API_V1.html",
+            "title": "API Overview",
+            "webUrl": "docs/Mem_API_V1.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/memv1",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_system_v1",
+      "description": "VMware Workspace ONE UEM System Management REST API V1",
+      "name": "System Management REST API V1",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/System_API_V1.html",
+            "title": "API Overview",
+            "webUrl": "docs/System_API_V1.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/systemv1",
+      "type": "swagger"
+    },
+    {
+      "api_uid": "api_airwatch_system_v2",
+      "description": "VMware Workspace ONE UEM System Management REST API V2",
+      "name": "System Management REST API V2",
+      "products": [
+        "VMware Workspace ONE UEM;19.2.0.0"
+      ],
+      "resources": {
+        "docs": [
+          {
+            "categories": [
+              "API_OVERVIEW"
+            ],
+            "downloadUrl": "docs/System_API_V2.html",
+            "title": "API Overview",
+            "webUrl": "docs/System_API_V2.html"
+          }
+        ]
+      },
+      "url": "/api/system/help/systemv2",
+      "type": "swagger"
+    }
+  ]
+}
