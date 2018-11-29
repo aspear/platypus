@@ -18,7 +18,6 @@ COPY ./local/staging /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY "runner.sh" /usr/share/nginx/html/
-ADD ./local/favicon.ico /usr/share/nginx/html/
 
 EXPOSE 80
 ENTRYPOINT ["/usr/share/nginx/html/runner.sh"]
