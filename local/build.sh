@@ -42,8 +42,11 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # values
 # these were the airwatch values export VER="1.0.0"
 #export MILESTONE="rc3"
-export VER="1.1.1"
-export MILESTONE="rc2"
+#export VER="1.1.1"
+#export MILESTONE="rc2"
+
+export VER="1.1.3"
+export MILESTONE=""
 
 # -----------------------------------------------------------------------------
 APIX_RELEASE_URL=https://github.com/vmware/api-explorer/releases/download/${VER}${MILESTONE}
