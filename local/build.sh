@@ -127,6 +127,6 @@ cp -vf ${SCRIPT_DIR}/swagger/* ${OUTPUT_DIR}/api/system/help/
 
 
 # inline replace title on the API Explorer index.html file to reflect our product branding
-sed -i 's/API Explorer/VMware Workspace ONE UEM API Explorer/' ${OUTPUT_DIR}/index.html
+sed -i 's/API Explorer/Workspace ONE UEM API Explorer/' ${OUTPUT_DIR}/index.html
 
 popd
