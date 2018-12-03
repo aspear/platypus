@@ -9,13 +9,13 @@
   // Whether or not to enable debug mode
   // Setting this to false will disable console output
   window.config.enableDebug = false;
-  
+
   // Whether or not to enable local APIs
   window.config.enableLocal = true;
-    
+
   // local APIs endpoint
   window.config.localApiEndPoint = "/api/system/help/localjson";
-  
+
   // Whether or not to enable remote APIs and resources
   window.config.enableRemote = true;
 
@@ -36,14 +36,20 @@
   // only over the display of them.  If all filters or a particular filter pane are not displayed and yet there is
   // a defaultFilters value for it, the user will not be able to change the value. This can be used to scope to a
   // particular product for example.
-  window.config.hideFilters = true;             // if true, the filter pane is not displayed at all
+  window.config.hideSwaggerPreferences  = true;  // if true, the swagger preferences for host and path are not displayed at all
+  window.config.hideFilters = true;              // if true, the filter pane is not displayed at all
   window.config.hideProductFilter = false;       // if true, the products filter is hidden
   window.config.hideLanguageFilter = false;      // if true, the language filter is hidden
   window.config.hideSourcesFilter = false;       // if true, the sources filter is hidden
 
-  // Remote APIs endpoint.  
+  // Remote APIs endpoint.
   window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
   window.config.remoteApiEndPoint = "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix";
+
+  window.config.clientID = "apix,VMware Workspace ONE UEM,";  // TODO replace this version with airwatch build version
+  window.config.clientUUID = null;
+  window.config.clientUserID = null;
+
 
   // for AirWatch we are enabling usage of basic auth for all APIs.
   window.config.ssoId = "basic";
