@@ -32,6 +32,11 @@
       sources: ["local"]
   };
 
+  // by default we cache fetched swagger.json in HTML5 sessionStorage.  This does have
+  // a size limit on it that is browser specific, so if there are many large swagger files
+  // this can be optionally disabled
+  window.config.enableSwaggerSessionStorageCache = true;
+
   // Default control over display of filters.  This has nothing to do do with the actual values of the filters,
   // only over the display of them.  If all filters or a particular filter pane are not displayed and yet there is
   // a defaultFilters value for it, the user will not be able to change the value. This can be used to scope to a
@@ -46,7 +51,7 @@
   window.config.remoteSampleExchangeApiEndPoint = "https://apigw.vmware.com/sampleExchange/v1";
   window.config.remoteApiEndPoint = "https://apigw.vmware.com/v1/m4/api/dcr/rest/apix";
 
-  window.config.clientID = "apix,VMware Workspace ONE UEM,";  // TODO replace this version with airwatch build version
+  window.config.clientID = "apix,VMware Workspace ONE UEM,";  // TODO include AirWatch build version
   window.config.clientUUID = null;
   window.config.clientUserID = null;
 
