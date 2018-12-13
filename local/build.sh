@@ -40,7 +40,7 @@ APIX_SERVER=https://vdc-repo.vmware.com
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://github.com/vmware/api-explorer/releases for valid 
 # values
-export VER="1.1.3"
+export VER="1.1.4"
 export MILESTONE=""
 
 # -----------------------------------------------------------------------------
