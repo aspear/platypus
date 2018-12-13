@@ -36,7 +36,8 @@
   // only over the display of them.  If all filters or a particular filter pane are not displayed and yet there is
   // a defaultFilters value for it, the user will not be able to change the value. This can be used to scope to a
   // particular product for example.
-  window.config.hideFilters = true;             // if true, the filter pane is not displayed at all
+  window.config.hideSwaggerPreferences  = false; // if true, the swagger preferences for host and path are not displayed at all
+  window.config.hideFilters = true;              // if true, the filter pane is not displayed at all
   window.config.hideProductFilter = false;       // if true, the products filter is hidden
   window.config.hideLanguageFilter = false;      // if true, the language filter is hidden
   window.config.hideSourcesFilter = false;       // if true, the sources filter is hidden
