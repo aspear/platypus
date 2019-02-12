@@ -45,7 +45,7 @@ APIX_SERVER=https://vdc-repo.vmware.com
 #export VER="1.1.1"
 #export MILESTONE="rc2"
 
-export VER="1.1.4"
+export VER="1.1.6"
 export MILESTONE=""
 
 # -----------------------------------------------------------------------------
