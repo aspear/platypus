@@ -10,7 +10,7 @@ fi
 
 echo "Downloading vRA Swagger files from host $VRA_HOST"
 
-# 5/15/2017 NOTE: these are currently broken, so removed. 
+# 5/15/2017 NOTE: these are currently broken, so removed.
 # https://${VRA_HOST}/healthbroker-proxy-server/api/docs/swagger.json;healthbroker-proxy-server
 # https://${VRA_HOST}/config-management-service/api/docs/swagger.json;config-management-service
 
@@ -51,7 +51,7 @@ https://${VRA_HOST}/workitem-service/api/docs/swagger.json;workitem-service
 
 OUTPUT_DIR=${SCRIPT_DIR}/swagger
 
-rm -rf ${OUTPUT_DIR}
+rm -rf ${OUTPUT_DIR}/*.json
 mkdir -p ${OUTPUT_DIR}
 
 pushd ${OUTPUT_DIR}

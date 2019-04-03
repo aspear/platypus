@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# XaaS (Advanced Service Designer) Service API Specification\n\n## What Is the XaaS REST API? \n\nThe advanced service designer (XaaS) REST API enables creation of custom services by exposing any vRealize Orchestrator (vRO) workflow to vRA's Service Catalog to provide custom functionality.\n\n## Typical Use Cases\n\nYou can use the XaaS REST API \nto:\n\n* Create XaaS Custom Resources, Blueprints, Resource Mappings and Actions.\n\n* Import and export XaaS components, such as custom resources, blueprints, and so on, from one vRealize Automation system to another. \n\nAdministrative users use the advanced designer service as follows:\n\n* Tenant administrators create and manage the workflow subscriptions that are specific to their tenant.\n\n* System administrators create and manage system workflow subscriptions.\n\nThe created system workflow subscriptions are active for events in any tenant and for system events.\n\n## Key Concepts\n\nThe XaaS domain model includes four basic objects - resource types, resource mappings, \nservice blueprints and resource actions.\n\n### Resource Type\n \nA resource type provides an abstraction of a resource from the physical and virtual IT world - a virtual \nmachine, a user, an account, a network card, and so on.\n\nTo enable ASD to use resources, you must create a resource type object in XaaS. \n\n### Service Blueprint\n\nA service blueprint is a blueprint for a service. It is based on a vRO workflow, but its request \nform (used to get input from users of the service) can be customized. \n\nThe key feature of service blueprints is that, when you request them, they produce (provision) resources \nof a spcified resource type. \n\n### Resource Mapping\n\nA resource mapping is a workflow that maps one resource type to another resource type. It allows resource actions to be performed over types that \ncan be mapped. \n\n### Resource Actions\n\nLike service blueprints, resource actions are built around \na vRO workflow. They have a resource as an input, and usually are used to change the state of a resource. They are also referred as \"2nd day operations.\" \n\n### Import and Export of Content\n\nXaaS is a provider of content, and if CMS is present, \nXaaS objects can be registered as content. After an ASD object is registered, it can be exported/imported \ncentrally from CMS. Note that this is not to be confused with ASD internal content management -- this feature is deprecated.\n\nFor more detailed usage information on importing and exporting content, see the \"Import and Export Content\" use case in the \"Use Cases\" chapter of the *vRA Programming Guide*.\n\n### Workflow Subscriptions \n\nWorkflow subscriptions use the event broker service to monitor the registered services for event messages in vRealize Automation, and then run a specified vRealize Orchestrator workflow when the conditions in the subscription are met.\n\nTo configure the subscription, you specify the event topic, the triggering conditions, and the workflow that runs when triggered.\n\nTenant administrators can create and manage the workflow subscriptions that are specific to their tenant. The system administrator can create and manage system workflow subscriptions. The created system workflow subscriptions are active for events in any tenant and for system events.\n",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Advanced Designer Service API"
   },
   "basePath" : "/advanced-designer-service",
@@ -1079,6 +1079,91 @@
         } ],
         "responses" : {
           "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/api/resources" : {
+      "post" : {
+        "summary" : "Create a resource",
+        "description" : "Create/Import an existing vRO resource in ASD and publish it to the Catalog",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "resource to import in the catalog",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/catalogItemResource"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/catalogItemResource"
+            }
+          }
+        }
+      }
+    },
+    "/api/resources/{resourceId}" : {
+      "get" : {
+        "summary" : "Get a resource",
+        "description" : "Retrieve an ASD resource published in the catalog by ASD id",
+        "parameters" : [ {
+          "name" : "resourceId",
+          "in" : "path",
+          "description" : "the resource identifier",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update a resource",
+        "description" : "Update an ASD resource published in the catalog",
+        "parameters" : [ {
+          "name" : "resourceId",
+          "in" : "path",
+          "description" : "the resource identifier",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$",
+          "format" : "uuid"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "the resource to update",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/catalogItemResource"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete a resource",
+        "description" : "Delete an ASD resource published in the catalog",
+        "parameters" : [ {
+          "name" : "resourceId",
+          "in" : "path",
+          "description" : "the resource identifier",
+          "required" : true,
+          "type" : "string",
+          "pattern" : ".+$"
+        } ],
+        "responses" : {
+          "200" : {
             "description" : ""
           }
         }
@@ -2621,6 +2706,22 @@
         "namespace" : "http://www.vmware.com/vcac/schema/advanced-designer-service/v7.0"
       }
     },
+    "CsResource" : {
+      "type" : "object",
+      "required" : [ "vcoId", "vcoType" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "vcoType" : {
+          "type" : "string"
+        },
+        "vcoId" : {
+          "type" : "string"
+        }
+      }
+    },
     "CsResourceOperation" : {
       "type" : "object",
       "required" : [ "name", "status", "workflowId" ],
@@ -2682,6 +2783,10 @@
         },
         "iconId" : {
           "type" : "string"
+        },
+        "provisionAsChild" : {
+          "type" : "boolean",
+          "default" : false
         },
         "builtIn" : {
           "type" : "boolean",
@@ -3997,13 +4102,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -4022,6 +4127,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4029,10 +4138,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
@@ -4640,6 +4745,42 @@
       "description" : "Wraps a boolean value.",
       "xml" : {
         "name" : "booleanLiteral"
+      }
+    },
+    "catalogItemResource" : {
+      "type" : "object",
+      "required" : [ "csResource", "csResourceTypeId", "displayName", "owners", "subtenantId" ],
+      "properties" : {
+        "csResource" : {
+          "$ref" : "#/definitions/CsResource"
+        },
+        "catalogId" : {
+          "type" : "string"
+        },
+        "csResourceTypeId" : {
+          "type" : "string"
+        },
+        "displayName" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "owners" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "subtenantId" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "catalogItemResource"
       }
     },
     "complexLiteral" : {

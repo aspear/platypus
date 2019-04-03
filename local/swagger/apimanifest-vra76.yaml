@@ -1,0 +1,465 @@
+---
+apis:
+- complete: false
+  api_uid: "api_vra_content_management"
+  name: "vRealize Automation Content Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-content-management.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.687-06:00"
+- complete: false
+  api_uid: "api_vra_forms"
+  name: "vRealize Automation Forms Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-forms-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.840-06:00"
+- complete: false
+  api_uid: "api_vra_management"
+  name: "vRealize Automation Reclamation Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-management-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.871-06:00"
+- complete: false
+  api_uid: "api_vra_software"
+  name: "vRealize Automation Software Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-software-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.906-06:00"
+- complete: false
+  api_uid: "api_vra_ipam"
+  name: "vRealize Automation IPAM Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-ipam-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.956-06:00"
+- complete: false
+  api_uid: "api_vra_plugin"
+  name: "vRealize Automation Extensibility Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-plugin-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:48.966-06:00"
+- complete: false
+  api_uid: "api_vra_catalog"
+  name: "vRealize Automation Catalog Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-catalog-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.038-06:00"
+- complete: false
+  api_uid: "api_vra_branding"
+  name: "vRealize Automation Branding Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-branding-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.043-06:00"
+- complete: false
+  api_uid: "api_vra_container"
+  name: "vRealize Automation Container Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-container-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.245-06:00"
+- complete: false
+  api_uid: "api_vra_workitem"
+  name: "vRealize Automation Work-item Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-workitem-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.272-06:00"
+- complete: false
+  api_uid: "api_vra_placement"
+  name: "vRealize Automation Placement Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-placement-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.278-06:00"
+- complete: false
+  api_uid: "api_vra_licensing"
+  name: "vRealize Automation Licensing Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-licensing-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.280-06:00"
+- complete: false
+  api_uid: "api_vra_iaas_proxy_provider"
+  name: "vRealize Automation IaaS Proxy Provider Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-iaas-proxy-provider.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.372-06:00"
+- complete: false
+  api_uid: "api_vra_advanced_designer"
+  name: "vRealize Automation Advanced Designer Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-advanced-designer-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.391-06:00"
+- complete: false
+  api_uid: "api_vra_reservation"
+  name: "vRealize Automation Reservation Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-reservation-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.403-06:00"
+- complete: false
+  api_uid: "api_vra_endpoint_configuration"
+  name: "vRealize Automation Endpoint Configuration Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-endpoint-configuration-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.418-06:00"
+- complete: false
+  api_uid: "api_vra_network"
+  name: "vRealize Automation Network Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-network-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.433-06:00"
+- complete: false
+  api_uid: "api_vra_event_broker"
+  name: "vRealize Automation Event Broker Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-event-broker-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.440-06:00"
+- complete: false
+  api_uid: "api_vra_approval"
+  name: "vRealize Automation Approval Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-approval-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.456-06:00"
+- complete: false
+  api_uid: "api_vro_rest"
+  name: "vRealize Automation vRealize Orchestrator Server API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-vco.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.473-06:00"
+- complete: false
+  api_uid: "api_vra_o11n_gateway"
+  name: "vRealize Automation Orchestration (o11n) Gateway Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-o11n-gateway-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.480-06:00"
+- complete: false
+  api_uid: "api_vra_composition"
+  name: "vRealize Automation Composition Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-composition-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.492-06:00"
+- complete: false
+  api_uid: "api_vra_component_registry"
+  name: "vRealize Automation Component Registry API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-component-registry.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.506-06:00"
+- complete: false
+  api_uid: "api_vra_identity"
+  name: "vRealize Automation Identity Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-identity.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.538-06:00"
+- complete: false
+  api_uid: "api_vra_portal"
+  name: "vRealize Automation Portal Services API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-portal-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.540-06:00"
+- complete: false
+  api_uid: "api_vra_notification"
+  name: "vRealize Automation Notification Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-notification-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.564-06:00"
+- complete: false
+  api_uid: "api_vra_properties"
+  name: "vRealize Automation Properties Service API"
+  version: "7.6"
+  user_groups:
+  - "OPEN"
+  technology: "REST"
+  visibility: "OPEN"
+  compatibility_level: "NONE"
+  state:
+    status: "CREATED"
+  api_ref_doc_type: "SWAGGER"
+  api_ref_doc_url: "api-vra-properties-service.json"
+  releases: []
+  tags: []
+  created_date: "2018-09-21T14:16:49.627-06:00"
+products:
+- product_name: "vRealize Automation"
+  product_version: "7.6"
+  provided_api_uids:
+  - "api_vra_content_management"
+  - "api_vra_forms"
+  - "api_vra_management"
+  - "api_vra_software"
+  - "api_vra_ipam"
+  - "api_vra_plugin"
+  - "api_vra_catalog"
+  - "api_vra_branding"
+  - "api_vra_container"
+  - "api_vra_workitem"
+  - "api_vra_placement"
+  - "api_vra_licensing"
+  - "api_vra_iaas_proxy_provider"
+  - "api_vra_advanced_designer"
+  - "api_vra_reservation"
+  - "api_vra_endpoint_configuration"
+  - "api_vra_network"
+  - "api_vra_event_broker"
+  - "api_vra_approval"
+  - "api_vro_rest"
+  - "api_vra_o11n_gateway"
+  - "api_vra_composition"
+  - "api_vra_component_registry"
+  - "api_vra_identity"
+  - "api_vra_portal"
+  - "api_vra_notification"
+  - "api_vra_properties"

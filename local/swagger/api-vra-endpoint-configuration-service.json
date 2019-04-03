@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Endpoint Configuration Service API Specification\n\n## What Is the Endpoint Configuration Service?\n\nYou can use the endpoint configuration service REST API to create, read, update and delete endpoint types, endpoint categories, and endpoints.\n\n## Typical Use Cases\n\nTypical use cases for the endpoint configuration service are:\n\n* A vRA Administrator or a Solution User creates an endpoint category.\n* The vRA administrator registers a new endpoint type with the endpoint configuration service.\n* The IaaS administrator creates, updates or deletes an endpoint through the UI. vRA  then calls the endpoint configuration service to create, update or delete endpoint information.\n\n## Key Concepts\n\n### Endpoint Category Operations\n\nBefore creating an endpoint type, an endpoint category should be registered with endpoint configuration service.  Examples of endpoint categories include Virtual, Physical, IPAM, and so on. An application can call the `POST /api/categories` API to create endpoint categories as required.\n\nWhen an endpoint category is created, the endpoint configuration service creates the endpoint category in the Postgres database.\n\n### Endpoint Type\n\nA value that represents the type of an endpoint. A service provider creates an endpoint type within a specified category.  For example, a provider of an IPAM service could create an endpoint type called \"MyIPAMapp\" within the IPAM endpoint category.\n\nIf a customer wants to use a new endpoint, the customer must follow a two step process:\n\n1. Add a new endpoint type, through the endpoint configuration service.\n2. Add a new endpoint instance of that endpoint type.\n\n### Endpoint Type Operations\n\nBefore creating an endpoint, the endpoint type and schema should be registered with the endpoint configuration service. When an endpoint type is created, the endpoint configuration service creates an endpoint type category in a Postgres database.\n\nAn endpoint type schema is stored only in the Postgres database. However, endpoint type information is stored in both the Postgres database and in the `InterfaceTypes` table on the SQL server.\n\n## How the Endpoint Configuration Service Works\n\nWhen an administrator creates an endpoint instance, the UI calls the endpoint service with endpoint data. The endpoint service performs the following steps:\n\n- Validates the data against the schema.\n- Gets the IaaS repository endpoint from the component registry.\n- Saves the new endpoint data to the Postgres database.\n- Calls the repository service to save the data.\n- Returns SUCCESS to the endpoint UI.\n\nThe logic for update and delete is same as for create.\n\n### User Roles and Permissions\n\nDifferent user roles have different permissions for working with endpoints.\n\n#### Endpoint Type Operations and Endpoint Type Categories\n\nThe following user roles have permission for the following:\n\n* GET - IaaS Administrators, vRA Administrators, Solution Users.\n\n* PUT/POST/DELETE  - vRA Administrators, Solution Users.\n\n#### Endpoint Operations\n\n* GET (global endpoint, without secure data) - IaaS Administrators, Solution Users.\n* GET (any endpoint, secure data) - Solution Users.\n* PUT/POST/DELETE -  Solution Users.\n* PUT/POST/DELETE - IaaS Administrators, Solution Users.\n\n### Handling Credentials\n\nIn vRA 7.0,  credential information is stored separately from the management endpoint information. So, when creating an infrastructure endpoint, the customer must specify the credential information separately, making endpoint creation a two-step process. With the vRA 7.1 endpoint configuration service, the endpoint information is specified along with the credential information. The UI displays all the information in a single place, and the endpoint data is stored together at a single place as well.\n\nPassword information must be encrypted when saved to the database. To specify that a field needs to be encrypted, the corresponding field must be marked as `securestring` in the database schema. When saving endpoint information, the endpoint service goes through all the fields of type `securestring` and encrypts the field data, before saving it to the database. This ensures that passwords are not saved as plain text in the database.\n\nWhen retrieving  endpoint information from the endpoint service, by default, all the fields that use `securestring` are set to empty. Only specific APIs return fields marked with `securestring`. Only solution users can retrieve secure fields.\n\n### Creating New Endpoint Types\n\nTo consume a new endpoint that belongs to a new endpoint type, a service provider must:\n\n1. Add a new endpoint type, through the endpoint configuration service.\n2. Add a new endpoint instance of that endpoint type.\n\nFor step 1, the customer (service provider) must also define a new schema for the endpoint type. The schema should indicate all the permissible fields and their corresponding values for the endpoint type. The endpoint object used for creating the endpoint should confirm to the schema of the endpoint type that the endpoint belongs to.\n\n## Additional Information\n\nFor more detailed information on using the the API, refer to the *vRA Programming Guide*.\n",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Endpoint Configuration Service API"
   },
   "basePath" : "/endpoint-configuration-service",
@@ -1326,13 +1326,13 @@
             "attribute" : true
           }
         },
-        "toEndpointType" : {
+        "fromEndpointType" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
           }
         },
-        "fromEndpointType" : {
+        "toEndpointType" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
@@ -1807,12 +1807,6 @@
           "minLength" : 1,
           "maxLength" : 255
         },
-        "typeDisplayName" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
         "name" : {
           "type" : "string",
           "xml" : {
@@ -1847,6 +1841,12 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/Association"
+          }
+        },
+        "typeDisplayName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
           }
         }
       }
@@ -2481,13 +2481,13 @@
     "PageAssociationType" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -2506,6 +2506,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2513,23 +2517,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageEndpoint" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -2548,6 +2548,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2555,23 +2559,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageEndpointType" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -2590,6 +2590,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2597,23 +2601,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageEndpointTypeCategory" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -2632,6 +2632,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -2639,10 +2643,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },

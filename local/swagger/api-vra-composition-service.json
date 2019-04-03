@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Composition Service API Specification\n\n## What Is the Composition Service?\n\nThe composition service allows vRA services to register application components, which the\ncomposition service manages so that they can be used in composite blueprints.  The composition\nservice analyzes the blueprint and breaks it down into tasks for each component service to execute\nwhen provisioning the blueprint, or later when performing a day-2 operation on the resulting\ndeployment. The service that registers the component performs the actual tasks needed to provision\nand update the component.\n\n## Typical Use Cases\n* An infrastructure architect designs blueprints that provision virtual machines to various endpoints.\n\n* A software architect designs and registers application components that may be used in blueprints.\n\n* An application developer develops converged blueprints representing entire application stacks using\nmachine, network and software components.\n\n* A blueprint is made available for an end user to provision.\n\n* The deployment resulting from a blueprint being provisioned is able to be managed through various\nday-2 operations such as scale-in, scale-out, update, destroy.\n\n## Key Concepts\n\n### Composite Blueprint\n\nA composite blueprint is a complex artifact representing a deployable application.  This\napplication may be composed of virtual machines, software components, XaaS blueprints, nested\ncomposite blueprints and so on.  The blueprint captures the components themselves, the\ndependencies between components, associated property definitions - everything necessary to\ncreate a running instance.\n\n### Component Type\nThe composition service provides a component type registry, which allows other services to\ndefine component types which may be used as part of a composite blueprint.  Machines, software\ncomponents, XaaS blueprints and network components are some of the component types registered\nwith the composition service by other services (component type providers).\n\n### Component Type Provider\nThis is the service that is responsible for registering a component type with the composition\nservice.  The component type provider understands the details of the component - how to author,\nhow to deploy, how to destroy, and so on.  The composition service orchestrates blueprint operations -\nauthoring, provisioning, teardown - but relies on the provider to handle the details for the\ncomponent.  For example, IaaS is responsible for managing the lifecycle of machine components.\n\n### Execution Flow\nWhen a blueprint is requested from the catalog, the composition service analyzes the components and\ntheir inter-dependencies to create an ordered set of tasks.  It works with the component providers,\nwhich actually carry out these tasks.\n\nFor more detailed usage information on the API  refer to the  **vRA Programming Guide**.\n",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Composition Service API"
   },
   "basePath" : "/composition-service",
@@ -3973,13 +3973,13 @@
     "PageComponentTypeExtension" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -3998,6 +3998,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4005,23 +4009,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageResourceDetails" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -4040,6 +4040,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -4047,10 +4051,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },

@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# IaaS Proxy Service API Specification\n\n## What is the IaaS Proxy Service REST API?\n\n**Note**: The  IaaS proxy service APIs are deprecated. If you do use them it is at your own risk, as they will no longer be supported in the future.\n\nThe IaaS proxy provider service acts as a bridge between the service catalog and the IaaS provider. The IaaS proxy provide service calls:\n\n* The catalog service to register resource types, catalog item types,catalog items, and component icons.\n\n* The composition service to register a machine component type.\n\nIt then calls the catalog service to register resource actions. Subsequently, the Iaas proxy provider service calls:\n\n* The reservation service to register reservation type categories, reservation types, and reservation policy types.\n\n* The event broker service to register IaaS event types.\n\n### Downstream Provider Services\n\nThe IaaS proxy provider service interacts with the following downstream provider services:\n\n* IAAS\n* vRO\n\n### Downstream Services for IaaS Registration\n\nThe IaaS proxy provider services interacts with the following services to register IaaS:\n\n* Composition service\n* Catalog service\n* Network service\n* Reservation service\n* Event broker service",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "IaaS Proxy Provider Service API"
   },
   "basePath" : "/iaas-proxy-provider",
@@ -1761,6 +1761,68 @@
         }
       }
     },
+    "/api/network/profiles/tenants" : {
+      "get" : {
+        "tags" : [ "network-profile" ],
+        "summary" : "Finds all tenants",
+        "description" : "",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "PageAndSortRequest pagination information",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PageAndSortRequest"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageTenant"
+            }
+          }
+        }
+      }
+    },
     "/api/network/profiles/{id}" : {
       "get" : {
         "tags" : [ "network-profile" ],
@@ -1833,6 +1895,19 @@
         "responses" : {
           "204" : {
             "description" : "The network profile is deleted."
+          }
+        }
+      }
+    },
+    "/api/odata/metadata/cache" : {
+      "delete" : {
+        "tags" : [ "internal" ],
+        "summary" : "Clear the OData metadata cache.",
+        "description" : "Clear the OData metadata cache.",
+        "operationId" : "clearOdataMetadataCache",
+        "responses" : {
+          "200" : {
+            "description" : "The odata metadata cache was deleted."
           }
         }
       }
@@ -5427,6 +5502,61 @@
         }
       }
     },
+    "/api/services/{serviceId}/reservations/policies/storage-policies" : {
+      "get" : {
+        "tags" : [ "reservation", "reservation-policy" ],
+        "summary" : "Get a page of storage reservation policies for the current tenant.",
+        "description" : "Returns all storage reservation policies set on reservations within the current tenant.",
+        "operationId" : "List Storage Reservation Policies For Tenant",
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page Number",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Number of entries per page",
+          "required" : false,
+          "type" : "integer",
+          "default" : 20
+        }, {
+          "name" : "$orderby",
+          "in" : "query",
+          "description" : "Multiple comma-separated properties sorted in ascending or descending order",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "$top",
+          "in" : "query",
+          "description" : "Sets the number of returned entries from the top of the response (total number per page in relation to skip)",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$skip",
+          "in" : "query",
+          "description" : "Sets how many entries you would like to skip",
+          "required" : false,
+          "type" : "integer"
+        }, {
+          "name" : "$filter",
+          "in" : "query",
+          "description" : "Boolean expression for whether a particular entry should be included in the response",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation.",
+            "schema" : {
+              "$ref" : "#/definitions/reservationPolicy"
+            }
+          }
+        }
+      }
+    },
     "/api/services/{serviceId}/reservations/policies/tenant" : {
       "get" : {
         "tags" : [ "reservation", "reservation-policy" ],
@@ -6369,6 +6499,9 @@
         }
       }
     },
+    "BoolCommonExpression" : {
+      "type" : "object"
+    },
     "BooleanLiteral" : {
       "allOf" : [ {
         "$ref" : "#/definitions/literal"
@@ -6519,6 +6652,15 @@
     "CapacityUsageByBlueprintViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
+        "blueprintName" : {
+          "type" : "string"
+        },
         "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
@@ -6535,22 +6677,13 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "blueprintName" : {
-          "type" : "string"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
         },
         "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
         }
       }
     },
@@ -6560,9 +6693,8 @@
         "hostName" : {
           "type" : "string"
         },
-        "cpus" : {
-          "type" : "integer",
-          "format" : "int32"
+        "href" : {
+          "type" : "string"
         },
         "memoryReservedMBTotal" : {
           "type" : "integer",
@@ -6612,22 +6744,29 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "href" : {
-          "type" : "string"
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
         },
         "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
+        "cpus" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
     "CapacityUsageByGroupViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
         "machinesAllocatedPercent" : {
           "type" : "integer",
           "format" : "int32"
@@ -6664,25 +6803,25 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
         },
         "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
         }
       }
     },
     "CapacityUsageByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
         "machinesAllocated" : {
           "type" : "integer",
           "format" : "int32"
@@ -6699,22 +6838,16 @@
           "type" : "integer",
           "format" : "int64"
         },
+        "machineType" : {
+          "type" : "string",
+          "format" : "byte"
+        },
         "machineOwner" : {
-          "type" : "string"
-        },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
           "type" : "string"
         },
         "machinesTotal" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "machineType" : {
-          "type" : "string",
-          "format" : "byte"
         }
       }
     },
@@ -6754,10 +6887,10 @@
         "userName" : {
           "type" : "string"
         },
-        "machineName" : {
+        "href" : {
           "type" : "string"
         },
-        "href" : {
+        "machineName" : {
           "type" : "string"
         },
         "blueprintCost" : {
@@ -6802,27 +6935,27 @@
         "groupName" : {
           "type" : "string"
         },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "parentId" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
         "tenantId" : {
+          "type" : "string"
+        },
+        "parentName" : {
           "type" : "string"
         },
         "startDate" : {
           "type" : "string",
           "format" : "date-time"
         },
-        "parentName" : {
-          "type" : "string"
-        },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "endDate" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "parentId" : {
-          "type" : "string",
-          "format" : "uuid"
         },
         "resultsPerPage" : {
           "type" : "integer",
@@ -6859,6 +6992,9 @@
           }
         }
       } ]
+    },
+    "CommonExpression" : {
+      "type" : "object"
     },
     "ComplexDataType" : {
       "allOf" : [ {
@@ -7334,6 +7470,14 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "EntitySimpleProperty" : {
+      "type" : "object",
+      "properties" : {
+        "propertyName" : {
+          "type" : "string"
+        }
+      }
     },
     "EqualsOperator" : {
       "allOf" : [ {
@@ -8413,6 +8557,9 @@
         },
         "addressSpaceExternalId" : {
           "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "string"
         }
       }
     },
@@ -8480,6 +8627,62 @@
           }
         }
       } ]
+    },
+    "OdataQueryInfo" : {
+      "type" : "object",
+      "properties" : {
+        "inlineCount" : {
+          "type" : "string",
+          "enum" : [ "NONE", "ALLPAGES" ]
+        },
+        "top" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "skip" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "filter" : {
+          "$ref" : "#/definitions/BoolCommonExpression"
+        },
+        "orderBy" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderByExpression"
+          }
+        },
+        "skipToken" : {
+          "type" : "string"
+        },
+        "customOptions" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "expand" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "select" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EntitySimpleProperty"
+          }
+        },
+        "rawFilter" : {
+          "type" : "string"
+        },
+        "rawOrderBy" : {
+          "type" : "string"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        }
+      }
     },
     "OpenstackImage" : {
       "type" : "object",
@@ -8575,6 +8778,18 @@
         }
       } ]
     },
+    "OrderByExpression" : {
+      "type" : "object",
+      "properties" : {
+        "expression" : {
+          "$ref" : "#/definitions/CommonExpression"
+        },
+        "direction" : {
+          "type" : "string",
+          "enum" : [ "ASCENDING", "DESCENDING" ]
+        }
+      }
+    },
     "OvfAuth" : {
       "type" : "object",
       "properties" : {
@@ -8599,13 +8814,13 @@
     "PageAmazonImage" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8624,6 +8839,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8631,23 +8850,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageAmazonRequestData" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8666,6 +8881,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8673,23 +8892,42 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageAndSortRequest" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "queryInfo" : {
+          "$ref" : "#/definitions/OdataQueryInfo"
+        },
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
     "PageBusinessGroupAllocationsData" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8708,6 +8946,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8715,23 +8957,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageComputeResource" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8750,6 +8988,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8757,23 +8999,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageCustomMachineAction" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8792,6 +9030,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8799,23 +9041,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageFlavor" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8834,6 +9072,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8841,23 +9083,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageHardwareProfile" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8876,6 +9114,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8883,23 +9125,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageHostProperty" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8918,6 +9156,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8925,23 +9167,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageInstanceType" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -8960,6 +9198,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -8967,23 +9209,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageIso" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9002,6 +9240,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9009,23 +9251,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageKeyPair" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9044,6 +9282,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9051,23 +9293,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageLoadBalancer" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9086,6 +9324,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9093,23 +9335,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachine" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9128,6 +9366,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9135,23 +9377,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachinePrefix" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9170,6 +9408,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9177,23 +9419,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageMachineSnapshot" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9212,6 +9450,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9219,23 +9461,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageManagementEndpoint" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9254,6 +9492,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9261,23 +9503,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageNetwork" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9296,6 +9534,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9303,23 +9545,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageNetworkProfile" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9338,6 +9576,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9345,23 +9587,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageOpenstackImage" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9380,6 +9618,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9387,23 +9629,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageOpenstackSecurityGroup" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9422,6 +9660,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9429,23 +9671,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageProvisioningWorkflow" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9464,6 +9702,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9471,23 +9713,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReservation" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9506,6 +9744,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9513,23 +9755,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageReservationPolicy" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9548,6 +9786,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9555,23 +9797,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityGroup" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9590,6 +9828,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9597,23 +9839,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityPolicy" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9632,6 +9870,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9639,23 +9881,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSecurityTag" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9674,6 +9912,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9681,23 +9923,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageStaticIPv4Address" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9716,6 +9954,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9723,23 +9965,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageStaticIPv4RangeSummary" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9758,6 +9996,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9765,23 +10007,61 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        }
+      }
+    },
+    "PageTenant" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/tenant"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean",
           "default" : false
+        },
+        "last" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
     "PageTransportZone" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9800,6 +10080,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9807,23 +10091,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageVirtualHardDisk" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -9842,6 +10122,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -9849,10 +10133,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
@@ -9919,7 +10199,7 @@
         "$ref" : "#/definitions/NetworkProfile"
       }, {
         "type" : "object",
-        "required" : [ "gatewayAddress", "subnetMask" ],
+        "required" : [ "subnetMask" ],
         "properties" : {
           "subnetMask" : {
             "type" : "string",
@@ -9931,8 +10211,23 @@
             "minLength" : 1,
             "maxLength" : 255
           },
-          "dhcpConfig" : {
-            "$ref" : "#/definitions/DhcpConfig"
+          "primaryDnsAddress" : {
+            "type" : "string"
+          },
+          "secondaryDnsAddress" : {
+            "type" : "string"
+          },
+          "dnsSuffix" : {
+            "type" : "string"
+          },
+          "dnsSearchSuffix" : {
+            "type" : "string"
+          },
+          "primaryWinsAddress" : {
+            "type" : "string"
+          },
+          "secondaryWinsAddress" : {
+            "type" : "string"
           }
         }
       } ]
@@ -9983,6 +10278,17 @@
     "ReclamationSavingsByGroupViewModel" : {
       "type" : "object",
       "properties" : {
+        "href" : {
+          "type" : "string"
+        },
+        "cost" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "machinesReclaimed" : {
           "type" : "integer",
           "format" : "int32"
@@ -10003,33 +10309,36 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "href" : {
-          "type" : "string"
-        },
-        "cost" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "groupName" : {
           "type" : "string"
-        },
-        "beginDate" : {
-          "type" : "string",
-          "format" : "date-time"
         },
         "machineType" : {
           "type" : "string",
           "format" : "byte"
+        },
+        "beginDate" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
     "ReclamationSavingsByOwnerViewModel" : {
       "type" : "object",
       "properties" : {
+        "groupName" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        },
+        "cost" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "machinesTotal" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "machinesReclaimed" : {
           "type" : "integer",
           "format" : "int32"
@@ -10050,30 +10359,16 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "groupName" : {
-          "type" : "string"
-        },
-        "href" : {
-          "type" : "string"
-        },
-        "cost" : {
-          "type" : "number",
-          "format" : "double"
-        },
-        "machinesTotal" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "userName" : {
           "type" : "string"
-        },
-        "beginDate" : {
-          "type" : "string",
-          "format" : "date-time"
         },
         "machineType" : {
           "type" : "string",
           "format" : "byte"
+        },
+        "beginDate" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -13124,6 +13419,36 @@
           "name" : "stringLiteral"
         }
       } ]
+    },
+    "tenant" : {
+      "type" : "object",
+      "properties" : {
+        "contactEmail" : {
+          "type" : "string"
+        },
+        "defaultTenant" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "password" : {
+          "type" : "string"
+        },
+        "urlName" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "tenant"
+      }
     },
     "timeSpan" : {
       "type" : "object",

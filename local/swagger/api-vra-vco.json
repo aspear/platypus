@@ -1,13 +1,17 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "## Overview\r\n\r\nvRealize Orchestrator Server API",
-    "version" : "7.1.0",
+    "description" : "# vRealize Orchestrator REST API\r\n\r\n## What Is the vRealize Orchestrator REST API?\r\n\r\nWith the vRealize Orchestrator REST API, you can communicate with the vRealize Orchestrator server directly through HTTP. The API exposes the objects from the vRealize Orchestrator server inventories and the installed plug-ins as resources at predefined URLs, and API consumers can trigger operations in vRealize Orchestrator by making HTTP calls at these URLs.\r\n\r\n## Typical Use Cases\r\n\r\nYou can use the vRealize Orchestrator REST API to:\r\n\r\n * Run a workflow, schedule a workflow, retrieve the runs of a workflow, respond to a user interaction, and cancel a workflow run.\r\n * Retrieve details about a workflow such as its input and output parameters and its presentation.\r\n * Retrieve details about a workflow run such as its state, generated logs, start date, and end date.\r\n * Browse through the vRealize Orchestrator inventories and the installed plug-ins.\r\n * Import and export workflows, actions, and packages.\r\n\r\n## Key Concepts\r\n\r\n### Resource\r\n\r\nA resource is an object with a type, associated data, relationships to other resources, and a set of methods that are used to perform operations. Only a few standard methods  are defined for the resource, which correspond to the standard HTTP GET, POST, PUT and DELETE methods.\r\n\r\n### Statelessness\r\n\r\nThe vRealize Orchestrator REST API is stateless, which means that the information required to process a request is included in the request.\r\n\r\n## How the vRealize Orchestrator REST API Works\r\n\r\nThe API supports a Representational State Transfer (REST) model for accessing a set of resources through a fixed set of operations. Every request to the vRealize Orchestrator REST API must be authorized by an authenticated user.\r\nDepending on whether you configure vRealize Orchestrator with LDAP, vCenter Single Sign-On, or OAuth2, the authentication scheme for the vRealize Orchestrator REST API is different.\r\n\r\n#### LDAP Authentication\r\n\r\nWhen vRealize Orchestrator is configured with LDAP, you must apply the HTTP Basic authentication scheme.\r\nWith the HTTP Basic authentication scheme, you can authenticate against vRealize Orchestrator or a third-party system by including an Authorization header in every HTTP request. You must provide a base64-encoded user name and password in the Authorization header. For details about the HTTP Basic authentication, see *RFC 2617*.\r\nThe REST resources expose a data model, supported by a set of client-side libraries that are available in the local Maven repository of vRealize Orchestrator.\r\n\r\n#### Single Sign-On Authentication\r\n\r\nIf vRealize Orchestrator is configured with the vCenter Single Sign-On (SSO) server, you need a principal holder-of-key (HoK) token to access system objects in vRealize Orchestrator through the REST API.\r\nThe HoK token is passed as a request *Authorization* header element. The value must be a GZIP, base64-encoded string.\r\n\r\n#### OAuth2 Authentication\r\n\r\nIf vRealize Orchestrator is configured with VIDM, you need an OAuth bearer access token to access system objects in vRealize Orchestrator through the REST API.\r\nThe OAuth bearer token is passed as an *Authorization* header element request. The value must be *Bearer {token}*.\r\n\r\n#### Data Model\r\nAll endpoints act on a common set of data. The data can be represented in different content types, depending on the endpoint that consumes or produces the data. An XML Schema describes the data, its XML representation, and the other formats of the data, such as JSON. Data can be grouped by namespace, with a schema document describing the elements and types of the namespace. Elements are instances of a type and types define the structure of the data. For example, elements are produced by a REST endpoint, and the structure of each element is described by its type.\r\nTo test the service bellow, you must enable basic authentication over vCenter Single Sign-On (SSO).\r\nTo enable basic authentication over vCenter Single Sign-On (SSO), add the following line in the vmo.properties configuration file:\r\n\r\n> com.vmware.o11n.sso.basic-authentication.enabled = true\r\n\r\n## Additional Information\r\n\r\nFor additional information and details on the REST APIs, see  *Developing a Web Services Client for VMware vRealize Orchestrator* at the following URL:\r\n\r\n[http://pubs.vmware.com/vsphere-60/index.jsp#com.vmware.vrealize.orchestrator-develop-web-services.doc/GUID-35EFD3A0-5F65-4875-A495-EE03E0B471C2.html](http://pubs.vmware.com/vsphere-60/index.jsp#com.vmware.vrealize.orchestrator-develop-web-services.doc/GUID-35EFD3A0-5F65-4875-A495-EE03E0B471C2.html \"Developing a Web Services Client for VMware vRealize Orchestrator\")\r\n",
+    "version" : "7.6.0",
     "title" : "vRealize Orchestrator Server API"
   },
   "basePath" : "/vco/api",
   "tags" : [ {
     "name" : "Actions Service"
+  }, {
+    "name" : "Audit Logs"
+  }, {
+    "name" : "Authorization Groups Service"
   }, {
     "name" : "Catalog Service"
   }, {
@@ -19,11 +23,17 @@
   }, {
     "name" : "Custom Event Service"
   }, {
+    "name" : "Debugger Service"
+  }, {
+    "name" : "Deprecated"
+  }, {
+    "name" : "Forms Service"
+  }, {
     "name" : "Inventory Service"
   }, {
-    "name" : "Packages Service"
+    "name" : "Orchestrator Server Instance Service"
   }, {
-    "name" : "Plugin Service"
+    "name" : "Packages Service"
   }, {
     "name" : "Policy Service"
   }, {
@@ -49,7 +59,7 @@
   }, {
     "name" : "Workflow User Interaction Presentation Service"
   }, {
-    "name" : "Orchestrator Server Instance Service"
+    "name" : "vRO cluster configuration and runtime data"
   } ],
   "schemes" : [ "https" ],
   "paths" : {
@@ -117,6 +127,7 @@
         "summary" : "Import an action in the given category",
         "description" : "<p>Imports an action in a given category. The action binary content should be available as multi-part content (see RFC-2387 for details).</p><p>Details of working with multi-part resources depend on the used client's HTTP/REST library. For example, in Spring it will look like:</p><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/actions/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/some.action\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryName\", \"com.vmware.basic\");<br />new RestTemplate().postForLocation(url, parts);<br />------------------- </pre>",
         "operationId" : "importAction",
+        "consumes" : [ "application/octet-stream", "multipart/form-data" ],
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
           "name" : "categoryName",
@@ -223,6 +234,15 @@
           "schema" : {
             "$ref" : "#/definitions/execution-context"
           }
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         } ],
         "responses" : {
           "200" : {
@@ -298,6 +318,15 @@
           "schema" : {
             "$ref" : "#/definitions/execution-context"
           }
+        }, {
+          "name" : "expand",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         } ],
         "responses" : {
           "200" : {
@@ -509,6 +538,110 @@
           },
           "404" : {
             "description" : "Can not find an action with the specified ID, the user does not have 'read' access rights for that action, or the permission rule with the specified ID does not exist"
+          }
+        }
+      }
+    },
+    "/authorization-groups" : {
+      "get" : {
+        "tags" : [ "Authorization Groups Service" ],
+        "summary" : "Get an Orchestrator's authorization group",
+        "description" : "Retrieve an Orchestrator's authorization group.",
+        "operationId" : "getAuthorizationGroup",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/authorization-group"
+            }
+          },
+          "404" : {
+            "description" : "Cannot find a group with the specified id."
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Authorization Groups Service" ],
+        "summary" : "Creates an Orchestrator's authorization group",
+        "description" : "Creates an Orchestrator's authorization group.",
+        "operationId" : "createAuthorizationGroup",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/authorization-group"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/authorization-group"
+            }
+          },
+          "201" : {
+            "description" : "The group is created"
+          },
+          "400" : {
+            "description" : ""
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Authorization Groups Service" ],
+        "summary" : "Creates an Orchestrator's authorization group",
+        "description" : "Creates an Orchestrator's authorization group.",
+        "operationId" : "addReferenceToGroup",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "groupId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "objectType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "objectId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The group is created"
+          },
+          "400" : {
+            "description" : ""
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Authorization Groups Service" ],
+        "summary" : "Delete an Orchestrator's authorization group",
+        "description" : "Delete an Orchestrator's authorization group.",
+        "operationId" : "deleteAuthorizationGroup",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
           }
         }
       }
@@ -743,6 +876,11 @@
           "default" : 0,
           "format" : "int32"
         }, {
+          "name" : "startFromId",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
           "name" : "queryCount",
           "in" : "query",
           "required" : true,
@@ -947,8 +1085,8 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "The request is successful"
+          "204" : {
+            "description" : "No content"
           },
           "400" : {
             "description" : "Request is not valid (validation error)"
@@ -988,8 +1126,8 @@
           "type" : "string"
         } ],
         "responses" : {
-          "200" : {
-            "description" : "The request is successful"
+          "204" : {
+            "description" : "No content"
           },
           "401" : {
             "description" : "User is not authorized"
@@ -1388,6 +1526,7 @@
         "summary" : "Import configuration",
         "description" : "Imports configuration in a given category. The configuration binary content should be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client's HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/configurations/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/some.vsoconf\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryId\", \"828080808080808080808080808080807F818080013217004819830adebdb10ea\");<br />new RestTemplate().postForLocation(url, parts);<br />-------------------<br /></pre>",
         "operationId" : "importConfiguration",
+        "consumes" : [ "multipart/form-data" ],
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
           "name" : "categoryId",
@@ -1441,6 +1580,46 @@
           }
         }
       },
+      "put" : {
+        "tags" : [ "Configuration Service" ],
+        "summary" : "Update ? configuration",
+        "description" : "Update ? configuration.",
+        "operationId" : "updateConfiguration",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/configuration"
+          }
+        }, {
+          "name" : "X-VRO-Changeset-Sha",
+          "in" : "header",
+          "required" : false,
+          "type" : "string",
+          "default" : ""
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "The request is invalid"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "The resource is not found"
+          }
+        }
+      },
       "delete" : {
         "tags" : [ "Configuration Service" ],
         "summary" : "Delete configuration",
@@ -1460,8 +1639,8 @@
           "default" : false
         } ],
         "responses" : {
-          "200" : {
-            "description" : "The request is successful"
+          "204" : {
+            "description" : "No content"
           },
           "401" : {
             "description" : "User is not authorized"
@@ -1903,6 +2082,12 @@
           "type" : "string",
           "default" : "ImportButPreserveExistingValue",
           "enum" : [ "DoNotImport", "ImportAndOverwriteExistingValue", "ImportButPreserveExistingValue" ]
+        }, {
+          "name" : "importConfigSecureStringAttributeValues",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "202" : {
@@ -1944,6 +2129,18 @@
           "required" : false,
           "type" : "boolean",
           "default" : true
+        }, {
+          "name" : "exportVersionHistory",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : true
+        }, {
+          "name" : "exportConfigSecureStringAttributeValues",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "200" : {
@@ -2158,8 +2355,8 @@
     "/customevent/{eventname}" : {
       "post" : {
         "tags" : [ "Custom Event Service" ],
-        "summary" : "Send custom event",
-        "description" : "Send custom event",
+        "summary" : "Send custom event.",
+        "description" : "Send custom event.",
         "operationId" : "sendCustomEvent",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -2179,6 +2376,449 @@
           },
           "401" : {
             "description" : "The user is not authorized"
+          }
+        }
+      }
+    },
+    "/debugger/enabled" : {
+      "get" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Get global debugger state",
+        "description" : "Retrieves the current global debugger state",
+        "operationId" : "getDebuggerEnabled",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "type" : "boolean"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Set the global debugger state",
+        "description" : "Sets the global debugger state",
+        "operationId" : "setDebuggerEnabled",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "value",
+          "in" : "query",
+          "required" : true,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}" : {
+      "get" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Get workflow debugger location",
+        "description" : "Retrieves the current debugger location for a requested workflow run",
+        "operationId" : "getWorkflowDebugLocation",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/debug-location"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/enabled" : {
+      "get" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Get debug mode for a specific execution",
+        "description" : "Retrieves the debugger mode for a requested workflow run",
+        "operationId" : "getWorkflowDebuggerEnabled",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "type" : "boolean"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/eval" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Evaluate script",
+        "description" : "Evaluate a script on the current debug location of the workflow execution.",
+        "operationId" : "evalScript",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/evaluate"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/variables"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/newValue" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Set multiple workflow breakpoints",
+        "description" : "Sets multiple breakpoints for a workflow",
+        "operationId" : "changeSlotEntry",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/variables"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/resume" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Resume",
+        "description" : "Resumes the workflow execution",
+        "operationId" : "resumeWorkflow",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/slots" : {
+      "get" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Current variables",
+        "description" : "Retrieve the variables in the current debug location of the workflow execution.",
+        "operationId" : "getScriptSlotEntries",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/variables"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/stepInto" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "StepInto",
+        "description" : "Step into the workflow execution",
+        "operationId" : "stepIntoWorkflow",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/stepOver" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "StepOver",
+        "description" : "Step over the workflow execution. Moves the debugger to the next item.",
+        "operationId" : "stepOverWorkflow",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{executionId}/stepReturn" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "StepReturn",
+        "description" : "StepReturn the workflow execution",
+        "operationId" : "stepReturnWorkflow",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{workflowId}/breakpoint" : {
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Set workflow breakpoint",
+        "description" : "Sets a single breakpoint for a workflow",
+        "operationId" : "setWorkflowBreakpoint",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "elementName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "lineNumber",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/breakpoint"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/debugger/{workflowId}/breakpoints" : {
+      "get" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Get workflow breakpoints",
+        "description" : "Retrieves the breakpoints for a workflow",
+        "operationId" : "getWorkflowBreakpoints",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "elementName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/breakpoints"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Set multiple workflow breakpoints",
+        "description" : "Sets multiple breakpoints for a workflow",
+        "operationId" : "setWorkflowBreakpoints",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/breakpoints"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/breakpoints"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Debugger Service" ],
+        "summary" : "Remove all breakpoints for a workflow",
+        "description" : "Removes all set breakpoints for a workflow",
+        "operationId" : "removeAllWorkflowBreakpoints",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
           }
         }
       }
@@ -2234,7 +2874,7 @@
       "get" : {
         "tags" : [ "User Interaction Service" ],
         "summary" : "Get all user interactions",
-        "description" : "Returns a list of all deployed packages.",
+        "description" : "Returns a list of all user interactions.",
         "operationId" : "getAllUserInteractions",
         "produces" : [ "application/xml", "application/json" ],
         "responses" : {
@@ -2373,6 +3013,12 @@
           "type" : "string",
           "default" : "ImportButPreserveExistingValue",
           "enum" : [ "DoNotImport", "ImportAndOverwriteExistingValue", "ImportButPreserveExistingValue" ]
+        }, {
+          "name" : "importConfigSecureStringAttributeValues",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "201" : {
@@ -2383,6 +3029,53 @@
           },
           "409" : {
             "description" : "One or more package elements have an older version."
+          }
+        }
+      }
+    },
+    "/packages/extendedImport" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Import package based on a import specification",
+        "description" : "Imports a package based on a import specification. The package binary content should be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client's HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/packages/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/some.package\");<br />parts.put(\"file\", Arrays.asList(r));<br />new RestTemplate().postForLocation(url, parts);<br />------------------- </pre>",
+        "operationId" : "importPackageExtended",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "201" : {
+            "description" : "Package successfully imported"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "409" : {
+            "description" : "One or more package elements have an older version."
+          }
+        }
+      }
+    },
+    "/packages/import-details" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Analyses uploaded package file and returns details about package elements and certificate",
+        "description" : "Analyses uploaded package file and returns details about package elements and certificate. The package binary content should be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client's HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/packages/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/some.package\");<br />parts.put(\"file\", Arrays.asList(r));<br />new RestTemplate().postForLocation(url, parts);<br />------------------- </pre>",
+        "operationId" : "getImportPackageDetails",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "file",
+          "in" : "formData",
+          "required" : true,
+          "type" : "file"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/ImportPackageDetails"
+            }
+          },
+          "401" : {
+            "description" : "User is not authorized"
           }
         }
       }
@@ -2415,6 +3108,37 @@
           }
         }
       },
+      "put" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Create new package",
+        "description" : "Create new package.",
+        "operationId" : "createPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CreatePackageDetails"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "409" : {
+            "description" : "Package already exists"
+          }
+        }
+      },
       "delete" : {
         "tags" : [ "Packages Service" ],
         "summary" : "Delete package",
@@ -2434,7 +3158,7 @@
           "default" : "deletePackage"
         } ],
         "responses" : {
-          "200" : {
+          "204" : {
             "description" : "The request is successful"
           },
           "401" : {
@@ -2442,6 +3166,231 @@
           },
           "404" : {
             "description" : "Cannot find a package with the specified name"
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Update package",
+        "description" : "Update package.",
+        "operationId" : "updatePackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/UpdatePackageDetails"
+          }
+        }, {
+          "name" : "X-VRO-Changeset-Sha",
+          "in" : "header",
+          "required" : false,
+          "type" : "string",
+          "default" : ""
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/action/{categoryName}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add actions to package",
+        "description" : "Add all actions and its dependencies from given category to package",
+        "operationId" : "addActionsToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/action/{categoryName}/{actionName}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add action to package",
+        "description" : "Add action and its dependencies to package",
+        "operationId" : "addActionToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "actionName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/action/{id}" : {
+      "delete" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Delete action element",
+        "description" : "Delete action element",
+        "operationId" : "deleteActionElement",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or action element is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/configuration/{configurationId}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add configuration element to package",
+        "description" : "Add configuration element and its dependencies to package",
+        "operationId" : "addConfigurationElementToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "configurationId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or configuration element is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/configuration/{id}" : {
+      "delete" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Delete configuration element",
+        "description" : "Delete configuration element",
+        "operationId" : "deleteConfigurationElement",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or configuration element is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/configuration_category/{configurationCategoryName}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add configuration category to package",
+        "description" : "Recursive add configuration category resources to package",
+        "operationId" : "addConfigurationElementCategoryToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "configurationCategoryName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or configuration category is missing"
           }
         }
       }
@@ -2635,11 +3584,223 @@
         }
       }
     },
+    "/packages/{packageName}/rebuild" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Rebuild package",
+        "description" : "Rebuild package.",
+        "operationId" : "rebuildPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "202" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package doesn't exist"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/resource/{id}" : {
+      "delete" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Delete resource element",
+        "description" : "Delete resource element",
+        "operationId" : "deleteResourceElement",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or resource element is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/resource/{resourceId}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add recource element to package",
+        "description" : "Add resource element and its dependencies to package",
+        "operationId" : "addRecourceElementToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "resourceId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/resource_category/{categoryName}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add recource category to package",
+        "description" : "Add all resource elements from resource category and its children to package",
+        "operationId" : "addRecourceCategoryToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/workflow/{id}" : {
+      "delete" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Delete workflow element",
+        "description" : "Delete workflow element",
+        "operationId" : "deleteWorkflowElement",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow element is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/workflow/{workflowId}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add workflow to package",
+        "description" : "Add workflow and its dependencies to package",
+        "operationId" : "addWorkflowToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow is missing"
+          }
+        }
+      }
+    },
+    "/packages/{packageName}/workflow_category/{categoryId}" : {
+      "post" : {
+        "tags" : [ "Packages Service" ],
+        "summary" : "Add workflow category to package",
+        "description" : "Add all workflows from given category and its subcategories to package",
+        "operationId" : "addWorkflowCategoryToPackage",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "packageName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "categoryId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Package or workflow category is missing"
+          }
+        }
+      }
+    },
     "/plugins" : {
       "get" : {
-        "tags" : [ "Plugin Service" ],
+        "tags" : [ "Deprecated" ],
         "summary" : "List all plugins",
-        "description" : "Returns metadata information for all installed plug-ins.",
+        "description" : "Returns metadata information for all installed plug-ins.<p>In a clustered setup this may not function properly. Use the ControlCenter's API instead - \n https://localhost:8283/vco-controlcenter/docs/#/plugin-controller</p>",
         "operationId" : "listAllPlugins",
         "produces" : [ "application/xml", "application/json" ],
         "responses" : {
@@ -2655,12 +3816,13 @@
           "403" : {
             "description" : "User is not authorized"
           }
-        }
+        },
+        "deprecated" : true
       },
       "post" : {
-        "tags" : [ "Plugin Service" ],
+        "tags" : [ "Deprecated" ],
         "summary" : "Import plugin",
-        "description" : "Imports a plug-in. If a plug-in with the same name is already installed, the import will fail unless the overwrite parameter is set to true. The plug-in binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/plugins/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/plugin.dar\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryId\", \"\");<br />new RestTemplate().postForLocation(url, parts);<br />-------------------</pre>",
+        "description" : "Imports a plug-in. If a plug-in with the same name is already installed, the import will fail unless the overwrite parameter is set to true. The plug-in binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/plugins/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/plugin.dar\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryId\", \"\");<br />new RestTemplate().postForLocation(url, parts);<br />-------------------</pre><p>In a clustered setup this may not function properly. Use the ControlCenter's API instead - \nhttps://localhost:8283/vco-controlcenter/docs/#/plugin-controller.</p>",
         "operationId" : "importPlugin",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -2694,14 +3856,15 @@
           "409" : {
             "description" : "Plug-in already exists"
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/plugins/installPluginDynamically" : {
       "post" : {
-        "tags" : [ "Plugin Service" ],
+        "tags" : [ "Deprecated" ],
         "summary" : "Install plugin dynamically",
-        "description" : "Imports a plug-in. If a plug-in with the same name is already installed, the import will fail unless the overwrite parameter is set to true. The plug-in binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/plugins/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/plugin.dar\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryId\", \"\");<br />new RestTemplate().postForLocation(url, parts);<br />-------------------</pre>",
+        "description" : "Imports a plug-in. If a plug-in with the same name is already installed, the import will fail unless the overwrite parameter is set to true. The plug-in binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:<br />-------------------<br />String url = \"https://localhost:8281/vco/api/plugins/\";<br />MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();<br />Resource r = new FileSystemResource(\"D:/path/to/plugin.dar\");<br />parts.put(\"file\", Arrays.asList(r));<br />parts.put(\"categoryId\", \"\");<br />new RestTemplate().postForLocation(url, parts);<br />-------------------</pre><p>In a clustered setup this may not function properly. Use the ControlCenter's API instead - \nhttps://localhost:8283/vco-controlcenter/docs/#/plugin-controller.</p>",
         "operationId" : "installPluginDynamically",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -2726,14 +3889,15 @@
           "409" : {
             "description" : "Plug-in already exists"
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/plugins/{pluginName}" : {
       "get" : {
-        "tags" : [ "Plugin Service" ],
+        "tags" : [ "Deprecated" ],
         "summary" : "Export plugin",
-        "description" : "Exports a plug-in by name. If the request is successful, the plug-in binary content is available as an attachment with MIME type application/zip (that is, a normal ZIP file). It is up to the client application to properly fetch and process this attachment, for example by saving it to local file system. The exported plug-in has the same format as that needed by the configurator when uploading a plug-in.",
+        "description" : "Exports a plug-in by name. If the request is successful, the plug-in binary content is available as an attachment with MIME type application/zip (that is, a normal ZIP file). It is up to the client application to properly fetch and process this attachment, for example by saving it to local file system. The exported plug-in has the same format as that needed by the configurator when uploading a plug-in.<p>In a clustered setup this may not function properly. Use the ControlCenter's API instead - https://localhost:8283/vco-controlcenter/docs/#/plugin-controller</p>",
         "operationId" : "exportPlugin",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -2752,14 +3916,15 @@
           "403" : {
             "description" : "User is not authorized"
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/plugins/{pluginName}/state" : {
       "put" : {
-        "tags" : [ "Plugin Service" ],
+        "tags" : [ "Deprecated" ],
         "summary" : "Enable/disable plugin",
-        "description" : "Enables/disables plug-in.",
+        "description" : "Enables/disables plug-in.<p>In a clustered setup this may not function properly. Use the ControlCenter's API instead - \nhttps://localhost:8283/vco-controlcenter/docs/#/plugin-controller.</p>",
         "operationId" : "disablePlugin",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -2788,7 +3953,8 @@
           "403" : {
             "description" : "User is not authorized"
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/policies" : {
@@ -2802,7 +3968,7 @@
           "200" : {
             "description" : "The request is successful",
             "schema" : {
-              "$ref" : "#/definitions/WsPolicyList"
+              "$ref" : "#/definitions/policy-list"
             }
           },
           "401" : {
@@ -2821,11 +3987,17 @@
           "name" : "body",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/WsPolicy"
+            "$ref" : "#/definitions/policy"
           }
         } ],
         "responses" : {
-          "202" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/policy"
+            }
+          },
+          "201" : {
             "description" : "The request is successful"
           },
           "400" : {
@@ -2833,6 +4005,180 @@
           },
           "401" : {
             "description" : "The user is not authorized"
+          }
+        }
+      }
+    },
+    "/policies/state/{state}" : {
+      "get" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Get all policies in state",
+        "description" : "Get all policies in state",
+        "operationId" : "getPoliciesForState",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/policy-list"
+            }
+          },
+          "400" : {
+            "description" : "The requested state is invalid"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          }
+        }
+      }
+    },
+    "/policies/templates" : {
+      "get" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Get all policy templates",
+        "description" : "Get all policy templates",
+        "operationId" : "getAllPolicyTemplates",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/policy-templates"
+            }
+          },
+          "204" : {
+            "description" : "No content"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Create policy template",
+        "description" : "Create policy template",
+        "operationId" : "createPolicyTemplate",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/policy-template"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/policy-template"
+            }
+          },
+          "201" : {
+            "description" : "The request is successful"
+          },
+          "400" : {
+            "description" : "The request is invalid(validation error)"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          }
+        }
+      }
+    },
+    "/policies/templates/{id}" : {
+      "get" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Get policy template",
+        "description" : "Get policy template",
+        "operationId" : "getPolicyTemplate",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/policy-template"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a policy template with the specified ID or the user does not have 'read' rights over it"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Update policy template",
+        "description" : "Update policy template",
+        "operationId" : "updatePolicyTemplate",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/policy-template"
+          }
+        }, {
+          "name" : "X-VRO-Changeset-Sha",
+          "in" : "header",
+          "required" : false,
+          "type" : "string",
+          "default" : ""
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "The request is successful"
+          },
+          "400" : {
+            "description" : "The request is invalid(validation error)"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Delete policy template",
+        "description" : "Delete policy template",
+        "operationId" : "deletePolicyTemplate",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No content"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a policy template with the specified ID or the user does not have 'delete' rights over it"
           }
         }
       }
@@ -2854,7 +4200,7 @@
           "200" : {
             "description" : "The request is successful",
             "schema" : {
-              "$ref" : "#/definitions/WsPolicy"
+              "$ref" : "#/definitions/policy"
             }
           },
           "401" : {
@@ -2890,6 +4236,81 @@
         }
       }
     },
+    "/policies/{id}/state" : {
+      "get" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Get policy state",
+        "description" : "Get policy state",
+        "operationId" : "getPolicyState",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "type" : "string",
+              "enum" : [ "STARTED", "STOPPED", "STOPPING", "STARTING" ]
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a policy with the specified ID"
+          }
+        }
+      }
+    },
+    "/policies/{id}/syslogs" : {
+      "get" : {
+        "tags" : [ "Policy Service" ],
+        "summary" : "Get policy logs",
+        "description" : "Policy information about each individual event that occurs when a policy is active",
+        "operationId" : "getPolicyLogs",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "maxResult",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "default" : 2147483647,
+          "format" : "int32"
+        }, {
+          "name" : "conditions",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/sys-logs"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Can not find a policy with the specified ID or the user does not have 'read' access rights for that policy"
+          }
+        }
+      }
+    },
     "/resources" : {
       "get" : {
         "tags" : [ "Resource Service" ],
@@ -2916,9 +4337,9 @@
         "operationId" : "importResource",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
-          "name" : "categoryId",
+          "name" : "",
           "in" : "query",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         }, {
           "name" : "file",
@@ -2948,7 +4369,7 @@
         "summary" : "Export resource",
         "description" : "Exports a resource by its ID. If the request is successful, the resource binary content is available in the body of response message. It is up to the client application to properly fetch and process this attachment, for example by saving it to local file system. The exported resource has the same internal format as the resource exported using Orchestrator client.",
         "operationId" : "exportResource",
-        "produces" : [ "application/octet-stream" ],
+        "produces" : [ "!application/json", "!application/xml" ],
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -2964,6 +4385,41 @@
           },
           "404" : {
             "description" : "Cannot find resource with the specified ID"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Resource Service" ],
+        "summary" : "Update resource content",
+        "description" : "Update resource content.",
+        "operationId" : "updateResource",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "file",
+          "in" : "formData",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "X-VRO-Changeset-Sha",
+          "in" : "header",
+          "required" : false,
+          "type" : "string",
+          "default" : ""
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful"
+          },
+          "401" : {
+            "description" : "User is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find resource with the specified ID."
           }
         }
       },
@@ -2986,7 +4442,7 @@
           "default" : false
         } ],
         "responses" : {
-          "200" : {
+          "204" : {
             "description" : "The request is successful"
           },
           "401" : {
@@ -3244,7 +4700,7 @@
         "summary" : "Enumerate services",
         "description" : "A REST endpoint for listing Orchestrator Server instance services.",
         "operationId" : "enumerateServices",
-        "produces" : [ "application/xml" ],
+        "produces" : [ "application/xml", "application/json" ],
         "responses" : {
           "200" : {
             "description" : "The request is successful",
@@ -3283,7 +4739,7 @@
       "post" : {
         "tags" : [ "Server Configuration Service" ],
         "summary" : "Import server configuration",
-        "description" : "Imports/exports the server configuration. The exported file is available as an attachment with MIME type application/zip. To perform an export request, an empty file must be attached to the request. Otherwise, the server tries to import a configuration.<br /><br />The format of the exported or imported file is same as that of files exported or imported by using the Orchestrator configuration interface. The configuration binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code that imports a server configuration:<br /> -----------------------<br />MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();<br />parts.add(\"file\", new FileSystemResource(\"/path/to/vco_config_file.config\"))<br />;parts.add(\"password\", \"secret\")<br />;parts.add(\"importIdentity\", Boolean.FALSE);<br /><br />getRestTemplate().postForEntity(\"https://localhost:8281/vco/api/server-configuration\", parts, Void.class);<br />-----------------------</pre>",
+        "description" : "Imports/exports the server configuration. The exported file is available as an attachment with MIME type application/zip. To perform an export request, an empty file must be attached to the request. Otherwise, the server tries to import a configuration.<br /><br />The format of the exported or imported file is same as that of files exported or imported by using the Orchestrator configuration interface. The configuration binary content must be available as multi-part content (see RFC-2387 for details). Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code that imports a server configuration:<br /> -----------------------<br />MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();<br />parts.add(\"file\", new FileSystemResource(\"/path/to/vco_config_file.zip\"))<br />;parts.add(\"password\", \"secret\")<br />;parts.add(\"importIdentity\", Boolean.FALSE);<br /><br />getRestTemplate().postForEntity(\"https://localhost:8281/vco/api/server-configuration\", parts, Void.class);<br />-----------------------</pre>",
         "operationId" : "importServerConfiguration",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -3308,6 +4764,193 @@
           },
           "400" : {
             "description" : "Request is not valid (validation error)."
+          },
+          "401" : {
+            "description" : "User is not authenticated."
+          },
+          "403" : {
+            "description" : "User is not authorized."
+          }
+        }
+      }
+    },
+    "/server-configuration/api" : {
+      "get" : {
+        "tags" : [ "Server Configuration Service" ],
+        "summary" : "Get scripting API",
+        "description" : "Returns supported Orchestrator scripting API.",
+        "operationId" : "getScriptingApi",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "scope",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "filter",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isStrict",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful.",
+            "schema" : {
+              "$ref" : "#/definitions/api-types"
+            }
+          },
+          "401" : {
+            "description" : "User is not authenticated."
+          },
+          "403" : {
+            "description" : "User is not authorized."
+          }
+        }
+      }
+    },
+    "/server-configuration/api/category/{id}" : {
+      "get" : {
+        "tags" : [ "Server Configuration Service" ],
+        "summary" : "Get scripting API for actions grouped by categories",
+        "description" : "Returns supported Orchestrator scripting API for actions grouped by categories.",
+        "operationId" : "getCategoryDetails",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "scope",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "filter",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isStrict",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful.",
+            "schema" : {
+              "$ref" : "#/definitions/category-details"
+            }
+          },
+          "401" : {
+            "description" : "User is not authenticated."
+          },
+          "403" : {
+            "description" : "User is not authorized."
+          }
+        }
+      }
+    },
+    "/server-configuration/api/plugins/{plugin}/{version}/{build}" : {
+      "get" : {
+        "tags" : [ "Server Configuration Service" ],
+        "summary" : "Get scripting API for a plugin",
+        "description" : "Returns supported Orchestrator scripting API for a plugin.",
+        "operationId" : "getPluginApi",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "plugin",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "version",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "build",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "scope",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "filter",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isStrict",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful.",
+            "schema" : {
+              "$ref" : "#/definitions/plugin-details"
+            }
+          },
+          "401" : {
+            "description" : "User is not authenticated."
+          },
+          "403" : {
+            "description" : "User is not authorized."
+          }
+        }
+      }
+    },
+    "/server-configuration/settings" : {
+      "get" : {
+        "tags" : [ "Server Configuration Service" ],
+        "summary" : "Get subset of the server configuration settings",
+        "description" : "",
+        "operationId" : "getSettings",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful.",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          },
+          "401" : {
+            "description" : "User is not authenticated."
+          },
+          "403" : {
+            "description" : "User is not authorized."
+          }
+        }
+      }
+    },
+    "/server-configuration/types" : {
+      "get" : {
+        "tags" : [ "Server Configuration Service" ],
+        "summary" : "Get supported types",
+        "description" : "Returns supported Orchestrator types.",
+        "operationId" : "getO11nTypes",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful.",
+            "schema" : {
+              "$ref" : "#/definitions/o11n-types"
+            }
           },
           "401" : {
             "description" : "User is not authenticated."
@@ -3557,6 +5200,26 @@
             "description" : "The request is successful",
             "schema" : {
               "$ref" : "#/definitions/owners"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          }
+        }
+      }
+    },
+    "/tags/all" : {
+      "get" : {
+        "tags" : [ "Tagging Service" ],
+        "summary" : "List global and self tags",
+        "description" : "Retrieves list of tag created by current and __GLOBAL__ users.",
+        "operationId" : "listAllTags",
+        "produces" : [ "application/xml", "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/tags"
             }
           },
           "401" : {
@@ -4133,6 +5796,7 @@
         "summary" : "Import/upload a workflow",
         "description" : "Imports a workflow in a given category. The workflow binary content should be available as multi-part content (see RFC-2387 for details).<br />Details of working with multi-part resources depend on the used client HTTP/REST library. For example, in Spring it will look like:<br /><pre>Sample client code:-------------------String url = \"https://localhost:8281/vco/api/workflows/\";MultiValueMap<String, Resource> parts = new LinkedMultiValueMap<String, Resource>();Resource r = new FileSystemResource(\"D:/path/to/some.workflow\");parts.put(\"file\", Arrays.asList(r));parts.put(\"categoryId\", \"\");new RestTemplate().postForLocation(url, parts); ------------------- </pre>",
         "operationId" : "importWorkflow",
+        "consumes" : [ "application/octet-stream", "multipart/form-data" ],
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
           "name" : "categoryId",
@@ -4164,6 +5828,31 @@
         }
       }
     },
+    "/workflows/validate/schema" : {
+      "put" : {
+        "tags" : [ "Workflow Service" ],
+        "summary" : "Validate workflow content",
+        "description" : "Validate provided workflow content",
+        "operationId" : "validate",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/schema-workflow"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Validation completed",
+            "schema" : {
+              "$ref" : "#/definitions/validation-messages"
+            }
+          }
+        }
+      }
+    },
     "/workflows/{id}" : {
       "get" : {
         "tags" : [ "Workflow Service" ],
@@ -4189,6 +5878,35 @@
           },
           "404" : {
             "description" : "Can not find a workflow with the specified id or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/workflows/{id}/content" : {
+      "get" : {
+        "tags" : [ "Workflow Service" ],
+        "summary" : "Access workflow's schema",
+        "description" : "The schema data is returned and response Content-type is set to correct media type, for example \"Content-Type:application/json\"",
+        "operationId" : "downloadWorkflowSchemaContent",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/schema-workflow"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Can not find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
           }
         }
       }
@@ -4567,6 +6285,12 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/workflow-execution"
+            }
+          },
           "202" : {
             "description" : "The request is successful"
           },
@@ -5042,6 +6766,22 @@
           "in" : "path",
           "required" : true,
           "type" : "string"
+        }, {
+          "name" : "maxResult",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "default" : 2147483647,
+          "format" : "int32"
+        }, {
+          "name" : "conditions",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         } ],
         "responses" : {
           "200" : {
@@ -5125,11 +6865,101 @@
         }
       }
     },
+    "/workflows/{workflowId}/executions/{executionId}/statistics" : {
+      "get" : {
+        "tags" : [ "Workflow Run Service" ],
+        "summary" : "Get workflow execution statistics",
+        "description" : "Retrieves statistics for given workflow run.",
+        "operationId" : "getWorkflowExecutionStatistics",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/workflow-execution-statistics"
+            }
+          },
+          "204" : {
+            "description" : "No content"
+          },
+          "400" : {
+            "description" : "The request is invalid(validation error)"
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Cannot find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
+    "/workflows/{workflowId}/executions/{executionId}/syslogs" : {
+      "get" : {
+        "tags" : [ "Workflow Run Service" ],
+        "summary" : "Get workflow run system and event logs",
+        "description" : "Provides logs generated by workflow scripting and system events.",
+        "operationId" : "getWorkflowExecutionSyslogs",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "executionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "maxResult",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "default" : 2147483647,
+          "format" : "int32"
+        }, {
+          "name" : "conditions",
+          "in" : "query",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request is successful",
+            "schema" : {
+              "$ref" : "#/definitions/sys-logs"
+            }
+          },
+          "401" : {
+            "description" : "The user is not authorized"
+          },
+          "404" : {
+            "description" : "Can not find a workflow with the specified ID or the user does not have 'read' access rights for that workflow"
+          }
+        }
+      }
+    },
     "/workflows/{workflowId}/interactions" : {
       "get" : {
         "tags" : [ "Workflow Service" ],
-        "summary" : " Retrieves all user interactions for a requested workflow",
-        "description" : " Retrieves all user interactions for a requested workflow.",
+        "summary" : "Retrieves all user interactions for a requested workflow",
+        "description" : "Retrieves all user interactions for a requested workflow.",
         "operationId" : "getAllUserInteractionsForWorkflow",
         "produces" : [ "application/xml", "application/json" ],
         "parameters" : [ {
@@ -5439,6 +7269,29 @@
           }
         }
       }
+    },
+    "/workflows/{workflowId}/validate" : {
+      "get" : {
+        "tags" : [ "Workflow Service" ],
+        "summary" : "Validate existing workflow",
+        "description" : "Validate existing workflow by workflow id",
+        "operationId" : "validateExisting",
+        "produces" : [ "application/xml", "application/json" ],
+        "parameters" : [ {
+          "name" : "",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Validation completed",
+            "schema" : {
+              "$ref" : "#/definitions/validation-messages"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
@@ -5453,6 +7306,55 @@
         }
       }
     },
+    "AttributeType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "readonly" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
     "BaseConstraint" : {
       "type" : "object"
     },
@@ -5460,6 +7362,68 @@
       "type" : "object",
       "properties" : {
         "kind" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "BaseType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        }
+      }
+    },
+    "Bind" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "export-name" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
@@ -5490,6 +7454,198 @@
         "identityCertificateExists" : {
           "type" : "boolean",
           "default" : false
+        }
+      }
+    },
+    "Condition" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "comparator" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "label" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Conditions" : {
+      "type" : "object",
+      "properties" : {
+        "condition" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Condition"
+          }
+        }
+      }
+    },
+    "CreatePackageDetails" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "items" : {
+          "$ref" : "#/definitions/PackageItemDetails"
+        }
+      }
+    },
+    "EnumType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/BaseType"
+          }
+        }
+      }
+    },
+    "ErrorHandler" : {
+      "type" : "object",
+      "required" : [ "position" ],
+      "properties" : {
+        "position" : {
+          "$ref" : "#/definitions/Position"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "throw-bind-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "EventType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "minValue" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "maxValue" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "numberFormat" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "unit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "props" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MemberType"
+          }
         }
       }
     },
@@ -5584,6 +7740,168 @@
         }
       } ]
     },
+    "ImportElementDetail" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "WORKFLOW", "POLICY_TEMPLATE", "SCRIPT_MODULE", "RESOURCE_ELEMENT", "CONFIGURATION_ELEMENT" ]
+        },
+        "fileObjectName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "fileCategory" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "versionComparison" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "IMPORT_SMALLER", "IMPORT_GREATER", "SAME_VERSIONS" ]
+        },
+        "fileObjectVersion" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "serverObjectName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "serverCategory" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "serverObjectVersion" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "importIt" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "hasTenantConflict" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "ImportPackageDetails" : {
+      "type" : "object",
+      "properties" : {
+        "packageName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "packageAlreadyExists" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "contentVerified" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "certificateInfo" : {
+          "$ref" : "#/definitions/PackageCertificateInfo"
+        },
+        "certificateValid" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "certificateTrusted" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "certificateUnknown" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "importElementDetails" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ImportElementDetail"
+          }
+        }
+      }
+    },
+    "InBinding" : {
+      "type" : "object",
+      "required" : [ "bind" ],
+      "properties" : {
+        "bind" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Bind"
+          }
+        }
+      }
+    },
+    "Input" : {
+      "type" : "object",
+      "required" : [ "param" ],
+      "properties" : {
+        "param" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Param"
+          }
+        }
+      }
+    },
+    "IterationCatchBlock" : {
+      "type" : "object",
+      "properties" : {
+        "script" : {
+          "$ref" : "#/definitions/Script"
+        }
+      }
+    },
     "Link" : {
       "type" : "object",
       "properties" : {
@@ -5611,6 +7929,459 @@
         },
         "rel" : {
           "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "MemberType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "MethodType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MemberType"
+          }
+        }
+      }
+    },
+    "ObjectType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AttributeType"
+          }
+        },
+        "constructors" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MethodType"
+          }
+        },
+        "methods" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MethodType"
+          }
+        },
+        "members" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/MemberType"
+          }
+        },
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/BaseType"
+          }
+        },
+        "isNamespace" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "OutBinding" : {
+      "type" : "object",
+      "required" : [ "bind" ],
+      "properties" : {
+        "bind" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Bind"
+          }
+        }
+      }
+    },
+    "Output" : {
+      "type" : "object",
+      "required" : [ "param" ],
+      "properties" : {
+        "param" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Param"
+          }
+        }
+      }
+    },
+    "PGroup" : {
+      "type" : "object",
+      "required" : [ "desc", "p-param", "title" ],
+      "properties" : {
+        "title" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "p-param" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PParam"
+          }
+        },
+        "p-qual" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PQual"
+          }
+        }
+      }
+    },
+    "PParam" : {
+      "type" : "object",
+      "properties" : {
+        "desc" : {
+          "type" : "string"
+        },
+        "p-qual" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PQual"
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "PQual" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "kind" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "PStep" : {
+      "type" : "object",
+      "required" : [ "p-group", "title" ],
+      "properties" : {
+        "title" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "p-group" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PGroup"
+          }
+        },
+        "p-param" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PParam"
+          }
+        },
+        "p-qual" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PQual"
+          }
+        }
+      }
+    },
+    "PackageCertificateInfo" : {
+      "type" : "object",
+      "properties" : {
+        "organization" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "organizationalUnit" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "commonName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "validUntilDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "validFromDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "publicKeyAlgorithm" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "fingerprintSHA1" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "serialNumber" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "country" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "PackageItemDetails" : {
+      "type" : "object",
+      "properties" : {
+        "workflows" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "actions" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "resources" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "configurations" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "policy-templates" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "Param" : {
+      "type" : "object",
+      "required" : [ "description" ],
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Parameter" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "position" : {
+          "type" : "integer",
+          "format" : "int32",
           "xml" : {
             "attribute" : true
           }
@@ -5654,6 +8425,57 @@
         "hasInstallActions" : {
           "type" : "boolean",
           "default" : false
+        }
+      }
+    },
+    "Position" : {
+      "type" : "object",
+      "properties" : {
+        "y" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "Presentation" : {
+      "type" : "object",
+      "properties" : {
+        "desc" : {
+          "type" : "string"
+        },
+        "p-step" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PStep"
+          }
+        },
+        "p-group" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PGroup"
+          }
+        },
+        "p-param" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PParam"
+          }
+        },
+        "p-qual" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PQual"
+          }
         }
       }
     },
@@ -5801,6 +8623,23 @@
         }
       }
     },
+    "Reference" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
     "Relations" : {
       "type" : "object",
       "properties" : {
@@ -5822,6 +8661,251 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/Link"
+          }
+        }
+      }
+    },
+    "Script" : {
+      "type" : "object",
+      "properties" : {
+        "value" : {
+          "type" : "string"
+        },
+        "encoded" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      }
+    },
+    "ScriptModuleCategory" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "actionsCount" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "detailsLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "ScriptModuleType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "resultType" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "categoryId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Parameter"
+          }
+        }
+      }
+    },
+    "SdkModuleType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "build" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "detailsLink" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "SdkType" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "scriptObject" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "props" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EventType"
           }
         }
       }
@@ -5910,11 +8994,341 @@
         }
       }
     },
+    "SystemTypes" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "objects" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ObjectType"
+          }
+        },
+        "enums" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EnumType"
+          }
+        },
+        "types" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SdkType"
+          }
+        },
+        "plugins" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SdkModuleType"
+          }
+        }
+      }
+    },
+    "UpdatePackageDetails" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "add-items" : {
+          "$ref" : "#/definitions/PackageItemDetails"
+        },
+        "delete-items" : {
+          "$ref" : "#/definitions/PackageItemDetails"
+        },
+        "items" : {
+          "$ref" : "#/definitions/PackageItemDetails"
+        }
+      }
+    },
+    "UsedPlugin" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "server-version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
     "Value" : {
       "type" : "object",
       "properties" : {
         "objectType" : {
           "type" : "string"
+        }
+      }
+    },
+    "WorkflowItem" : {
+      "type" : "object",
+      "required" : [ "position" ],
+      "properties" : {
+        "display-name" : {
+          "type" : "string"
+        },
+        "script" : {
+          "$ref" : "#/definitions/Script"
+        },
+        "in-binding" : {
+          "$ref" : "#/definitions/InBinding"
+        },
+        "out-binding" : {
+          "$ref" : "#/definitions/OutBinding"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "conditions" : {
+          "$ref" : "#/definitions/Conditions"
+        },
+        "condition" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Condition"
+          }
+        },
+        "reference" : {
+          "$ref" : "#/definitions/Reference"
+        },
+        "iteration-catch-block" : {
+          "$ref" : "#/definitions/IterationCatchBlock"
+        },
+        "workflow-subelements-list" : {
+          "$ref" : "#/definitions/WorkflowSubelementsList"
+        },
+        "presentation" : {
+          "$ref" : "#/definitions/Presentation"
+        },
+        "position" : {
+          "$ref" : "#/definitions/Position"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "out-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "alt-out-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "catch-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "throw-bind-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "type" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "end-mode" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "script-module" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "business-status" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "color" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "prototype-id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "content-mode" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "launched-workflow-id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "interaction" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "linked-workflow-id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "comparator" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "WorkflowNote" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string"
+        },
+        "x" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "y" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "w" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "h" : {
+          "type" : "number",
+          "format" : "double",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "color" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
+    "WorkflowSubelement" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "display-name" : {
+          "type" : "string"
+        },
+        "linked-workflow-id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "in-binding" : {
+          "$ref" : "#/definitions/InBinding"
+        },
+        "out-binding" : {
+          "$ref" : "#/definitions/OutBinding"
+        }
+      }
+    },
+    "WorkflowSubelementsList" : {
+      "type" : "object",
+      "properties" : {
+        "workflow-subelement" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WorkflowSubelement"
+          }
         }
       }
     },
@@ -5967,6 +9381,46 @@
         }
       }
     },
+    "WsAuthorizedEntity" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "GROUP", "USER" ]
+        },
+        "role" : {
+          "type" : "string",
+          "enum" : [ "ADMINISTRTATOR", "MEMBER" ]
+        },
+        "domain" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "WsDetails" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "value" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
     "WsLog" : {
       "type" : "object",
       "properties" : {
@@ -6001,116 +9455,25 @@
         }
       }
     },
-    "WsPolicy" : {
-      "type" : "object",
-      "properties" : {
-        "href" : {
-          "type" : "string",
-          "xml" : {
-            "attribute" : true
-          }
-        },
-        "relations" : {
-          "$ref" : "#/definitions/Relations"
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "priority" : {
-          "type" : "string",
-          "enum" : [ "VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH" ]
-        },
-        "startup" : {
-          "type" : "string",
-          "enum" : [ "MANUAL", "AUTOMATIC" ]
-        },
-        "state" : {
-          "type" : "string"
-        },
-        "policy-item" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "policy-items",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/WsPolicyItem"
-          }
-        },
-        "parameter" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "parameters",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/parameter"
-          }
-        }
-      }
-    },
-    "WsPolicyEventHandler" : {
-      "type" : "object",
-      "properties" : {
-        "type" : {
-          "type" : "string",
-          "enum" : [ "TRIGGER", "GAUGE" ]
-        },
-        "event-id" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        },
-        "script" : {
-          "type" : "string"
-        },
-        "workflow" : {
-          "$ref" : "#/definitions/workflow"
-        }
-      }
-    },
     "WsPolicyEventSource" : {
       "type" : "object"
     },
-    "WsPolicyItem" : {
+    "WsProfilerOptions" : {
       "type" : "object",
       "properties" : {
-        "eventSource" : {
-          "$ref" : "#/definitions/WsPolicyEventSource"
-        },
-        "handlers" : {
-          "type" : "array",
-          "xml" : {
-            "name" : "event-handlers",
-            "wrapped" : true
-          },
-          "items" : {
-            "$ref" : "#/definitions/WsPolicyEventHandler"
-          }
-        },
-        "name" : {
-          "type" : "string"
-        },
-        "description" : {
-          "type" : "string"
-        }
-      }
-    },
-    "WsPolicyList" : {
-      "type" : "object",
-      "properties" : {
-        "href" : {
-          "type" : "string",
+        "enabled" : {
+          "type" : "boolean",
           "xml" : {
             "attribute" : true
-          }
+          },
+          "default" : false
         },
-        "relations" : {
-          "$ref" : "#/definitions/Relations"
+        "debuggerEnabled" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
         }
       }
     },
@@ -6134,6 +9497,53 @@
           "xml" : {
             "attribute" : true
           }
+        }
+      }
+    },
+    "WsSysLog" : {
+      "type" : "object",
+      "properties" : {
+        "origin" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "long-description" : {
+          "type" : "string"
+        },
+        "short-description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "user" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "time-stamp" : {
+          "type" : "string",
+          "format" : "date-time",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "time-stamp-val" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "severity" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "UNKNOWN", "DEBUG", "INFO", "WARNING", "ERROR" ]
         }
       }
     },
@@ -6174,6 +9584,35 @@
         }
       }
     },
+    "WsValidationMessage" : {
+      "type" : "object",
+      "properties" : {
+        "title" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "text" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "owner" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "severity" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      }
+    },
     "WsWorkflowExecutionStackItem" : {
       "type" : "object",
       "properties" : {
@@ -6187,6 +9626,22 @@
           "type" : "string",
           "xml" : {
             "attribute" : true
+          }
+        },
+        "workflowDisplayName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "parameter" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "workflow-attributes",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/parameter"
           }
         },
         "href" : {
@@ -6214,6 +9669,17 @@
         },
         "api-version" : {
           "type" : "string"
+        },
+        "feature" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "features",
+            "wrapped" : true
+          },
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/feature"
+          }
         }
       },
       "xml" : {
@@ -6222,6 +9688,7 @@
     },
     "action" : {
       "type" : "object",
+      "required" : [ "module", "name" ],
       "properties" : {
         "href" : {
           "type" : "string",
@@ -6252,7 +9719,12 @@
           }
         },
         "name" : {
-          "type" : "string"
+          "type" : "string",
+          "pattern" : "^[\\p{L}_$][\\p{L}0-9_$]*$"
+        },
+        "module" : {
+          "type" : "string",
+          "pattern" : "^[\\p{L}_]+(\\.[\\p{L}0-9_]+)*$"
         },
         "description" : {
           "type" : "string"
@@ -6264,6 +9736,12 @@
           }
         },
         "fqn" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "script" : {
           "type" : "string",
           "xml" : {
             "attribute" : true
@@ -6300,6 +9778,170 @@
       },
       "xml" : {
         "name" : "actions"
+      }
+    },
+    "activity-statistics" : {
+      "type" : "object",
+      "properties" : {
+        "activities" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "activity",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/activity-statistics"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "total-time" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "number-of-executions" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "number-of-transitions" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "max-time" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "activity-statistics"
+      }
+    },
+    "api-types" : {
+      "type" : "object",
+      "properties" : {
+        "system" : {
+          "$ref" : "#/definitions/SystemTypes"
+        },
+        "plugins" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SdkModuleType"
+          }
+        },
+        "scriptCategories" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ScriptModuleCategory"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "api-types"
+      }
+    },
+    "authorization-group" : {
+      "type" : "object",
+      "properties" : {
+        "authorizedEntities" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "authorized-entity",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/WsAuthorizedEntity"
+          }
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "label" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "protectedResources" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "resource-reference",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/resource-ref"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "authorization-group"
+      }
+    },
+    "breakpoint" : {
+      "type" : "object",
+      "required" : [ "active", "elementName", "lineNumber", "workflowId" ],
+      "properties" : {
+        "workflowId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "elementName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lineNumber" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "active" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      },
+      "xml" : {
+        "name" : "breakpoint"
+      }
+    },
+    "breakpoints" : {
+      "type" : "object",
+      "properties" : {
+        "breakpoints" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/breakpoint"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "breakpoints"
       }
     },
     "categories" : {
@@ -6379,6 +10021,57 @@
       },
       "xml" : {
         "name" : "category-context"
+      }
+    },
+    "category-details" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "actions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ScriptModuleType"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "category-details"
       }
     },
     "config-entries" : {
@@ -6515,6 +10208,53 @@
         "name" : "configurations"
       }
     },
+    "debug-location" : {
+      "type" : "object",
+      "required" : [ "dunesObjectId", "dunesObjectType", "elementName", "lineNumber", "suspended", "workflowTokenId" ],
+      "properties" : {
+        "workflowTokenId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "dunesObjectId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "dunesObjectType" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "elementName" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "lineNumber" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "suspended" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        }
+      },
+      "xml" : {
+        "name" : "debug-location"
+      }
+    },
     "descriptor" : {
       "type" : "object",
       "properties" : {
@@ -6530,6 +10270,58 @@
       },
       "xml" : {
         "name" : "descriptor"
+      }
+    },
+    "evaluate" : {
+      "type" : "object",
+      "properties" : {
+        "scripts" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "evaluate"
+      }
+    },
+    "event-handler" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "TRIGGER", "GAUGE" ]
+        },
+        "eventId" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "script" : {
+          "type" : "string"
+        },
+        "workflow" : {
+          "$ref" : "#/definitions/workflow"
+        },
+        "bindings" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Bind"
+          }
+        },
+        "min-value" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "max-value" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      },
+      "xml" : {
+        "name" : "event-handler"
       }
     },
     "execution" : {
@@ -6613,6 +10405,12 @@
     "execution-context" : {
       "type" : "object",
       "properties" : {
+        "executionId" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
         "parameter" : {
           "type" : "array",
           "xml" : {
@@ -6622,6 +10420,9 @@
           "items" : {
             "$ref" : "#/definitions/parameter"
           }
+        },
+        "profilerOptions" : {
+          "$ref" : "#/definitions/WsProfilerOptions"
         }
       },
       "xml" : {
@@ -6643,6 +10444,20 @@
       },
       "xml" : {
         "name" : "executions"
+      }
+    },
+    "feature" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "feature"
       }
     },
     "health-status" : {
@@ -6849,6 +10664,62 @@
         "name" : "node-status"
       }
     },
+    "o11n-types" : {
+      "type" : "object",
+      "properties" : {
+        "o11n-type" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/o11nType"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "o11n-types"
+      }
+    },
+    "o11nType" : {
+      "type" : "object",
+      "properties" : {
+        "ret" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "in" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "out" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "attr" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "o11nType"
+      }
+    },
     "owners" : {
       "type" : "object",
       "properties" : {
@@ -6920,6 +10791,26 @@
             "$ref" : "#/definitions/Link"
           }
         },
+        "policyTemplates" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "policy-templates",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        },
+        "usedPlugins" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "used-plugins",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/UsedPlugin"
+          }
+        },
         "id" : {
           "type" : "string",
           "xml" : {
@@ -6976,6 +10867,7 @@
     },
     "parameter" : {
       "type" : "object",
+      "required" : [ "name" ],
       "properties" : {
         "description" : {
           "type" : "string",
@@ -6996,7 +10888,8 @@
           "type" : "string",
           "xml" : {
             "attribute" : true
-          }
+          },
+          "pattern" : "^[\\p{L}_$][\\p{L}0-9_$]*$"
         },
         "scope" : {
           "type" : "string",
@@ -7006,6 +10899,13 @@
           "enum" : [ "LOCAL", "TOKEN" ]
         },
         "updated" : {
+          "type" : "boolean",
+          "xml" : {
+            "attribute" : true
+          },
+          "default" : false
+        },
+        "encrypt-value" : {
           "type" : "boolean",
           "xml" : {
             "attribute" : true
@@ -7054,6 +10954,110 @@
         "name" : "permissions"
       }
     },
+    "plugin-details" : {
+      "type" : "object",
+      "properties" : {
+        "description" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "externalUrl" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "state" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "enum" : [ "RELEASE", "ALPHA", "BETA", "DEPRECATED" ]
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "build" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "objects" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ObjectType"
+          }
+        },
+        "enums" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EnumType"
+          }
+        },
+        "types" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SdkType"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "plugin-details"
+      }
+    },
+    "plugin-statistics" : {
+      "type" : "object",
+      "properties" : {
+        "details" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WsDetails"
+          }
+        },
+        "plugin-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "total-time" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "number-of-executions" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "plugin-statistics"
+      }
+    },
     "plugins" : {
       "type" : "object",
       "properties" : {
@@ -7073,6 +11077,229 @@
       },
       "xml" : {
         "name" : "plugins"
+      }
+    },
+    "policy" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "eventHandlers" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "event-handler",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/event-handler"
+          }
+        },
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "relations" : {
+          "$ref" : "#/definitions/Relations"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 100
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 1024
+        },
+        "policy-item" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "policy-items",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/policy-item"
+          }
+        },
+        "parameter" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "parameters",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        },
+        "priority" : {
+          "type" : "string",
+          "enum" : [ "VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH" ]
+        },
+        "startup" : {
+          "type" : "string",
+          "enum" : [ "MANUAL", "AUTOMATIC" ]
+        },
+        "state" : {
+          "type" : "string",
+          "enum" : [ "STARTED", "STOPPED", "STOPPING", "STARTING" ]
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "started-by" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "policy"
+      }
+    },
+    "policy-item" : {
+      "type" : "object",
+      "properties" : {
+        "event-source" : {
+          "$ref" : "#/definitions/WsPolicyEventSource"
+        },
+        "eventHandlers" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "event-handler",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/event-handler"
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "policy-item"
+      }
+    },
+    "policy-list" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "relations" : {
+          "$ref" : "#/definitions/Relations"
+        }
+      },
+      "xml" : {
+        "name" : "policy-list"
+      }
+    },
+    "policy-template" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "eventHandlers" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "event-handler",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/event-handler"
+          }
+        },
+        "href" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "relations" : {
+          "$ref" : "#/definitions/Relations"
+        },
+        "name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          },
+          "minLength" : 1,
+          "maxLength" : 100
+        },
+        "description" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 1024
+        },
+        "policy-item" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "policy-items",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/policy-item"
+          }
+        },
+        "parameter" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "parameters",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "minLength" : 0,
+          "maxLength" : 20
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "policy-template"
+      }
+    },
+    "policy-templates" : {
+      "type" : "object",
+      "properties" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "start" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "link" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Link"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "policy-templates"
       }
     },
     "presentation" : {
@@ -7172,6 +11399,20 @@
         "name" : "resource"
       }
     },
+    "resource-ref" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        }
+      },
+      "xml" : {
+        "name" : "resource-ref"
+      }
+    },
     "resources" : {
       "type" : "object",
       "properties" : {
@@ -7199,6 +11440,140 @@
       "xml" : {
         "name" : "resources"
       }
+    },
+    "schema-workflow" : {
+      "type" : "object",
+      "required" : [ "attrib", "description", "display-name", "input", "output", "position", "presentation", "ref-types", "workflow-item", "workflow-note" ],
+      "properties" : {
+        "display-name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "ref-types" : {
+          "type" : "string"
+        },
+        "error-handler" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ErrorHandler"
+          }
+        },
+        "position" : {
+          "$ref" : "#/definitions/Position"
+        },
+        "input" : {
+          "$ref" : "#/definitions/Input"
+        },
+        "output" : {
+          "$ref" : "#/definitions/Output"
+        },
+        "attrib" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        },
+        "workflow-item" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WorkflowItem"
+          }
+        },
+        "presentation" : {
+          "$ref" : "#/definitions/Presentation"
+        },
+        "workflow-note" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WorkflowNote"
+          }
+        },
+        "schemaLocation" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "root-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "object-name" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "icon-id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "api-version" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "allowed-operations" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "restartMode" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "resumeFromFailedMode" : {
+          "type" : "integer",
+          "format" : "int32",
+          "xml" : {
+            "attribute" : true
+          }
+        }
+      },
+      "xml" : {
+        "name" : "schema-workflow"
+      }
+    },
+    "sdk-event-source" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/WsPolicyEventSource"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "sdk-type" : {
+            "type" : "string"
+          }
+        },
+        "xml" : {
+          "name" : "sdk-event-source"
+        }
+      } ]
     },
     "server-authentication" : {
       "type" : "object",
@@ -7287,6 +11662,20 @@
       },
       "xml" : {
         "name" : "supported-versions"
+      }
+    },
+    "sys-logs" : {
+      "type" : "object",
+      "properties" : {
+        "logs" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WsSysLog"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "sys-logs"
       }
     },
     "tag-instance" : {
@@ -7478,6 +11867,28 @@
         "name" : "task-data"
       }
     },
+    "task-event-source" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/WsPolicyEventSource"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "recurrence-pattern" : {
+            "type" : "string"
+          },
+          "recurrence-cycle" : {
+            "type" : "string",
+            "enum" : [ "ONE_TIME", "EVERY_MINUTES", "EVERY_HOURS", "EVERY_DAYS", "EVERY_WEEKS", "EVERY_MONTHS" ]
+          },
+          "time-zone" : {
+            "type" : "string"
+          }
+        },
+        "xml" : {
+          "name" : "task-event-source"
+        }
+      } ]
+    },
     "tasks" : {
       "type" : "object",
       "properties" : {
@@ -7653,6 +12064,34 @@
         "name" : "user-interaction"
       }
     },
+    "validation-messages" : {
+      "type" : "object",
+      "properties" : {
+        "messages" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/WsValidationMessage"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "validation-messages"
+      }
+    },
+    "variables" : {
+      "type" : "object",
+      "properties" : {
+        "variables" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "variables"
+      }
+    },
     "version" : {
       "type" : "object",
       "properties" : {
@@ -7685,6 +12124,9 @@
         },
         "id" : {
           "type" : "string"
+        },
+        "schema-workflow" : {
+          "$ref" : "#/definitions/schema-workflow"
         },
         "inputParameters" : {
           "type" : "array",
@@ -7798,10 +12240,116 @@
           "items" : {
             "$ref" : "#/definitions/WsWorkflowExecutionStackItem"
           }
+        },
+        "workflowAttributes" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "parameter",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/parameter"
+          }
+        },
+        "current-item-for-display" : {
+          "type" : "string"
+        },
+        "statistic" : {
+          "$ref" : "#/definitions/workflow-execution-statistics"
         }
       },
       "xml" : {
         "name" : "workflow-execution"
+      }
+    },
+    "workflow-execution-statistics" : {
+      "type" : "object",
+      "properties" : {
+        "activities" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "activity",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/activity-statistics"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "total-time" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "number-of-transitions" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "total-number-of-transitions" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "token-size" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "token-blocked" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "token-system" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "token-user" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "token-wait" : {
+          "type" : "integer",
+          "format" : "int64",
+          "xml" : {
+            "attribute" : true
+          }
+        },
+        "plugins" : {
+          "type" : "array",
+          "xml" : {
+            "name" : "plugin",
+            "wrapped" : true
+          },
+          "items" : {
+            "$ref" : "#/definitions/plugin-statistics"
+          }
+        }
+      },
+      "xml" : {
+        "name" : "workflow-execution-statistics"
       }
     }
   }

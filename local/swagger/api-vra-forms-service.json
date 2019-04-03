@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Forms Service API Specification\n\n## What Is the Forms Service?\n\nThe forms service is used internally by the vRealize Automation system to create, read, update and delete (perform CRUD operations on) request forms for XaaS components.\n\nA typical use case is creation, update, and deletion of a catalog item request form.\n\n## Key Concepts\n\n### Form\n\nA form used to configure vRealize Automation provisioning requests for XaaS components.\n\n### XaaS component\n\nA custom service that is created by a vRealize Automation tenant administrator or XaaS administrator.",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Forms Service API"
   },
   "basePath" : "/forms-service",
@@ -697,6 +697,12 @@
         },
         "refresh" : {
           "$ref" : "#/definitions/Refresh"
+        },
+        "shortValueName" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         },
         "id" : {
           "type" : "string"
@@ -1836,13 +1842,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -1861,6 +1867,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -1868,10 +1878,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },

@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Extensibility Service\n \nThis document describes how to use the Extensibility Service REST API.\n \n## What Is the Extensibility Service?\n \nThe Extensibility service enables you to manage extensions, plugins, and wizard states.  \n\n \n## Typical Use Cases\n \nYou can use the Extensibility REST API to:\n \n * Create, retrieve, update, and delete a plugin.\n \n * List all the plugins.\n \n * Retrieve and delete an extension.\n \n * List all the extensions.\n \n * List all the extensions for a plugin.\n \n * Set or get wizard state for a logged-in user.\n \n \n## Key Concepts\n\n### Host Application \n\nA host application is a web application that is being extended with a pluggable UI.  The host application discovers plugins, manages plugin life cycle, and serves the UI from the plugin extensions to the extension hosts.\n\n### Plugin \n\nA plugin is a packaged set of extensions, and possibly extension hosts. Commonly, a plugin contains JavaScript that runs in the browser along with other web resources like HTML and CSS.\n\n### Extension \n\nAn extension is a component that extends the functionality of another component based on a predefined contract.  Extensions are packaged in plugins and contain metadata that describes what component it is to be extended and how it is extended.\n\n### Extension Host \n\nAn extension host is a component that can be extended with an extension.  To become an extension host, a component defines one or more extension points.  The host application provides the framework for making the extensions available to an extension host.  In many cases, extension hosts are UI widgets, for example, a tabbed view that dynamically adds tabs defined in extensions.\n\n### Extension Point \n\nAn extension point defines the contract between an extension host and extensions.  It has a unique identifier that extensions use to hook into extension hosts.  The extension host also defines the properties that should be provided by extensions of a given extension point. \n\n### Wizard State\n\nThe application has goal based wizards to enable users to complete a number of steps to achieve a goal. Wizard state is a domain object persisting the last step visited by the user.  It does not imply that they have completed all preceding steps, nor even the current step.\n \n\n",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Extensibility Service API"
   },
   "basePath" : "/component-registry",
@@ -448,13 +448,13 @@
     "PageExtensionInfo" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -473,6 +473,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -480,10 +484,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },

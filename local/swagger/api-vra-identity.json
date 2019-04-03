@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "# Identity Overview\n\nThe Identity Service is composed of two components: authentication and authorization. Further details on these components can be found below.\n\n## Authentication Overview\n\nThe authentication component manages tenants, business groups (formerly named subtenants), groups (both Single-Sign-On and Custom groups), users and identity stores.\n\n### Tenancy\n\nA tenant is an organizational unit in a vRealize Automation deployment. A tenant can represent a business unit in an enterprise or a company that subscribes to cloud services from a service provider.\n\nEach tenant has its own dedicated configuration. Some system-level configuration is shared across tenants.\n\n### User and Group Management\n\nAll user authentication is handled through single sign-on. Each tenant has one or more identity stores, such as Active Directory servers, that provide authentication.\n\nThe system administrator performs the initial configuration of single sign-on and basic tenant setup, including designating at least one identity store and a tenant administrator for each tenant. Thereafter, a tenant administrator can configure additional identity stores and assign roles to users or groups from the identity stores.\n\nTenant administrators can also create custom groups within their own tenant and add users and groups defined in the identity store to custom groups. Custom groups, like identity store groups and users, can be assigned roles or designated as the approvers in an approval policy.\n\nTenant administrators can also create business groups within their tenant. A business group is a set of users, often corresponding to a line of business, department or other organizational unit, that can be associated with a set of catalog services and infrastructure resources. Users, identity store groups, and custom groups can be added to business groups.\n\n### Authentication API Examples\n\n#### Identifying and groups and users\n\nBoth groups (SSO and custom) and users use the same object for identification - the principal id. Principal id consists of name and domain and is serialized in the form of `name@domain.`\n\nExample usages include:\n\n*   Getting a group by principal id: `GET /tenants/vcac.local/groups/Administrators@vcac.local`\n*   Getting a user by principal id: `GET /tenants/vcac.local/principals/Administrator@vcac.local`\n*   Search all groups using criteria instead of principal id:\n`GET /tenants/vcac.local/groups?criteria=administrator`\n\n*   Creating a group: `POST /tenants/vcac.local/groups` \n\n```json \n{ \n  \"@type\": \"Group\", \n  \"groupType\": \"CUSTOM\", \n  \"name\": \"Developers\", \n  \"domain\": \"vcac.local\", \n  \"description\": \"Developer Group\",\n  \"principalId\": { \n    \"domain\": \"vcac.local\", \n    \"name\": \"DevGroup\"\n  }\n} \n```\n\n## Authorization Overview\n\nThe authorization component manages authorization configurations as a set of triples\n\n*   `Principal` - The user or group to whom access is granted\n    *   principals are externally definded in authentication service and merely referenced in the authorization service.\n*   `Permission` - Identifies the action or data the principal is granted access to.\n    *   Permissions can correspond to atomic actions (e.g. \"Power On VM\").\n    *   They can also act as an abstraction for an entire set of activities (e.g. \"VM Power Lifecycle\").\n*   `Scope` - Defines the context within which the access applies.\n    *   A scope can identify an object (or an object representing a set of objects) upon which the action identified by a permission can be performed. (i.e. To define an Access Control List (ACL).)\n    *   A scope can be used to represent a group and the permissions identify the roles of different users within the group. (i.e. To define business groups, aka: sub-tenants)\n    *   Scope is optional\n\nNOTE: Roles and Permissions are both a part of the PrincipalExtensionApi REST resource.\n\n### Role Management\n\nRoles consist of a set of privileges that can be associated with users to determine what tasks they can perform. Based on their responsibilities, individuals might have one or more roles associated with their user account.\n\nAll user roles are assigned within the context of a specific tenant. However, some roles in the default tenant can manage system-wide configuration that applies to multiple tenants.\n\nFor more high-level details, see the \"Foundations and Concepts\" documentation located on the [vRA public documentation site](https://www.vmware.com/support/pubs/vcac-pubs.html)\n\n### Authorization API Examples\n\n#### Getting a specific role by id\n\n`GET /authorization/roles/CSP_TENANT_ADMIN`\n\n#### Creating a new role (e.g: one for helpdesk personnel)\n\n`POST /authorization/roles` \n```json\n{ \n  \"@type\" : \"TenantRole\", \n  \"id\" : \"HELPDESK_TENANT_ROLE\", \n  \"name\" : \"Helpdesk Administrator Tenant Role\", \n  \"description\" : \"Role representing helpdesk personnel\" \n}\n```\n\n#### Adding a permission to a role (e.g.: adding permission to tenant administration GUI\n\n`PUT /authorization/roles/HELPDESK_TENANT_ROLE/permissions/assigned/GUI_MY_TENANT_MANAGEMENT`\n\nNOTE: For this PUT, there is an empty request body. \n```json\n{} \n```\n",
-    "version" : "7.5.1-SNAPSHOT",
+    "version" : "7.6.0-SNAPSHOT",
     "title" : "Identity Service API"
   },
   "basePath" : "/identity",
@@ -5946,13 +5946,13 @@
     "PageAclEntry" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -5971,6 +5971,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -5978,23 +5982,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageIdentityStore" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -6013,6 +6013,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -6020,23 +6024,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PagePrincipalData" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -6055,6 +6055,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -6062,23 +6066,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSubtenant" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -6097,6 +6097,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -6104,23 +6108,19 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
     "PageSubtenantRole" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -6139,6 +6139,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "last" : {
           "type" : "boolean",
           "default" : false
@@ -6146,10 +6150,6 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean",
-          "default" : false
         }
       }
     },
