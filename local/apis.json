@@ -11,5 +11,71 @@
         "version" : "6.7",
         "url" : "/assets/swagger/vcenter.json",
         "languages" : ["Java","Python","Perl","Ruby",".NET"]
-    }
+    },
+    {
+        "api_uid": "api_vcenter_server_appliance_management",
+        "description": "VMware vCenter Server provides a centralized platform for managing your VMware vSphere environments",
+        "name" : "vCenter Server Appliance API",
+        "products": [ "vSphere" ],
+        "resources": {
+        "docs": []
+        },
+        "type": "swagger",
+        "version" : "6.7",
+        "url" : "/assets/swagger/appliance.json",
+        "languages" : ["Java","Python","Perl","Ruby",".NET"]
+    },
+    {
+        "api_uid": "api_cis_management",
+        "name" : "Common Infrastructure Services API",
+        "description": "The common Infrastructure Services (CIS) API provides access to common APIs used in the VMware infrastructure.",
+        "products": [ "vSphere" ],
+        "resources": {
+        "docs": []
+        },
+        "type": "swagger",
+        "version" : "6.7",
+        "url" : "/assets/swagger/cis.json",
+        "languages" : ["Java","Python","Perl","Ruby",".NET"]
+    },
+    {
+        "api_uid": "api_content",
+        "name" : "Content Library API",
+        "description": "VMware vSphere Content Library empowers vSphere Admins to effectively manage VM templates, vApps, ISO images and scripts with ease.",
+        "products": [ "vSphere" ],
+        "resources": {
+        "docs": []
+        },
+        "type": "swagger",
+        "version" : "6.7",
+        "url" : "/assets/swagger/content.json",
+        "languages" : ["Java","Python","Perl","Ruby",".NET"]
+    },
+    {
+        "api_uid": "api_vapi_management",
+        "name" : "vSphere Extensibility API",
+        "description": "vSphere Extensibility API (vAPI) is an extensible API Platform for modelling and delivering APIs/SDKs/CLIs.",
+        "products": [ "vSphere" ],
+        "resources": {
+        "docs": []
+        },
+        "type": "swagger",
+        "version" : "6.7",
+        "url" : "/assets/swagger/vapi.json",
+        "languages" : ["Java","Python","Perl","Ruby",".NET"]
+   },
+   {
+        "api_uid": "api_esx",
+        "name" : "ESX API",
+        "description": "API for ESXi",
+        "products": [ "vSphere" ],
+        "resources": {
+        "docs": []
+        },
+        "type": "swagger",
+        "version" : "6.7",
+        "url" : "/assets/swagger/esx.json",
+        "languages" : ["Java","Python","Perl","Ruby",".NET"]
+   }
+
 ]
