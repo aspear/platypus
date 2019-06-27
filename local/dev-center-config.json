@@ -1,19 +1,19 @@
 {
-    "title" : "VMware {code} Developer Center",
+    "title" : "vSphere Developer Center",
     "base" : "/",
-    "productRelease" : "VMware {code};latest",
-    "sampleQuery" : "product=VMware {code}",    
+    "productRelease" : "vSphere;6.7",
+    "sampleQuery" : "product=vSphere",    
     "enableRemote" : false,
     "localApiUrl" : "/assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "Samples that use VMware {code} services",
+    "samplePageOverview": "vSphere related samples",
     "sdkPageOverview": "Improve your development experience with our SDKs allowing you to develop and integrate with the product features.",
     "defaultHost" : "",
     "defaultBasePath" : "", 
     "auth": [
         {   "id": "basic",
             "swaggerAuthName": "BasicAuth",
-            "displayName": "MyVMware credential Basic Authentication",    
+            "displayName": "vSphere SSO",    
             "authUrl": "/rest/v1"
         }
     ]
