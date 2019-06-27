@@ -1,0 +1,260 @@
+{
+    "paths": {
+        "/esx/health/clusters/{cluster}/perspectives/ready-for-apply/status?action=check": {
+            "post": {
+                "operationId": "check",
+                "summary": "Check if the cluster is ready for realizing the desired state. Warning: This operation is available as technical preview. It may be changed in a future release.",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Contains the cluster MoID.",
+                        "in": "path",
+                        "name": "cluster",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "request_body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/com.vmware.esx.health.clusters.perspectives.ready_for_apply.status_check"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cluster health status info.",
+                        "schema": {
+                            "$ref": "#/definitions/com.vmware.esx.health.clusters.perspectives.ready_for_apply.status.check_result"
+                        }
+                    },
+                    "401": {
+                        "description": "if the caller is not authenticated.",
+                        "schema": {
+                            "$ref": "#/definitions/com.vmware.vapi.std.errors.unauthenticated_error"
+                        }
+                    },
+                    "403": {
+                        "description": "If the caller does not have the necessary privileges.",
+                        "schema": {
+                            "$ref": "#/definitions/com.vmware.vapi.std.errors.unauthorized_error"
+                        }
+                    },
+                    "404": {
+                        "description": "if no cluster with the given MoId could be found.",
+                        "schema": {
+                            "$ref": "#/definitions/com.vmware.vapi.std.errors.not_found_error"
+                        }
+                    }
+                },
+                "tags": [
+                    "health/clusters/perspectives/ready_for_apply/status "
+                ]
+            }
+        }
+    },
+    "basePath": "/rest",
+    "info": {
+        "description": "",
+        "version": "2.0.0",
+        "termsOfService": "http://swagger.io/terms/",
+        "title": "esx"
+    },
+    "swagger": "2.0",
+    "host": "",
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "tags": [],
+    "definitions": {
+        "com.vmware.esx.health.clusters.perspectives.ready_for_apply.status.check_result": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "$ref": "#/definitions/com.vmware.esx.health.status_info"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "com.vmware.esx.health.clusters.perspectives.ready_for_apply.status_check": {
+            "type": "object",
+            "properties": {
+                "exclude_checks": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A {@term set} of check IDs that should not be executed."
+                }
+            },
+            "required": [
+                "exclude_checks"
+            ]
+        },
+        "com.vmware.vapi.std.errors.error.type": {
+            "type": "string",
+            "description": "Enumeration of all standard errors. Used as discriminator in protocols that have no standard means for transporting the error type, e.g. REST.",
+            "enum": [
+                "ERROR",
+                "ALREADY_EXISTS",
+                "ALREADY_IN_DESIRED_STATE",
+                "CANCELED",
+                "CONCURRENT_CHANGE",
+                "FEATURE_IN_USE",
+                "INTERNAL_SERVER_ERROR",
+                "INVALID_ARGUMENT",
+                "INVALID_ELEMENT_CONFIGURATION",
+                "INVALID_ELEMENT_TYPE",
+                "INVALID_REQUEST",
+                "NOT_ALLOWED_IN_CURRENT_STATE",
+                "NOT_FOUND",
+                "OPERATION_NOT_FOUND",
+                "RESOURCE_BUSY",
+                "RESOURCE_IN_USE",
+                "RESOURCE_INACCESSIBLE",
+                "SERVICE_UNAVAILABLE",
+                "TIMED_OUT",
+                "UNABLE_TO_ALLOCATE_RESOURCE",
+                "UNAUTHENTICATED",
+                "UNAUTHORIZED",
+                "UNEXPECTED_INPUT",
+                "UNSUPPORTED",
+                "UNVERIFIED_PEER"
+            ]
+        },
+        "com.vmware.vapi.std.errors.not_found": {
+            "type": "object",
+            "properties": {
+                "error_type": {
+                    "description": "Discriminator field to help API consumers identify the structure type.",
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.error.type"
+                },
+                "data": {
+                    "description": "Data to facilitate clients responding to the {@term operation} reporting a standard {@term error} to indicating that it was unable to complete successfully. <p> {@term Operations} may provide data that clients can use when responding to {@term errors}.  Since the data that clients need may be specific to the context of the {@term operation} reporting the {@term error}, different {@term operations} that report the same {@term error} may provide different data in the {@term error}.  The documentation for each each {@term operation} will describe what, if any, data it provides for each {@term error} it reports. The {@link ArgumentLocations}, {@link FileLocations}, and {@link TransientIndication} {@term structures} are intended as possible values for this {@term field}.  {@link com.vmware.vapi.std.DynamicID} may also be useful as a value for this {@term field} (although that is not its primary purpose).  Some {@term services} may provide their own specific {@term structures} for use as the value of this {@term field} when reporting {@term errors} from their {@term operations}.",
+                    "type": "object"
+                },
+                "messages": {
+                    "description": "Stack of one or more localizable messages for human {@term error} consumers. <p> The message at the top of the stack (first in the list) describes the {@term error} from the perspective of the {@term operation} the client invoked. Each subsequent message in the stack describes the \"cause\" of the prior message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/com.vmware.vapi.std.localizable_message"
+                    }
+                }
+            },
+            "required": [
+                "messages"
+            ]
+        },
+        "com.vmware.vapi.std.errors.not_found_error": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.not_found"
+                }
+            }
+        },
+        "com.vmware.vapi.std.errors.unauthenticated": {
+            "type": "object",
+            "properties": {
+                "error_type": {
+                    "description": "Discriminator field to help API consumers identify the structure type.",
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.error.type"
+                },
+                "data": {
+                    "description": "Data to facilitate clients responding to the {@term operation} reporting a standard {@term error} to indicating that it was unable to complete successfully. <p> {@term Operations} may provide data that clients can use when responding to {@term errors}.  Since the data that clients need may be specific to the context of the {@term operation} reporting the {@term error}, different {@term operations} that report the same {@term error} may provide different data in the {@term error}.  The documentation for each each {@term operation} will describe what, if any, data it provides for each {@term error} it reports. The {@link ArgumentLocations}, {@link FileLocations}, and {@link TransientIndication} {@term structures} are intended as possible values for this {@term field}.  {@link com.vmware.vapi.std.DynamicID} may also be useful as a value for this {@term field} (although that is not its primary purpose).  Some {@term services} may provide their own specific {@term structures} for use as the value of this {@term field} when reporting {@term errors} from their {@term operations}.",
+                    "type": "object"
+                },
+                "messages": {
+                    "description": "Stack of one or more localizable messages for human {@term error} consumers. <p> The message at the top of the stack (first in the list) describes the {@term error} from the perspective of the {@term operation} the client invoked. Each subsequent message in the stack describes the \"cause\" of the prior message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/com.vmware.vapi.std.localizable_message"
+                    }
+                }
+            },
+            "required": [
+                "messages"
+            ]
+        },
+        "com.vmware.vapi.std.errors.unauthenticated_error": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.unauthenticated"
+                }
+            }
+        },
+        "com.vmware.vapi.std.errors.unauthorized": {
+            "type": "object",
+            "properties": {
+                "error_type": {
+                    "description": "Discriminator field to help API consumers identify the structure type.",
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.error.type"
+                },
+                "data": {
+                    "description": "Data to facilitate clients responding to the {@term operation} reporting a standard {@term error} to indicating that it was unable to complete successfully. <p> {@term Operations} may provide data that clients can use when responding to {@term errors}.  Since the data that clients need may be specific to the context of the {@term operation} reporting the {@term error}, different {@term operations} that report the same {@term error} may provide different data in the {@term error}.  The documentation for each each {@term operation} will describe what, if any, data it provides for each {@term error} it reports. The {@link ArgumentLocations}, {@link FileLocations}, and {@link TransientIndication} {@term structures} are intended as possible values for this {@term field}.  {@link com.vmware.vapi.std.DynamicID} may also be useful as a value for this {@term field} (although that is not its primary purpose).  Some {@term services} may provide their own specific {@term structures} for use as the value of this {@term field} when reporting {@term errors} from their {@term operations}.",
+                    "type": "object"
+                },
+                "messages": {
+                    "description": "Stack of one or more localizable messages for human {@term error} consumers. <p> The message at the top of the stack (first in the list) describes the {@term error} from the perspective of the {@term operation} the client invoked. Each subsequent message in the stack describes the \"cause\" of the prior message.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/com.vmware.vapi.std.localizable_message"
+                    }
+                }
+            },
+            "required": [
+                "messages"
+            ]
+        },
+        "com.vmware.vapi.std.errors.unauthorized_error": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/com.vmware.vapi.std.errors.unauthorized"
+                }
+            }
+        },
+        "com.vmware.vapi.std.localizable_message": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier of the localizable string or message template. <p> This identifier is typically used to retrieve a locale-specific string or message template from a message catalog.",
+                    "type": "string"
+                },
+                "default_message": {
+                    "description": "The value of this localizable string or message template in the {@code en_US} (English) locale.  If {@link #id} refers to a message template, the default message will contain the substituted arguments. This value can be used by clients that do not need to display strings and messages in the native language of the user.  It could also be used as a fallback if a client is unable to access the appropriate message catalog.",
+                    "type": "string"
+                },
+                "args": {
+                    "description": "Positional arguments to be substituted into the message template. This list will be empty if the message uses named arguments or has no arguments.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "default_message",
+                "args"
+            ]
+        }
+    }
+}

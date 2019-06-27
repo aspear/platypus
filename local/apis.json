@@ -1,15 +1,15 @@
-[ 
+[
     {
-        "api_uid": "api_vcenter_management", 
-        "description": "VMware vCenter Server provides a centralized platform for managing your VMware vSphere environments", 
+        "api_uid": "api_vcenter_management",
+        "description": "VMware vCenter Server provides a centralized platform for managing your VMware vSphere environments",
         "name" : "vCenter API",
-        "products": [ "vSphere" ], 
+        "products": [ "vSphere" ],
         "resources": {
         "docs": []
-        }, 
-        "type": "swagger", 
+        },
+        "type": "swagger",
         "version" : "6.7",
-        "url" : "/swagger/vcenter.json",
+        "url" : "/assets/swagger/vcenter.json",
         "languages" : ["Java","Python","Perl","Ruby",".NET"]
     }
 ]
