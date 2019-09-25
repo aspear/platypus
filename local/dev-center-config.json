@@ -1,7 +1,7 @@
 {
     "title" : "NSX testing",
     "productRelease" : "NSX-T;2.1.0",
-    "sampleQuery" : "product=NSX-T",    
+    "sampleQuery" : "product=NSX-T Data Center",    
     "enableRemote" : false,
     "localApiUrl" : "apis.json",
     "overviewPath" : null,
