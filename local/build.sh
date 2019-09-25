@@ -32,7 +32,7 @@ DEV_CENTER_ROOT_PATH=${DEV_CENTER_ROOT_PATH:-"/"}
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
 # for valid values
-export VER="0.1.0"
+export VER="7.0.1"
 
 # -----------------------------------------------------------------------------
 ARTIFACTORY_URL=https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
@@ -88,6 +88,7 @@ rm -rfv ./local
 
 echo "Removing stock configuration files (will be overwritten, but to catch errors we remove them explicitly)"
 rm -fv ./assets/dev-center-config.json
+rm -fv ./assets/apis.json
 
 echo "Staging product specific dev-center-config.json as well as apis.json"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
@@ -105,8 +106,8 @@ python ${TOOLS_DIR}/apixlocal.py \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
  --output_file=${OUTPUT_DIR}/apis.json  \
- --product_name="NSX-T;2.1.0" \
- --swagger_url="name=NSX-T API,description=NSX-T API FROM vdc-download,version=2.1.0,url=https://vdc-download.vmware.com/vmwb-repository/dcr-public/d78d97e5-a2b0-45a4-97cd-c5b73fdc8b95/85fb0c30-3a55-477f-b70d-4386ed40bf15/nsx_api.json,product=NSX-T"
+ --product_name="NSX-T Data Center;2.1.0" \
+ --swagger_url="name=NSX-T Data Center REST API,description=NSX-T API FROM vdc-download,version=2.1.0,url=https://vdc-download.vmware.com/vmwb-repository/dcr-public/d78d97e5-a2b0-45a4-97cd-c5b73fdc8b95/85fb0c30-3a55-477f-b70d-4386ed40bf15/nsx_api.json,product=NSX-T Data Center"
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html

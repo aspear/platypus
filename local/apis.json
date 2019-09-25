@@ -1,0 +1,15 @@
+{
+    "apis": [
+        {
+            "description": "NSX-T API FROM vdc-download", 
+            "name": "NSX-T API", 
+            "products": [
+                "NSX-T"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "https://vdc-download.vmware.com/vmwb-repository/dcr-public/d78d97e5-a2b0-45a4-97cd-c5b73fdc8b95/85fb0c30-3a55-477f-b70d-4386ed40bf15/nsx_api.json", 
+            "version": "2.1.0"
+        }
+    ]
+}
