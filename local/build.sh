@@ -94,20 +94,11 @@ echo "Staging product specific dev-center-config.json as well as apis.json"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
 cp -fv ${SCRIPT_DIR}/favicon.ico ./    # copy VMware standard icon.  Replace with your products if there is one.
 
-echo "Generating apis.json"
-# run the tool to stage the swagger json files from the 
-# ${SCRIPT_DIR}/swagger directory to the local/swagger
-# directory, abbreviating the descriptions and then also taking the 
-# markdown description from the swagger and generating overview HTML
-# next to the json files.  When it does this it generates an "overview"
-# resource in the local.json file that has all of the configuration in it
-python ${TOOLS_DIR}/apixlocal.py \
- stage \
- --server=${APIX_SERVER} \
- --html_root_dir=${OUTPUT_DIR} \
- --output_file=${OUTPUT_DIR}/apis.json  \
- --product_name="NSX-T Data Center;2.1.0" \
- --swagger_url="name=NSX-T Data Center REST API,description=NSX-T API FROM vdc-download,version=2.1.0,url=https://vdc-download.vmware.com/vmwb-repository/dcr-public/d78d97e5-a2b0-45a4-97cd-c5b73fdc8b95/85fb0c30-3a55-477f-b70d-4386ed40bf15/nsx_api.json,product=NSX-T Data Center"
+echo "Staging product specific dev-center-config.json as well as apis.json"
+cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
+cp -fv ${SCRIPT_DIR}/apis.json ./assets
+cp -fv ${SCRIPT_DIR}/favicon.ico ./    # copy VMware standard icon.  Replace with your products if there is one.
+cp -fv ${SCRIPT_DIR}/dev-center-overview.html ./
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
