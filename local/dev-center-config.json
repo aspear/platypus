@@ -1,11 +1,12 @@
 {
-    "title" : "NSX testing",
-    "productRelease" : "NSX-T;2.1.0",
+    "title" : "NSX-T Data Center Developer Center",
+    "base" : "/",
+    "productRelease" : "NSX-T Data Center;2.5",
     "sampleQuery" : "product=NSX-T Data Center",    
     "enableRemote" : false,
-    "localApiUrl" : "apis.json",
+    "localApiUrl" : "/assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "NSX-T Samples",
+    "samplePageOverview": "Improve your development experience with our SDKs allowing you to develop and integrate with the product features.",
     "sdkPageOverview": "NSX-T SDKs",
     "defaultHost" : "",
     "defaultBasePath" : "", 
@@ -13,7 +14,7 @@
         { 
           "id": "basic",
           "swaggerAuthName": "BasicAuth",
-          "displayName": "BasicAuth",
+          "displayName": "MyVMware Basic authentication",
           "authUrl": "/api/v1"
         }
     ]

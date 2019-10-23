@@ -98,11 +98,11 @@ echo "Staging product specific dev-center-config.json as well as apis.json"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
 cp -fv ${SCRIPT_DIR}/apis.json ./assets
 cp -fv ${SCRIPT_DIR}/favicon.ico ./    # copy VMware standard icon.  Replace with your products if there is one.
-cp -fv ${SCRIPT_DIR}/dev-center-overview.html ./
+#cp -fv ${SCRIPT_DIR}/dev-center-overview.html ./
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
-sed -i "s|VMware {code} Developer Center App|AirWatch Developer Center|g" ./index.html
+sed -i "s|VMware {code} Developer Center App|NSX-T Data Center Developer Center|g" ./index.html
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./.htaccess
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./server.rewrites
 
