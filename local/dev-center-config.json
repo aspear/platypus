@@ -1,19 +1,19 @@
 {
-    "title" : "VMware {code} Developer Center",
+    "title" : "VMware Cloud Foundation Developer Center",
     "base" : "/",
-    "productRelease" : "VMware {code};latest",
-    "sampleQuery" : "product=VMware {code}",    
+    "productRelease" : "VMware Cloud Foundation;3.9.0",
+    "sampleQuery" : "product=VMware Cloud Foundation",
     "enableRemote" : false,
     "localApiUrl" : "/assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "Samples that use VMware {code} services",
+    "samplePageOverview": "Samples that use VMware Cloud Foundation APIs",
     "sdkPageOverview": "Improve your development experience with our SDKs allowing you to develop and integrate with the product features.",
     "defaultHost" : "",
-    "defaultBasePath" : "", 
+    "defaultBasePath" : "",
     "auth": [
         {   "id": "basic",
             "swaggerAuthName": "BasicAuth",
-            "displayName": "MyVMware credential Basic Authentication",    
+            "displayName": "MyVMware credential Basic Authentication",
             "authUrl": "/rest/v1"
         }
     ]
