@@ -1,0 +1,100 @@
+{
+    "apis": [
+        {
+            "api_uid": "api_airwatch_mam_v1", 
+            "description": "", 
+            "name": "MAM API V1", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mam_API_V1.json", 
+            "version": "1"
+        }, 
+        {
+            "api_uid": "api_airwatch_mam_v2", 
+            "description": "", 
+            "name": "MAM API V2", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mam_API_V2.json", 
+            "version": "2"
+        }, 
+        {
+            "api_uid": "api_airwatch_mcm_v1", 
+            "description": "", 
+            "name": "MCM API", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mcm_API_V1.json", 
+            "version": "1"
+        }, 
+        {
+            "api_uid": "api_airwatch_mdm_v1", 
+            "description": "", 
+            "name": "MDM API V1", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mdm_API_V1.json", 
+            "version": "1"
+        }, 
+        {
+            "api_uid": "api_airwatch_mdm_v2", 
+            "description": "", 
+            "name": "MDM API V2", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mdm_API_V2.json", 
+            "version": "2"
+        }, 
+        {
+            "api_uid": "api_airwatch_mem_v1", 
+            "description": "", 
+            "name": "MEM API", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/Mem_API_V1.json", 
+            "version": "1"
+        }, 
+        {
+            "api_uid": "api_airwatch_system_v1", 
+            "description": "", 
+            "name": "System API V1", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/System_API_V1.json", 
+            "version": "1"
+        }, 
+        {
+            "api_uid": "api_airwatch_system_v2", 
+            "description": "", 
+            "name": "System API V2", 
+            "products": [
+                "AirWatch;9.2"
+            ], 
+            "resources": [], 
+            "type": "swagger", 
+            "url": "assets/specs/System_API_V2.json", 
+            "version": "2"
+        }
+    ]
+}

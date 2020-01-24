@@ -101,16 +101,21 @@ echo "Generating apis.json"
 # markdown description from the swagger and generating overview HTML
 # next to the json files.  When it does this it generates an "overview"
 # resource in the local.json file that has all of the configuration in it
-python ${TOOLS_DIR}/apixlocal.py \
- stage \
- --server=${APIX_SERVER} \
- --html_root_dir=${OUTPUT_DIR} \
- --output_file=${OUTPUT_DIR}/assets/apis.json  \
- --abbreviate_description \
- --generate_overview_html \
- --product_name="AirWatch;9.2" \
- --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir=${OUTPUT_DIR}/assets/specs 
+#python ${TOOLS_DIR}/apixlocal.py \
+# stage \
+# --server=${APIX_SERVER} \
+# --html_root_dir=${OUTPUT_DIR} \
+# --output_file=${OUTPUT_DIR}/assets/apis.json  \
+# --abbreviate_description \
+# --generate_overview_html \
+# --product_name="AirWatch;9.2" \
+# --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
+# --swagger_output_dir=${OUTPUT_DIR}/assets/specs 
+
+mkdir -p ./assets/specs
+cp -fv ${SCRIPT_DIR}/swagger/* ./assets/specs
+cp -fv ${SCRIPT_DIR}/apis.json ./assets
+
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
