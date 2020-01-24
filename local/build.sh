@@ -88,6 +88,7 @@ rm -rfv ./local
 
 echo "Removing stock configuration files (will be overwritten, but to catch errors we remove them explicitly)"
 rm -fv ./assets/dev-center-config.json
+rm -fv ./assets/apis.json
 
 echo "Staging product specific dev-center-config.json as well as apis.json"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
@@ -104,12 +105,12 @@ python ${TOOLS_DIR}/apixlocal.py \
  stage \
  --server=${APIX_SERVER} \
  --html_root_dir=${OUTPUT_DIR} \
- --output_file=${OUTPUT_DIR}/apis.json  \
+ --output_file=${OUTPUT_DIR}/assets/apis.json  \
  --abbreviate_description \
  --generate_overview_html \
  --product_name="AirWatch;9.2" \
  --swagger_glob ${SCRIPT_DIR}/swagger/*.json \
- --swagger_output_dir=${OUTPUT_DIR}/local/swagger 
+ --swagger_output_dir=${OUTPUT_DIR}/assets/specs 
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html

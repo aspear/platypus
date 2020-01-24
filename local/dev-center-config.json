@@ -3,7 +3,7 @@
     "productRelease" : "AirWatch;9.2",
     "sampleQuery" : "product=AirWatch",    
     "enableRemote" : false,
-    "localApiUrl" : "apis.json",
+    "localApiUrl" : "assets/apis.json",
     "overviewPath" : null,
     "samplePageOverview": "AirWatch Samples",
     "sdkPageOverview": "AirWatch SDKs",
