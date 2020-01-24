@@ -32,7 +32,7 @@ DEV_CENTER_ROOT_PATH=${DEV_CENTER_ROOT_PATH:-"/"}
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
 # for valid values
-export VER="0.1.0"
+export VER="8.0.4"
 
 # -----------------------------------------------------------------------------
 ARTIFACTORY_URL=https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
