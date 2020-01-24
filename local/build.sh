@@ -32,7 +32,7 @@ DEV_CENTER_ROOT_PATH=${DEV_CENTER_ROOT_PATH:-"/"}
 # the VER variable is the one place to change the particular release of API 
 # explorer.  See https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
 # for valid values
-export VER="8.0.4"
+export VER="8.0.5"
 
 # -----------------------------------------------------------------------------
 ARTIFACTORY_URL=https://build-artifactory.eng.vmware.com/artifactory/npm/%40vmw/vcode-dev-center-app/-/@vmw
@@ -119,7 +119,7 @@ cp -fv ${SCRIPT_DIR}/apis.json ./assets
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
-sed -i "s|VMware {code} Developer Center App|AirWatch Developer Center|g" ./index.html
+sed -i "s|VMware {code} Developer Center App|Workspace ONE UEM Developer Center|g" ./index.html
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./.htaccess
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./server.rewrites
 

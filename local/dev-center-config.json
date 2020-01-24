@@ -1,7 +1,7 @@
 {
     "title" : "AirWatch Developer Center",
     "productRelease" : "AirWatch;9.2",
-    "sampleQuery" : "product=AirWatch",    
+    "sampleQuery" : "product=AirWatch,Workspace ONE UEM",    
     "enableRemote" : false,
     "localApiUrl" : "assets/apis.json",
     "overviewPath" : null,
