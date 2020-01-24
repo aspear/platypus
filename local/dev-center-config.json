@@ -1,12 +1,12 @@
 {
-    "title" : "AirWatch Developer Center",
-    "productRelease" : "AirWatch;9.2",
+    "title" : "VMware Workspace ONE UEM Developer Center",
+    "productRelease" : "VMware Workspace ONE UEM;1908 Cloud Only",
     "sampleQuery" : "product=AirWatch,Workspace ONE UEM",    
     "enableRemote" : false,
     "localApiUrl" : "assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "AirWatch Samples",
-    "sdkPageOverview": "AirWatch SDKs",
+    "samplePageOverview": "Workspace ONE UEM Samples",
+    "sdkPageOverview": "Workspace ONE UEM SDKs",
     "defaultHost" : "",
     "defaultBasePath" : "", 
     "auth": [
