@@ -3,7 +3,7 @@
 		"api_uid": "api_csp_iam", 
 		"description": "", 
 		"name": "Identity & AM APIs", 
-		"products": [ "VMware Cloud Services Platform (CSP)","Common Services Platform" ], 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
 		"resources": {
         "docs": []
         }, 

@@ -1,6 +1,6 @@
 {
     "title" : "VMware Cloud Services Platform Developer Center",
-    "productRelease" : "VMware Cloud Services Platform;latest",
+    "productRelease" : "VMware Cloud Services Platform (CSP);latest",
     "sampleQuery" : "product=VMware Cloud Services Platform (CSP)",
     "enableRemote" : false,
     "localApiUrl" : "assets/apis.json",
