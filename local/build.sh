@@ -94,7 +94,7 @@ echo "Staging product specific dev-center-config.json as well as apis.json"
 cp -fv ${SCRIPT_DIR}/dev-center-config.json ./assets
 cp -fv ${SCRIPT_DIR}/favicon.ico ./    # copy VMware standard icon.  Replace with your products if there is one.
 
-echo "Generating apis.json"
+#echo "Generating apis.json"
 # run the tool to stage the swagger json files from the 
 # ${SCRIPT_DIR}/swagger directory to the local/swagger
 # directory, abbreviating the descriptions and then also taking the 
@@ -113,13 +113,13 @@ echo "Generating apis.json"
 # --swagger_output_dir=${OUTPUT_DIR}/assets/specs 
 
 mkdir -p ./assets/specs
-cp -fv ${SCRIPT_DIR}/swagger/* ./assets/specs
+cp -fv ${SCRIPT_DIR}/specs/* ./assets/specs
 cp -fv ${SCRIPT_DIR}/apis.json ./assets
 
 
 echo "Using DEV_CENTER_ROOT_PATH variable to set base path in generated files to \"${DEV_CENTER_ROOT_PATH}\""
 sed -i "s|<base href=\\\"/\\\">|<base href=\\\"${DEV_CENTER_ROOT_PATH}\\\">|g" ./index.html
-sed -i "s|VMware {code} Developer Center App|Workspace ONE UEM Developer Center|g" ./index.html
+sed -i "s|VMware {code} Developer Center App|VMware Cloud Services Platform|g" ./index.html
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./.htaccess
 sed -i "s|/dev-center-app/|/${DEV_CENTER_ROOT_PATH}/|g" ./server.rewrites
 

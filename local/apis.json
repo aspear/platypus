@@ -8,8 +8,106 @@
         "docs": []
         }, 
 		"type": "swagger", 
-		"url": "https://console-stg.cloud.vmware.com/csp/gateway/am/api/v2/api-docs?group=docs", 
+		"url": "assets/specs/api_csp_iam.json", 
 		"version": "latest"
-	} 
-
+	},
+	{
+		"api_uid": "api_csp_billing", 
+		"description": "", 
+		"name": "Billing APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_billing.json"
+	},
+	{
+		"api_uid": "api_csp_slc", 
+		"description": "", 
+		"name": "Service Lifecycle APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_slc.json"
+	},
+	{
+		"api_uid": "api_csp_vmwid", 
+		"description": "", 
+		"name": "VMware ID Identity Provider APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_vmwid.json"
+	},
+	{
+		"api_uid": "api_csp_commerce", 
+		"description": "", 
+		"name": "Commerce APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_commerce.json"
+	},
+	{
+		"api_uid": "api_csp_po", 
+		"description": "", 
+		"name": "Message-Bus APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_po.json"
+	},
+	{
+		"api_uid": "api_csp_es", 
+		"description": "", 
+		"name": "Email-Service APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_es.json"
+	},
+	{
+		"api_uid": "api_csp_os", 
+		"description": "", 
+		"name": "Onboarding Service APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_os.json"
+	},
+	{
+		"api_uid": "api_csp_um", 
+		"description": "", 
+		"name": "Usage Meter APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_um.json"
+	},
+	{
+		"api_uid": "api_csp_ff", 
+		"description": "", 
+		"name": "Feature Flag Service APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)" ], 
+		"resources": {
+        "docs": []
+        }, 
+		"type": "swagger", 
+		"url": "assets/specs/api_csp_ff.json"
+	}
 ]
