@@ -1,12 +1,12 @@
 {
-    "title" : "VMware Workspace ONE UEM Developer Center",
-    "productRelease" : "VMware Workspace ONE UEM;1908 Cloud Only",
-    "sampleQuery" : "product=AirWatch,Workspace ONE UEM",    
+    "title" : "VMware Cloud Services Platform Developer Center",
+    "productRelease" : "VMware Cloud Services Platform;latest",
+    "sampleQuery" : "product=VMware Cloud Services Platform (CSP)",
     "enableRemote" : false,
     "localApiUrl" : "assets/apis.json",
     "overviewPath" : null,
-    "samplePageOverview": "Workspace ONE UEM Samples",
-    "sdkPageOverview": "Workspace ONE UEM SDKs",
+    "samplePageOverview": "VMware Cloud Services Platform Samples",
+    "sdkPageOverview": "VMware Cloud Services Platform SDKs",
     "defaultHost" : "",
     "defaultBasePath" : "", 
     "auth": [

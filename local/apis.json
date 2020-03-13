@@ -1,98 +1,15 @@
 [
 	{
-		"api_uid": "api_airwatch_mam_v1", 
+		"api_uid": "api_csp_iam", 
 		"description": "", 
-		"name": "MAM API V1", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
+		"name": "Identity & AM APIs", 
+		"products": [ "VMware Cloud Services Platform (CSP)","Common Services Platform" ], 
 		"resources": {
         "docs": []
         }, 
 		"type": "swagger", 
-		"url": "assets/specs/Mam_API_V1.json", 
-		"version": "1"
-	}, 
-	{
-		"api_uid": "api_airwatch_mam_v2", 
-		"description": "", 
-		"name": "MAM API V2", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/Mam_API_V2.json", 
-		"version": "2"
-	}, 
-	{
-		"api_uid": "api_airwatch_mcm_v1", 
-		"description": "", 
-		"name": "MCM API", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/Mcm_API_V1.json", 
-		"version": "1"
-	}, 
-	{
-		"api_uid": "api_airwatch_mdm_v1", 
-		"description": "", 
-		"name": "MDM API V1", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/Mdm_API_V1.json", 
-		"version": "1"
-	}, 
-	{
-		"api_uid": "api_airwatch_mdm_v2", 
-		"description": "", 
-		"name": "MDM API V2", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/Mdm_API_V2.json", 
-		"version": "2"
-	}, 
-	{
-		"api_uid": "api_airwatch_mem_v1", 
-		"description": "", 
-		"name": "MEM API", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/Mem_API_V1.json", 
-		"version": "1"
-	}, 
-	{
-		"api_uid": "api_airwatch_system_v1", 
-		"description": "", 
-		"name": "System API V1", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/System_API_V1.json", 
-		"version": "1"
-	}, 
-	{
-		"api_uid": "api_airwatch_system_v2", 
-		"description": "", 
-		"name": "System API V2", 
-		"products": [ "AirWatch", "Workspace ONE UEM" ], 
-		"resources": {
-        "docs": []
-        }, 
-		"type": "swagger", 
-		"url": "assets/specs/System_API_V2.json", 
-		"version": "2"
-	}
+		"url": "https://console-stg.cloud.vmware.com/csp/gateway/am/api/v2/api-docs?group=docs", 
+		"version": "latest"
+	} 
+
 ]
